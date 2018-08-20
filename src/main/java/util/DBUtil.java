@@ -1,4 +1,5 @@
 package util;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -7,35 +8,94 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Properties;
 
 
 public class DBUtil 
 {
 	private static String dbDriver = "com.mysql.jdbc.Driver";
-	private static String dbUrl = "jdbc:mysql://127.0.0.1:3306/cwc?useUnicode=true&characterEncoding=utf-8&useSSL=false";
-	private static String dbUser = "root";
-	private static String dbPass = "";
+	//private static String dbUrl = "jdbc:mysql://127.0.0.1:3306/webcrawler?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+	//private static String dbUser = "root";
+	//private static String dbPass = "";
 
-	public static Connection getConn() throws ClassNotFoundException, SQLException
+	private static String dbUrl;
+	private static String dbUser;
+	private static String dbPass;
+	public static boolean config(String mysqlURL,String mysqlUserName,String mysqlPassword){
+		try {
+			Class.forName(dbDriver);
+		}catch (ClassNotFoundException e){
+			System.err.println(e);
+			return false;
+		}
+
+		dbUrl=mysqlURL;
+		dbUser=mysqlUserName;
+		dbPass=mysqlPassword;
+		System.out.println("URL:"+dbUrl);
+		System.out.println("UserName:"+dbUser);
+		System.out.println("Password:"+dbPass);
+		try{
+			Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
+			conn.close();
+		}catch (SQLException e){
+			System.err.println(e);
+			dbUrl=null;
+			dbPass=null;
+			dbUser=null;
+			return false;
+		}
+		return true;
+	}
+	public static Connection getConn()
 	{
-		Connection conn = null;
-		Class.forName(dbDriver);
-		conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
+		Connection conn;
+		if(dbUrl==null||dbUser==null||dbPass==null){
+			Properties prop=new Properties();
+			try {
+				prop.load(DBUtil.class.getResourceAsStream("/application.properties"));
+			}catch (IOException e){
+				System.err.println(e);
+				return null;
+			}
+			dbUrl=prop.getProperty("mysqlURL");
+			dbUser=prop.getProperty("mysqlUserName");
+			dbPass=prop.getProperty("mysqlPassword");
+		}
+		try{
+			conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
+		}catch (SQLException e){
+			System.err.println(e);
+			return null;
+		}
 		return conn;
 	}
-	public static void release(Connection conn, Statement st, ResultSet rs) throws SQLException 
+	public static void release(Connection conn, Statement st, ResultSet rs)
 	{
 		if (rs != null) 
 		{
-			rs.close();
+			try {
+				rs.close();
+			}catch (SQLException e){
+				e.printStackTrace();
+			}
+
 		}
 		if (st != null) 
 		{
-			st.close();			
+			try {
+				st.close();
+			}catch (SQLException e){
+				e.printStackTrace();
+			}
 		}
 		if (conn != null) 
 		{
-			conn.close();			
+			try {
+				conn.close();
+			}catch (SQLException e){
+				e.printStackTrace();
+			}
 		}
 	}
 	/*
@@ -79,28 +139,8 @@ public class DBUtil
 				flag = false;
 				e.printStackTrace();
 			}
-		} catch (ClassNotFoundException e1) 
-		{
-				// TODO Auto-generated catch block
-			flag = false;
-			e1.printStackTrace();
-		} catch (SQLException e1) 
-		{
-				// TODO Auto-generated catch block
-			flag = false;
-			e1.printStackTrace();
-		}
-		finally 
-		{
-			try
-			{
-				release(conn, st, rs);
-			} catch (SQLException e) 
-			{
-				// TODO Auto-generated catch block
-				flag = false;
-				e.printStackTrace();
-			}
+		} finally {
+			release(conn, st, rs);
 		}
 		return flag;
 	}
@@ -140,28 +180,8 @@ public class DBUtil
 				flag = false;
 			}
 		
-		} catch (ClassNotFoundException e1) 
-		{
-		// TODO Auto-generated catch block
-		flag = false;
-		e1.printStackTrace();
-		} catch (SQLException e1) 
-		{
-		// TODO Auto-generated catch block
-			flag = false;
-			e1.printStackTrace();
-		}
-		finally 
-		{
-			try 
-			{
-				release(conn, st, rs);
-			} catch (SQLException e) 
-			{
-				// TODO Auto-generated catch block
-				flag = false;
-				e.printStackTrace();
-			}
+		}finally {
+			release(conn, st, rs);
 		}
 		return flag;
 	}
@@ -199,23 +219,8 @@ public class DBUtil
 					flag = false;
 					e.printStackTrace();
 				} 
-			} catch (ClassNotFoundException e1) {
-				// TODO Auto-generated catch block
-				flag = false;
-				e1.printStackTrace();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				flag = false;
-				e1.printStackTrace();
-			}
-			finally {
-				try {
-					release(conn, st, rs);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					flag = false;
-					e.printStackTrace();
-				}
+			}finally {
+				release(conn, st, rs);
 			}
 			return flag;
 		}
@@ -310,26 +315,8 @@ public class DBUtil
 			{
 				e.printStackTrace();
 			}
-		} catch (ClassNotFoundException e1) 
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (SQLException e1) 
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		finally 
-		{
-			try 
-			{
-				release(conn, st, rs);
-				
-			} catch (SQLException e) 
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		} finally {
+			release(conn, st, rs);
 		}
 		return result;
 
@@ -423,27 +410,9 @@ public class DBUtil
 			}
 			return result;
 
-		} catch (ClassNotFoundException e1) 
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (SQLException e1) 
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} finally {
+			release(conn, st, rs);
 		}
-		finally 
-		{
-			try 
-			{
-				release(conn, st, rs);
-			} catch (SQLException e) 
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return result;
 
 	}
 	
@@ -530,26 +499,8 @@ public class DBUtil
 			{
 				e.printStackTrace();
 			}
-		}
-		catch (ClassNotFoundException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (SQLException e1) 
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		finally 
-		{
-			try 
-			{
-				release(conn, st, rs);
-			} catch (SQLException e) 
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		} finally {
+			release(conn, st, rs);
 		}
 		return result;	
 	}
@@ -617,21 +568,8 @@ public class DBUtil
 				e1.printStackTrace();
 			}
 	
-		}
-		catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		finally {	
-			try {
-				release(conn, st, rs);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		} finally {
+			release(conn, st, rs);
 		}
 		return result;
 		
@@ -723,26 +661,8 @@ public class DBUtil
 			{
 				e.printStackTrace();
 			}
-		} 
-		catch (ClassNotFoundException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (SQLException e1) 
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		finally 
-		{
-			try 
-			{
-				release(conn, st, rs);
-			} catch (SQLException e) 
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		} finally {
+			release(conn, st, rs);
 		}
 		return result;
 	}
@@ -783,25 +703,8 @@ public class DBUtil
 			{
 				e.printStackTrace();
 			}
-		} catch (ClassNotFoundException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (SQLException e1) 
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		finally 
-		{
-			try 
-			{
-				release(conn, st, rs);
-			} catch (SQLException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		} finally {
+			release(conn, st, rs);
 		}
 		return max;
 	}
@@ -860,26 +763,8 @@ public class DBUtil
 			System.out.println("error in move point ");
 			e.printStackTrace();
 	      }
-		} catch (ClassNotFoundException e1) 
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (SQLException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		finally 
-		{
-			try 
-			{
-				release(conn, st, rs);
-				
-			} catch (SQLException e) 
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		} finally {
+			release(conn, st, rs);
 		}
 		return links;
 	}
@@ -945,21 +830,8 @@ public class DBUtil
 			e.printStackTrace();
 		}
 		
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		finally {
-			try {
-				release(conn, st, rs);
-				
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		} finally {
+			release(conn, st, rs);
 		}
 		return sum;
 	}
@@ -1005,25 +877,8 @@ public class DBUtil
 			{
 			e.printStackTrace();
 			}
-		} catch (ClassNotFoundException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (SQLException e1) 
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		finally 
-		{
-			try 
-			{
-				release(conn, st, rs);
-			} catch (SQLException e) 
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		} finally {
+			release(conn, st, rs);
 		}
 		return sum;
 	}
@@ -1054,20 +909,8 @@ public class DBUtil
 		catch (SQLException e) {
 			// TODO: handle exception
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		finally 
-		{
-			try
-			{
-				release(conn, st, null);
-			} catch (SQLException e) 
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		} finally {
+			release(conn, st, null);
 		}
 		return rs;
 	}
