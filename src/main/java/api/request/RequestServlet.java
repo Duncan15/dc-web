@@ -25,14 +25,13 @@ public class RequestServlet extends HttpServlet {
             String[] params = {"requestID", "requestName", "requestDesc","createdTime"};
             String[][] requesttable = DBUtil.select("requesttable", params);
             int total = requesttable.length;
-            List<String[]> strings = new ArrayList<>();
+            List<Map<String,Object>> strings = new ArrayList<>();
             for (int i = 0; i < requesttable.length; i++) {
-                int strLen = requesttable[0].length;
-                String[] tempStr = new String[strLen];
+                Map<String,Object> data=new HashMap<>();
                 for (int j = 0; j < requesttable[0].length; j++) {
-                    tempStr[j] = params[j] + ":" + requesttable[i][j];
+                    data.put(params[j], requesttable[i][j]);
                 }
-                strings.add(tempStr);
+                strings.add(data);
             }
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
