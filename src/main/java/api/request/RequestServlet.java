@@ -50,14 +50,14 @@ public class RequestServlet extends HttpServlet {
                 response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, null));
                 return;
             }
-            String[] params = {"requestID", "requestName", "requestDesc"};
-            String[][] requesttable = DBUtil.selectByReqID("requestTable", params, requestID);
+           String[] params = {"requestID", "requestName", "requestDesc"};
+            String[] con_params={"requestID"};
+            String[] con_values={String.valueOf(requestID)};
+            String[][] requestData = DBUtil.select("requestTable",params,con_params,con_values);
             Map<String, Object> data = new HashMap<>();
-            for (int i = 0; i < requesttable.length; i++) {
-                data.put(params[0], Integer.parseInt(requesttable[i][0]));
-                data.put(params[1], requesttable[i][1]);
-                data.put(params[2], requesttable[i][2]);
-            }
+            data.put("requestID",Integer.parseInt(requestData[0][0]));
+            data.put("requestName",requestData[0][1]);
+            data.put("requestDesc",requestData[0][2]);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(RespWrapper.build(data));
