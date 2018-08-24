@@ -265,7 +265,7 @@ public class TaskServlet extends HttpServlet {
     }
 	/*
     for api: /api/datacrawling/task/:id
-             /apu/datacrawling/task/:id
+          
      */
 	 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
