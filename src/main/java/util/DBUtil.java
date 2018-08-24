@@ -242,7 +242,7 @@ public class DBUtil
 		sql += params[params.length - 1] + " from " + table + " where ";
 		for(int j=0;j<cond_params.length-1;j++)
 		{
-			sql+=cond_params[j]+"="+cond_par_val[j]+" and ";
+			sql+=cond_params[j]+"=\'"+cond_par_val[j]+"\' and ";
 		}
 		sql+=cond_params[cond_params.length-1]+"=\'"+cond_par_val[cond_params.length-1]+"\'";
 		try 
