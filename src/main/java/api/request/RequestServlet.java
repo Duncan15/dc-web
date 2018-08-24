@@ -21,7 +21,9 @@ public class RequestServlet extends HttpServlet {
     /*
      for api :/api/datacrawling/request/all
       */
-
+    /*
+     for api :/api/datacrawling/request/:id
+      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String[] pathParam = RequestParser.parsePath(request.getRequestURI(), 2);
         if ("request".equals(pathParam[0]) && "all".equals(pathParam[1])) {
@@ -40,12 +42,33 @@ public class RequestServlet extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(RespWrapper.build(strings, total));
-        }else {
+        } else if ("request".equals(pathParam[0]) && isInteger(pathParam[1])) {
+            int requestID = 0;
+            try {
+                requestID = Integer.parseInt(pathParam[1]);
+            } catch (NumberFormatException e) {
+                response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, null));
+                return;
+            }
+            String[] params = {"requestID", "requestName", "requestDesc"};
+            String[] con_params={"requestID"};
+            String[] con_values={String.valueOf(requestID)};
+            String[][] requestData = DBUtil.select("requestTable",params,con_params,con_values);
+            Map<String, Object> data = new HashMap<>();
+            data.put("requestID",Integer.parseInt(requestData[0][0]));
+            data.put("requestName",requestData[0][1]);
+            data.put("requestDesc",requestData[0][2]);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(RespWrapper.build(data));
+        }
+        else
+
+        {
             response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, null));
         }
 
     }
-
     /*
             for api :/api/datacrawling/request/:id
      */
