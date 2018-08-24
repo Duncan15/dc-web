@@ -59,7 +59,7 @@ public class TaskServlet extends HttpServlet {
     }
     /*
     for api: /api/datacrawling/task/urlparam/:id
-             /apu/datacrawling/task/loginparam/:id
+             /api/datacrawling/task/loginparam/:id
      */
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
@@ -262,6 +262,44 @@ public class TaskServlet extends HttpServlet {
         }else {
             response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,null));
         }
+    }
+	/*
+    for api: /api/datacrawling/task/:id
+             /apu/datacrawling/task/:id
+     */
+	 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        Map<String,Object> data=new HashMap<>();
+        String url=request.getRequestURL().toString();
+        int webId =Integer.parseInt(url.substring(url.lastIndexOf("/")+1));
+        try{
+            String[]  param = {"webId","webName","runningMode","workFile","driver","createtime","usable",
+                    "indexUrl","prefix","paramQuery","paramPage","startPageNum","paramList","paramValueList",
+                    "userParam","pwdParam","userName","password","loginUrl","threadNum","timeout","charset","databaseSize"};
+           String[] taskData= DBUtil.select("website",param,webId)[0];
+            String[]  keys = {"taskID","taskName","runningMode","workPath","driver","createtime","usable",
+                    "siteURL","searchURL","keywordName","pageParamName","pageParamValue","otherParamName","otherParamValue",
+                    "userNameID","passwordID","username","password","loginURL","threadNum","timeout","charset","datagross"};
+
+            for(int i=0;i<keys.length;i++)
+                data.put(keys[i], taskData[i]);
+            System.out.println(taskData[2]);
+            if("structed".equals(taskData[2])){
+                String[] params = {"iframeNav","navValue","iframeCon","searchButton","resultRow","nextPageXPath"
+                        ,"pageNumXPath","iframeSubParam","arrow"};
+                String[] structedData= DBUtil.select("structedParam",params,webId)[0];
+                for(int i=0;i<params.length;i++)
+                    data.put(params[i], structedData[i]);
+            }
+            response.getWriter().println(RespWrapper.build(data));
+        }catch(Exception e){
+            data.put("msg","任务参数获取失败");
+            response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
+        }
+
+
     }
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request,response);
