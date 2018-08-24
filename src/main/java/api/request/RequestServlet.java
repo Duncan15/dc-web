@@ -123,4 +123,8 @@ public class RequestServlet extends HttpServlet {
         }
 
     }
+    public static boolean isInteger(String str) {
+        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+        return pattern.matcher(str).matches();
+    }
 }
