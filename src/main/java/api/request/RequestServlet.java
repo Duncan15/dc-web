@@ -21,9 +21,7 @@ public class RequestServlet extends HttpServlet {
     /*
      for api :/api/datacrawling/request/all
       */
-    /*
-     for api :/api/datacrawling/request/:id
-      */
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String[] pathParam = RequestParser.parsePath(request.getRequestURI(), 2);
         if ("request".equals(pathParam[0]) && "all".equals(pathParam[1])) {
@@ -42,29 +40,7 @@ public class RequestServlet extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(RespWrapper.build(strings, total));
-        } else if ("request".equals(pathParam[0]) && isInteger(pathParam[1])) {
-            int requestID = 0;
-            try {
-                requestID = Integer.parseInt(pathParam[1]);
-            } catch (NumberFormatException e) {
-                response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, null));
-                return;
-            }
-            String[] params = {"requestID", "requestName", "requestDesc"};
-            String[][] requesttable = DBUtil.selectByReqID("requestTable", params, requestID);
-            Map<String, Object> data = new HashMap<>();
-            for (int i = 0; i < requesttable.length; i++) {
-                data.put(params[0], Integer.parseInt(requesttable[i][0]));
-                data.put(params[1], requesttable[i][1]);
-                data.put(params[2], requesttable[i][2]);
-            }
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().println(RespWrapper.build(data));
-        }
-        else
-
-        {
+        }else {
             response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, null));
         }
 
@@ -123,10 +99,5 @@ public class RequestServlet extends HttpServlet {
             response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, null));
         }
 
-    }
-
-    public static boolean isInteger(String str) {
-        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
-        return pattern.matcher(str).matches();
     }
 }
