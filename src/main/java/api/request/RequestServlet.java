@@ -42,7 +42,7 @@ public class RequestServlet extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(RespWrapper.build(strings, total));
-        } else if ("request".equals(pathParam[0]) && isInteger(pathParam[1])) {
+        } else if ("request".equals(pathParam[0])) {
             int requestID = 0;
             try {
                 requestID = Integer.parseInt(pathParam[1]);
@@ -69,35 +69,12 @@ public class RequestServlet extends HttpServlet {
         }
 
     }
-    /*
-            for api :/api/datacrawling/request/:id
-     */
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        String[] pathParam = RequestParser.parsePath(request.getRequestURI(), 2);
-        int requestID = 0;
-        try {
-            requestID = Integer.parseInt(pathParam[1]);
-        } catch (NumberFormatException e) {
-            response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, null));
-            return;
-        }
-        request.setCharacterEncoding("UTF-8");
-        String requestName = request.getParameter("requestName");
-        String requestDesc = request.getParameter("requestDesc");
-        String[] params = {"requestName", "requestDesc",};
-        String[] params_value = {requestName, requestDesc};
-        boolean isUpdated = DBUtil.update("requesttable", params, params_value, requestID);
-        System.out.println("isUpdated ?:" + isUpdated);
-        Map<String, Object> data = new HashMap<>();
-        data.put("requestID", requestID);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().println(RespWrapper.build(data));
-    }
 
     /*
         for api :/api/datacrawling/request/new
+     */
+    /*
+            for api :/api/datacrawling/request/:id
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
@@ -113,6 +90,26 @@ public class RequestServlet extends HttpServlet {
             String[] con_values = {taskName, runningMode, createdTime};
             boolean isInserted = DBUtil.insert("requesttable", params, con_values);
             int requestID = DBUtil.getLasttaskID();
+            Map<String, Object> data = new HashMap<>();
+            data.put("requestID", requestID);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(RespWrapper.build(data));
+        } else if("request".equals(pathParam[0])){
+            int requestID = 0;
+            try {
+                requestID = Integer.parseInt(pathParam[1]);
+            } catch (NumberFormatException e) {
+                response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, null));
+                return;
+            }
+            request.setCharacterEncoding("UTF-8");
+            String requestName = request.getParameter("requestName");
+            String requestDesc = request.getParameter("requestDesc");
+            String[] params = {"requestName", "requestDesc",};
+            String[] params_value = {requestName, requestDesc};
+            boolean isUpdated = DBUtil.update("requesttable", params, params_value, requestID);
+            System.out.println("isUpdated ?:" + isUpdated);
             Map<String, Object> data = new HashMap<>();
             data.put("requestID", requestID);
             response.setContentType("application/json");
