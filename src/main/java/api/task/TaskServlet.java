@@ -336,14 +336,18 @@ public class TaskServlet extends HttpServlet {
 
                  for(int i=0;i<keys.length;i++)
                      data.put(keys[i], taskData[i]);
-                 System.out.println(taskData[2]);
-                 if("structed".equals(taskData[2])){
-                     String[] params = {"iframeNav","navValue","iframeCon","searchButton","resultRow","nextPageXPath"
-                             ,"pageNumXPath","iframeSubParam","arrow"};
-                     String[] structedData= DBUtil.select("structedParam",params,webId)[0];
-                     for(int i=0;i<params.length;i++)
-                         data.put(params[i], structedData[i]);
-                 }
+                System.out.println(taskData[2]);
+                if("structed".equals(taskData[2]) && "true".equals(taskData[4])){
+						String[] params = {"iframeNav","navValue","iframeCon","searchButton","resultRow","nextPageXPath"
+                        ,"pageNumXPath","iframeSubParam","arrow","loginButton"};
+						String[] structedData= DBUtil.select("structedParam",params,webId)[0];
+                for(int i=0;i<params.length;i++)
+                    data.put(params[i], structedData[i]);
+            }
+            else if("structed".equals(taskData[2]) && "false".equals(taskData[4])){
+                String[] params = {"dataParamList"};
+                data.put("paramQueryValueList", DBUtil.select("queryparam", params, webId)[0][0]);
+            }
                  response.getWriter().println(RespWrapper.build(data));
              }catch(Exception e){
                  data.put("msg","任务参数获取失败");
