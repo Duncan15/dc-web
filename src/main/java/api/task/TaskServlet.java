@@ -69,14 +69,15 @@ public class TaskServlet extends HttpServlet {
             }
             Map<String,Object> data=new HashMap<>();
             int webId =taskID;
-            String[] p={"runningMode","driver","usable"};
+            String[] p={"runningMode","driver","usable","charset"};
             String[] ans =DBUtil.select("website", p,webId)[0];
             String runningMode=ans[0];
             String driver=ans[1];
-            String usable="false";
+            String usable=ans[2];
 
-            String flag =DBUtil.select("website", p,webId)[0][0];
-            if(flag!=null ||flag.length()!=0)usable="true";
+            String flag =ans[3];
+            if(flag!=null ||flag.length()!=0)
+				usable="true";
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             if("false".equals(driver)){
@@ -229,7 +230,8 @@ public class TaskServlet extends HttpServlet {
             String usable="false";
             String[] p={"indexUrl"};
             String ans =DBUtil.select("website", p,webId)[0][0];
-            if(ans!=null ||ans.length()!=0)usable="true";
+            if(ans!=null ||ans.length()!=0)
+				usable="true";
             String[] param = {"threadNum","timeout","charset","databaseSize","usable"};
             String[] paramValue = {threadNum,timeout,charset,datagross,usable};
 
