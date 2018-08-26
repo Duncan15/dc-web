@@ -14,9 +14,9 @@ import java.util.Properties;
 public class DBUtil
 {
 	private static String dbDriver = "com.mysql.jdbc.Driver";
-	//private static String dbUrl = "jdbc:mysql://127.0.0.1:3306/webcrawler?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT";
-	//private static String dbUser = "root";
-	//private static String dbPass = "2333";
+//	private static String dbUrl = "jdbc:mysql://127.0.0.1:3306/webcrawler?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT";
+//	private static String dbUser = "root";
+//	private static String dbPass = "2333";
 
 	private static String dbUrl;
 	private static String dbUser;
@@ -167,7 +167,7 @@ public class DBUtil
 		{
 			sql += params[i] + "=\'" + params_value[i] + "\',";
 		}
-		sql += params[params.length - 1] + "=\'" + params_value[params_value.length - 1] + "\' where requestID=\'" + webId + "\';";
+		sql += params[params.length - 1] + "=\'" + params_value[params_value.length - 1] + "\' where webId=\'" + webId + "\';";
 		try
 		{
 			conn = getConn();
