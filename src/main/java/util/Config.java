@@ -12,7 +12,7 @@ public class Config {
 		boolean flag=false;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String[] param = {"webName","runningMode","workFile","driver","createtime","usable"};
-		String[] paramValue = {taskName,runningMode,workPath,driver,sdf.format(new Date()),"0"};
+		String[] paramValue = {taskName,runningMode,workPath,driver,sdf.format(new Date()),"false"};
 		if("unstructed".equals(runningMode)){
 			flag=ParamSetter.setInterface_unstructed(param, paramValue);
 		}
