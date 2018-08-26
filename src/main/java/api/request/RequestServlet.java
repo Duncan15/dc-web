@@ -69,45 +69,12 @@ public class RequestServlet extends HttpServlet {
         }
 
     }
-
-
-
-
-    /*
-            for api :/api/datacrawling/request/:id
-    */
-     /*
-            for api :/api/datacrawling/request/:id
-     */
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String[] pathParam = RequestParser.parsePath(request.getRequestURI(), 2);
-        int requestID = 0;
-        try {
-            requestID = Integer.parseInt(pathParam[1]);
-        } catch (NumberFormatException e) {
-            response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, null));
-            return;
-        }
-        request.setCharacterEncoding("UTF-8");
-        String requestName = request.getParameter("requestName");
-        String requestDesc = request.getParameter("requestDesc");
-        String[] params = {"requestName", "requestDesc",};
-        String[] params_value = {requestName, requestDesc};
-        String[] con_params={"requestID"};
-        String[] con_vals={requestID+""};
-        boolean isUpdated = DBUtil.update("requesttable", params, params_value, con_params,con_vals);
-        System.out.println("isUpdated ?:" + isUpdated);
-        Map<String, Object> data = new HashMap<>();
-        data.put("requestID", requestID);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().println(RespWrapper.build(data));
-    }
-
      /*
         for api :/api/datacrawling/request/new
      */
-
+     /*
+            for api :/api/datacrawling/request/:id
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         //前端页面保证这些值均不为空，这里无需验证
@@ -140,7 +107,9 @@ public class RequestServlet extends HttpServlet {
             String requestDesc = request.getParameter("requestDesc");
             String[] params = {"requestName", "requestDesc",};
             String[] params_value = {requestName, requestDesc};
-            boolean isUpdated = DBUtil.update("requesttable", params, params_value, requestID);
+            String[] con_params={"requestID"};
+            String[] con_vals={requestID+""};
+            boolean isUpdated = DBUtil.update("requesttable", params, params_value, con_params,con_vals);
             System.out.println("isUpdated ?:" + isUpdated);
             Map<String, Object> data = new HashMap<>();
             data.put("requestID", requestID);
