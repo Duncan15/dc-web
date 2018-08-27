@@ -76,7 +76,7 @@ public class TaskServlet extends HttpServlet {
             String usable=ans[2];
 
             String flag =ans[3];
-            if(flag!=null ||flag.length()!=0)
+            if(flag!=null &&flag.length()!=0)
 				usable="true";
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
@@ -122,7 +122,7 @@ public class TaskServlet extends HttpServlet {
             else if("structed".equals(runningMode)){
                 System.out.println(runningMode);
                 String iframeNav = request.getParameter("iframeNav").trim();
-                String indexUrl = request.getParameter("indexUrl").trim();
+                String indexUrl = request.getParameter("siteURL").trim();
                 String navValue = request.getParameter("navValue").trim();
                 String iframeCon = request.getParameter("iframeCon").trim();
                 String searchButton = request.getParameter("searchButton").trim();
@@ -131,8 +131,8 @@ public class TaskServlet extends HttpServlet {
                 String pageNumXPath = request.getParameter("pageNumXPath").trim();
                 String iframeSubParam = request.getParameter("iframeSubParam").trim();
                 String arrow = request.getParameter("arrow").trim();
-                String paramList = request.getParameter("paramList").trim();
-                String paramValueList = request.getParameter("paramValueList").trim();
+                String paramList = request.getParameter("otherParamName").trim();
+                String paramValueList = request.getParameter("otherParamValue").trim();
 
 
                 String[] params = {"webId","iframeNav","navValue","iframeCon","searchButton","resultRow","nextPageXPath"

@@ -20,12 +20,13 @@ import util.RequestParser;
 public class TemplateServlet extends HttpServlet {
 	/*
 	for api: /api/datacrawling/task/template/all
+	for api: /api/datacrawling/task/template/:id
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String[] pathParam= RequestParser.parsePath(request.getRequestURI(),2);
 		if("template".equals(pathParam[0])&&"all".equals(pathParam[1])){
 			String [] template_params={"patternName","type"};//usable:true ,"formula","headerXPath"
-			String [] param={"webId","indexUrl"};
+			String [] param={"webId","webName"};
 			List<Map<String,Object>> dataList=new ArrayList<Map<String,Object>>();
 			Map<String,Object> data=new HashMap<>();
 			response.setContentType("application/json");
@@ -38,19 +39,11 @@ public class TemplateServlet extends HttpServlet {
 						for(int j=0;j<template.length;j++){
 							Map<String,Object> content=new HashMap<>();
 							content.put("taskID", res[i][0]);
-							content.put("url", res[i][1]);
-							content.put("usable", "true");
+							content.put("taskName", res[i][1]);
 							content.put("templateName",template[j][0]);
 							content.put("templateType",template[j][1]);
 							dataList.add(content);
 						}
-					}
-					else{
-						Map<String,Object> content=new HashMap<>();
-						content.put("taskID", res[i][0]);
-						content.put("url", res[i][1]);
-						content.put("usable", "false");
-						dataList.add(content);
 					}
 				}
 				response.getWriter().println(RespWrapper.build(dataList,dataList.size()));
@@ -63,8 +56,10 @@ public class TemplateServlet extends HttpServlet {
 		}
     }
 
+
     /*
     for api: /api/datacrawling/task/template/:id
+	for api: /api/datacrawling/task/template/new
      */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
