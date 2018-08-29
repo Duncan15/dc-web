@@ -69,11 +69,10 @@ public class RequestServlet extends HttpServlet {
         }
 
     }
-
-    /*
+     /*
         for api :/api/datacrawling/request/new
      */
-    /*
+     /*
             for api :/api/datacrawling/request/:id
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -108,7 +107,9 @@ public class RequestServlet extends HttpServlet {
             String requestDesc = request.getParameter("requestDesc");
             String[] params = {"requestName", "requestDesc",};
             String[] params_value = {requestName, requestDesc};
-            boolean isUpdated = DBUtil.update("requesttable", params, params_value, requestID);
+            String[] con_params={"requestID"};
+            String[] con_vals={requestID+""};
+            boolean isUpdated = DBUtil.update("requesttable", params, params_value, con_params,con_vals);
             System.out.println("isUpdated ?:" + isUpdated);
             Map<String, Object> data = new HashMap<>();
             data.put("requestID", requestID);
