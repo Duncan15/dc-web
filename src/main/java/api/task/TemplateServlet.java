@@ -56,31 +56,32 @@ public class TemplateServlet extends HttpServlet {
 			}
 		}
 		else if("template".equals(pathParam[0])){
-			int taskID=0;
+			int templateID=0;
 			try{
-				taskID=Integer.parseInt(pathParam[1]);
+				templateID=Integer.parseInt(pathParam[1]);
 			}catch (NumberFormatException e){
 				response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,null));
 				return;
 			}
 			Map<String,Object> data=new HashMap<>();
-			int webId =taskID;
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 			try{
-				String[] res=util.DBUtil.select("website", param,webId)[0];
-				String[][] template=util.DBUtil.select("pattern", template_params, webId);
-				if(template.length>0){
-					for(int j=0;j<template.length;j++){
-						Map<String,Object> content=new HashMap<>();
-						content.put("taskID", res[0]);
-						content.put("taskName", res[1]);
-						content.put("templateName",template[j][0]);
-						content.put("templateType",template[j][1]);
-						dataList.add(content);
-						}
-					}
-				response.getWriter().println(RespWrapper.build(dataList,dataList.size()));
+				String[][] template=util.DBUtil.select("pattern", new String[]{"webId","patternName","xpath","indexPath","type","formula","headerXPath"}, new String[]{"id"},new String[]{templateID+""});
+				Map<String, Object> content = new HashMap<>();
+				if(template!=null&&template.length>0) {
+					String[] res = util.DBUtil.select("website", param, Integer.parseInt(template[0][0]))[0];
+					content.put("taskID", res[0]);
+					content.put("taskName", res[1]);
+					content.put("templateName", template[0][1]);
+					content.put("templateXpath",template[0][2]);
+					content.put("templateIndexPath",template[0][3]);
+					content.put("templateType", template[0][4]);
+					content.put("templateFormula",template[0][5]);
+					content.put("templateHeaderXpath",template[0][6]);
+					content.put("templateID", templateID);
+				}
+				response.getWriter().println(RespWrapper.build(content));
 			}catch(Exception e){
 				data.put("msg","模板参数获取失败");
 				response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
@@ -110,9 +111,7 @@ public class TemplateServlet extends HttpServlet {
 				}
 			}
 			webId=Integer.parseInt(request.getParameter("taskID"));
-
 			Map<String,Object> data=new HashMap<>();
-
 			//前端页面保证这些值均不为空，这里无需验证
 			String templateName=request.getParameter("templateName");
 			String templateType=request.getParameter("templateType");
@@ -137,12 +136,15 @@ public class TemplateServlet extends HttpServlet {
 			 data.put("templateXpath",templateXpath);
 			 data.put("templateFormula",templateFormula);
 			 data.put("templateHeaderXpath",templateHeaderXpath);
-			if(DBUtil.select("pattern", par,p, pv).length!=0) {
-				data.put("msg", "该模板名称已使用，请重新输入");
-				response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
-			}
-			else if("new".equals(pathParam[1])&&DBUtil.insert("pattern", params, params_value)){
-				response.getWriter().println(RespWrapper.build(data));
+
+			if("new".equals(pathParam[1])){
+				 if(DBUtil.select("pattern", par,p, pv).length!=0) {
+					 data.put("msg", "该模板名称已使用，请重新输入");
+					 response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
+				 }else{
+				 	DBUtil.insert("pattern", params, params_value);
+					response.getWriter().println(RespWrapper.build(data));
+				}
 			}
 			else if(DBUtil.update("pattern", params, params_value,par,parValue)){
 				 response.getWriter().println(RespWrapper.build(data));
