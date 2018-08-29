@@ -1,0 +1,31 @@
+.navbar-fixed-top {
+	background-color: #1b365f;
+}
+.navbar-fixed-top a {
+	color:#f8f3f3!important;
+}
+.empty-to-fixed,
+.main-content,
+.footer {
+	margin-top: 50px;
+}
+.nav-line {
+	padding-left:30%;
+}
+.nav-line * {
+	padding:5px 20px;
+	color:#7e8081;
+}
+.has-valid {
+	height: 50px;
+}
+.form-title {
+	padding: 20px 67px;
+}
+.local-input-group {
+	padding-right: 15px!important;
+	padding-left: 15px!important;
+}
+.return-btn {
+	float: right;
+}

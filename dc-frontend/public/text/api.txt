@@ -1,0 +1,232 @@
+1.create new request
+url:/api/datacrawling/request/new
+method:post
+content-type:x-www-form-urlencoded
+param:{
+  requestName:"",
+  requestDesc:""
+}
+ans:{
+  errno:0,//0:success 500:error,when error happen can ignore data column
+  data:{
+    requestID:0
+  }
+}
+2.get request list
+url:/api/datacrawling/request/all
+method:get
+ans:{
+  errno:0,
+  data:{
+    total:10,//the number of ans data item
+    content:[
+      {
+        requestID:0,
+        requestName:"",
+        requestDesc:"",
+        createdTime:""
+      },
+      {
+        requestID:0,
+        requestName:"",
+        requestDesc:"",
+        createdTime:""
+      }
+    ]
+  }
+}
+3.confirm request
+（1）
+url:/api/datacrawling/request/:id
+method:post
+param:{
+  requestName:"",
+  requestDesc:""
+}
+ans:{
+  errno:0,//0:success 500:error,when error happen can ignore data column
+  data:{
+    requestID:0
+  }
+}
+（2）
+url:/api/datacrawling/request/:id
+method:get
+ans:{
+  errno:0,
+  data:{
+    requestID:4,
+    requestName:"",
+    reqeuestDesc:""
+  }
+}
+4.get site resource list    get URL parse rule list    get task list    get crawling task list
+url:/api/datacrawling/task/all
+method:get
+ans:{
+errno:0,
+data:{
+  total:10,//the number of ans data item
+  content:[
+    {
+      taskID:0,
+      taskName:"",
+      URL:"",
+      runningMode:"",//structed or unstructed
+      driver:true,//true represent use browser driver
+      usable:true,//true:the parse rule is usable，in other word,config finish    false:the parse rule is unusable,not to finish
+      createdTime:"",
+      creator:"",//directly ans empty str here
+    },
+    {
+      taskID:0,
+      taskName:"",
+      URL:"",
+      runningMode:"",//structed or unstructed
+      driver:true,//true represent use browser driver
+      usable:true,//true:the parse rule is usable，in other word,config finish    false:the parse rule is unusable,not to finish
+      createdTime:"",
+      creator:"",//directly ans empty str here
+    }
+  ]
+}
+}
+5.task create
+(1)
+url:/api/datacrawling/task/new
+method:post
+content-type:x-www-form-urlencoded
+param:{
+  taskName:"",
+  runningMode:"structed",//structed or unstructed,
+  driver:true,//true represent use browser driver
+  workPath:""
+}
+ans:{
+  errno:0,
+  data:{
+    taskID:0
+  }
+}
+(2)
+url:/api/datacrawling/task/:id
+method:get
+ans:{
+  errno:0,
+  data:{
+    //the total data related with this id
+  }
+}
+6.URL parse rule config，divided into 3 sub api，the rule is usable when configed totally
+(1)URL param config
+url:/api/datacrawling/task/urlparam/:id   //id is taskID
+method:put
+content-type:x-www-form-urlencoded
+param:{
+  siteURL:"",
+  searchURL:"",
+  keywordName:"",
+  pageParamName:"",
+  pageParamValue:"",
+  otherParamName:"",//divided by ,
+  otherParamValue:"",//the same with below
+}
+ans:{
+  errno:0//success or not，ans 500 if fail
+}
+(2)login param config
+url:/api/datacrawling/task/loginparam/:id
+method:put
+content-type:x-www-form-urlencoded
+param:{
+  loginURL:"",//the login page url
+  userNameID:"",
+  passwordID:"",
+  username:"",
+  password:""
+}
+ans:{
+  errno:0
+}
+(3)download param config
+url:/api/datacrawling/task/downloadparam/:id
+method:put
+content-type:x-www-form-urlencoded
+param:{
+  threadNum:5,
+  timeout:3000,
+  charset:"GBK",
+  datagross:100000,//the gross of data
+}
+ans:{
+  errno:0
+}
+7.get template list
+url:/api/datacrawling/task/template/all
+method:get
+ans:{
+  errno:0
+  data:{
+    total:10,
+    content:[
+      {
+        taskID:1,
+        URL:"",//site URL
+        templateName:"",
+        templateType:"",
+        usable:true,//if false, other column in this item will be empty value
+      }
+    ]
+  }
+}
+8.change template content
+url:/api/datacrawling/task/template/:id
+method:post
+param:{
+  templateName:"",
+  templateType:"",
+  templateXpath:"",
+  templateFormula:""
+}
+ans:{
+  errno:0
+}
+9.task monitor api
+url:/api/datacrawling/task/monitor?taskID=9&option=start    //option represent monitor action，for example:start or stop
+method:get
+ans:{
+  errno:0,
+  data:"",//if fail ans the extract reason
+}
+10.get task status
+url:/api/datacrawling/task/status/:id
+method:get
+ans:{
+  errno:0,
+  data:{
+    taskID:12,
+    taskStatus:"stopped"//or started
+  }
+}
+11.edit db config
+url:/api/datacrawling/config/mysql
+method:post
+param:{
+  mysqlURL:"xxx",
+  mysqlUserName:"xxx",
+  mysqlPassword:"xxx"
+}
+ans:{
+  errno:0
+}
+12.get db config
+url:/api/datacrawling/config/mysql
+method:get
+ans:{
+  errno:0,
+  data:{
+    mysqlURL:"xxx",
+    mysqlUserName:"xxx",
+    mysqlPassword:"xxx"
+  }
+}

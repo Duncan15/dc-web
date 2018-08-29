@@ -11,5 +11,8 @@
 #maven
 target
 
+#node
+dc-frontend/node_modules
+
 #special
 logs

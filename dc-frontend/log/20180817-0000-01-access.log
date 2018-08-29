@@ -1,0 +1,17 @@
+[0mGET /static/css/define.css [36m304 [0m88.668 ms - -[0m
+[0mGET /static/lib/bootstrap/dist/css/bootstrap.css [36m304 [0m108.669 ms - -[0m
+[0mGET /static/css/desktop.css [36m304 [0m35.808 ms - -[0m
+[0mGET /static/css/mobile.css [36m304 [0m34.571 ms - -[0m
+[0mGET /static/lib/bootstrap/dist/css/bootstrap.css.map [32m200 [0m7.161 ms - 430003[0m
+[0mGET / [32m200 [0m76.443 ms - 9452[0m
+[0mGET /static/css/desktop.css [32m200 [0m13.550 ms - 675[0m
+[0mGET /static/css/define.css [32m200 [0m14.282 ms - 1927[0m
+[0mGET /static/css/mobile.css [32m200 [0m1.238 ms - 705[0m
+[0mGET /static/lib/bootstrap/dist/css/bootstrap.css [32m200 [0m15.628 ms - 173597[0m
+[0mGET /static/js/index.js?e115074bd8c1eb911cdd [32m200 [0m11.982 ms - 352199[0m
+[0mGET /static/lib/bootstrap/dist/css/bootstrap.css.map [32m200 [0m1.464 ms - 430003[0m
+[0mGET /static/css/define.css [36m304 [0m77.634 ms - -[0m
+[0mGET /static/css/mobile.css [36m304 [0m3.254 ms - -[0m
+[0mGET /static/lib/bootstrap/dist/css/bootstrap.css [36m304 [0m82.581 ms - -[0m
+[0mGET /static/css/desktop.css [36m304 [0m0.500 ms - -[0m
+[0mGET /static/lib/bootstrap/dist/css/bootstrap.css.map [32m200 [0m3.505 ms - 430003[0m
