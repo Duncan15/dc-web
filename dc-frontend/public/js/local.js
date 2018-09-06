@@ -370,6 +370,7 @@ $(function(){
                     form.find("input[name='cur-pg-xpath']").val(data['data']['pageNumXPath']);
                     form.find("input[name='sub-pg-iframe']").val(data['data']['iframeSubParam']);
                     form.find("input[name='dropdown-list-class-name']").val(data['data']['arrow']);
+                    form.find("input[name='login-button']").val(data['data']['loginButton']);
                     form.find("input[name='other-param-name']").val(data['data']['otherParamName']);
                     form.find("input[name='other-param-value']").val(data['data']['otherParamValue']);
                   }
@@ -398,6 +399,7 @@ $(function(){
                         pageNumXPath:form.find("input[name='cur-pg-xpath']").val().trim(),
                         iframeSubParam:form.find("input[name='sub-pg-iframe']").val().trim(),
                         arrow:form.find("input[name='dropdown-list-class-name']").val().trim(),
+                          loginButton:form.find("input[name='login-button']").val().trim(),
                         otherParamName:form.find("input[name='other-param-name']").val().trim(),
                         otherParamValue:form.find("input[name='other-param-value']").val().trim()
                       }
@@ -507,6 +509,7 @@ $(function(){
                   form.find("input[name='password-id']").val(data['data']['passwordID']);
                   form.find("input[name='username']").val(data['data']['username']);
                   form.find("input[name='password']").val(data['data']['password']);
+                  form.find("input[name='login-button']").val(data['data']['loginButton']);
                 }
               })
               .fail(function() {
@@ -527,7 +530,8 @@ $(function(){
                       userNameID:form.find("input[name='username-id']").val().trim(),
                       passwordID:form.find("input[name='password-id']").val().trim(),
                       username:form.find("input[name='username']").val().trim(),
-                      password:form.find("input[name='password']").val().trim()
+                      password:form.find("input[name='password']").val().trim(),
+                        loginButton:form.find("input[name='login-button']").val().trim()
                     }
                   })
                   .done(function(data) {
