@@ -571,7 +571,7 @@ $(function(){
                   form.find("input[name='thread-num']").val(data['data']['threadNum']);
                   form.find("input[name='timeout-num']").val(data['data']['timeout']);
                   form.find("input[name='charset']").val(data['data']['charset']);
-                  form.find("input[name='data-gross']").val(data['data']['datagross'])||0;
+                  form.find("input[name='data-gross']").val(data['data']['datagross']);
                 }
               })
               .fail(function() {
@@ -591,7 +591,7 @@ $(function(){
                       threadNum: form.find("input[name='thread-num']").val(),
                       timeout: form.find("input[name='timeout-num']").val(),
                       charset: form.find("input[name='charset']").val(),
-                      datagross: form.find("input[name='data-gross']").val()
+                      datagross: form.find("input[name='data-gross']").val()||0
                     }
                   })
                   .done(function(data) {
