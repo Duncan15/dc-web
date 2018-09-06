@@ -571,7 +571,7 @@ $(function(){
                   form.find("input[name='thread-num']").val(data['data']['threadNum']);
                   form.find("input[name='timeout-num']").val(data['data']['timeout']);
                   form.find("input[name='charset']").val(data['data']['charset']);
-                  form.find("input[name='data-gross']").val(data['data']['datagross']);
+                  form.find("input[name='data-gross']").val(data['data']['datagross'])||0;
                 }
               })
               .fail(function() {
