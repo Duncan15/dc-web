@@ -1,3 +1,4 @@
+var baseURL="http://localhost:8082"
 $(function(){
   var $requestBtn=$("#request-btn");
   var $crawlingBtn=$("#crawling-btn");
@@ -20,7 +21,7 @@ $(function(){
             alert("输入不能为空");
           }
           $.ajax({
-            url: 'http://localhost:8082/api/datacrawling/request/new',
+            url: baseURL+'/api/datacrawling/request/new',
             type: 'POST',
             dataType: 'json',
             data: {
@@ -51,7 +52,7 @@ $(function(){
     $requestConfirmBtn.on('click',function(){
       var tmpl=$.templates("#request-list");
       $.ajax({
-        url: 'http://localhost:8082/api/datacrawling/request/all',
+        url: baseURL+'/api/datacrawling/request/all',
         type: 'GET',
         dataType: 'json'
       })
@@ -70,7 +71,7 @@ $(function(){
             var $id=$th.siblings('.request-id');
             var id=$id.text();
             $.ajax({
-              url: 'http://localhost:8082/api/datacrawling/request/'+id,
+              url: baseURL+'/api/datacrawling/request/'+id,
               type: 'GET',
               dataType: 'json'
             })
@@ -100,7 +101,7 @@ $(function(){
                     alert("输入不能为空");
                   }
                   $.ajax({
-                    url: 'http://localhost:8082/api/datacrawling/request/'+id,
+                    url: baseURL+'/api/datacrawling/request/'+id,
                     type: 'POST',
                     dataType: 'json',
                     data: {
@@ -148,7 +149,7 @@ $(function(){
     $siteResourceBtn.on('click',function(){
       var tmpl=$.templates("#site-list");
       $.ajax({
-        url: 'http://localhost:8082/api/datacrawling/task/all',
+        url: baseURL+'/api/datacrawling/task/all',
         type: 'GET',
         dataType: 'json'
       })
@@ -207,7 +208,7 @@ $(function(){
             driver='false';
           }
           $.ajax({
-            url: 'http://localhost:8082/api/datacrawling/task/new',
+            url: baseURL+'/api/datacrawling/task/new',
             type: 'POST',
             dataType: 'JSON',
             data: {
@@ -241,7 +242,7 @@ $(function(){
     $paserRuleBtn.on('click',function(){
       var tmpl=$.templates("#rule-list");
       $.ajax({
-        url: 'http://localhost:8082/api/datacrawling/task/all',
+        url: baseURL+'/api/datacrawling/task/all',
         type: 'GET',
         dataType: 'json'
       })
@@ -288,7 +289,7 @@ $(function(){
               if(runningMode=='文本型'){
                 form=$("#unstructed-undriver");
                 $.ajax({
-                  url: 'http://localhost:8082/api/datacrawling/task/'+taskID,
+                  url: baseURL+'/api/datacrawling/task/'+taskID,
                   type: 'GET',
                   dataType: 'json'
                 })
@@ -316,7 +317,7 @@ $(function(){
                   submitHandler:function(){
                     var id=form.find("input.rule-id").val();
                     $.ajax({
-                      url: 'http://localhost:8082/api/datacrawling/task/urlparam/'+id,
+                      url: baseURL+'/api/datacrawling/task/urlparam/'+id,
                       type: 'POST',
                       dataType: 'json',
                       data: {
@@ -351,7 +352,7 @@ $(function(){
               }else if(driver=='是'){
                 form=$("#structed-driver");
                 $.ajax({
-                  url: 'http://localhost:8082/api/datacrawling/task/'+taskID,
+                  url: baseURL+'/api/datacrawling/task/'+taskID,
                   type: 'GET',
                   dataType: 'json'
                 })
@@ -385,7 +386,7 @@ $(function(){
                   submitHandler:function(){
                     var id=form.find("input.rule-id").val();
                     $.ajax({
-                      url: 'http://localhost:8082/api/datacrawling/task/urlparam/'+id,
+                      url: baseURL+'/api/datacrawling/task/urlparam/'+id,
                       type: 'POST',
                       dataType: 'json',
                       data: {
@@ -426,7 +427,7 @@ $(function(){
               }else{
                 form=$("#structed-undriver");
                 $.ajax({
-                  url: 'http://localhost:8082/api/datacrawling/task/'+taskID,
+                  url: baseURL+'/api/datacrawling/task/'+taskID,
                   type: 'GET',
                   dataType: 'json'
                 })
@@ -455,7 +456,7 @@ $(function(){
                   submitHandler:function(){
                     var id=form.find("input.rule-id").val();
                     $.ajax({
-                      url: 'http://localhost:8082/api/datacrawling/task/urlparam/'+id,
+                      url: baseURL+'/api/datacrawling/task/urlparam/'+id,
                       type: 'POST',
                       dataType: 'json',
                       data: {
@@ -495,7 +496,7 @@ $(function(){
               var taskID=event.data.taskID;
               var form=$("#login-param-form");
               $.ajax({
-                url: 'http://localhost:8082/api/datacrawling/task/'+taskID,
+                url: baseURL+'/api/datacrawling/task/'+taskID,
                 type: 'GET',
                 dataType: 'json'
               })
@@ -522,7 +523,7 @@ $(function(){
                 submitHandler:function(){
                   var id=form.find("input.rule-id").val();
                   $.ajax({
-                    url: 'http://localhost:8082/api/datacrawling/task/loginparam/'+id,
+                    url: baseURL+'/api/datacrawling/task/loginparam/'+id,
                     type: 'POST',
                     dataType: 'json',
                     data: {
@@ -559,7 +560,7 @@ $(function(){
               var taskID=event.data.taskID;
               var form=$("#download-param-form");
               $.ajax({
-                url: 'http://localhost:8082/api/datacrawling/task/'+taskID,
+                url: baseURL+'/api/datacrawling/task/'+taskID,
                 type: 'GET',
                 dataType: 'json'
               })
@@ -584,7 +585,7 @@ $(function(){
                 submitHandler:function(){
                   var id=form.find("input.rule-id").val();
                   $.ajax({
-                    url: 'http://localhost:8082/api/datacrawling/task/downloadparam/'+id,
+                    url: baseURL+'/api/datacrawling/task/downloadparam/'+id,
                     type: 'POST',
                     dataType: 'json',
                     data: {
@@ -644,7 +645,7 @@ $(function(){
       $templateListBtn.on('click',function(){
         var tmpl=$.templates("#template-list");
         $.ajax({
-          url: 'http://localhost:8082/api/datacrawling/task/template/all',
+          url: baseURL+'/api/datacrawling/task/template/all',
           type: 'GET',
           dataType: 'json'
         })
@@ -671,7 +672,7 @@ $(function(){
               var form=$("#change-template-form");
               form.find("input[name='template-id']").val(templateID);
               $.ajax({
-                url: 'http://localhost:8082/api/datacrawling/task/template/'+templateID,
+                url: baseURL+'/api/datacrawling/task/template/'+templateID,
                 type: 'GET',
                 dataType: 'json'
               })
@@ -699,7 +700,7 @@ $(function(){
                 submitHandler:function(){
                   var id=form.find("input[name='template-id']").val();
                   $.ajax({
-                    url: 'http://localhost:8082/api/datacrawling/task/template/'+id,
+                    url: baseURL+'/api/datacrawling/task/template/'+id,
                     type: 'POST',
                     dataType: 'json',
                     data: {
@@ -746,7 +747,7 @@ $(function(){
       $newTemplateBtn.on('click',function(){
         var tmpl=$.templates("#task-id-list");
         $.ajax({
-          url: 'http://localhost:8082/api/datacrawling/task/all',
+          url: baseURL+'/api/datacrawling/task/all',
           type: 'GET',
           dataType: 'json',
         })
@@ -775,7 +776,7 @@ $(function(){
         var validator=form.validate({
           submitHandler:function(){
             $.ajax({
-              url: 'http://localhost:8082/api/datacrawling/task/template/new',
+              url: baseURL+'/api/datacrawling/task/template/new',
               type: 'POST',
               dataType: 'json',
               data:{
@@ -813,7 +814,7 @@ $(function(){
     $taskMonitorBtn.on('click',function(){
       var tmpl=$.templates("#task-control-list");
       $.ajax({
-        url: 'http://localhost:8082/api/datacrawling/task/all',
+        url: baseURL+'/api/datacrawling/task/all',
         type: 'GET',
         dataType: 'json'
       })
@@ -832,7 +833,7 @@ $(function(){
             var action=$(this).attr("name");
             $.LoadingOverlay("show");
             $.ajax({
-              url: 'http://localhost:8082/api/datacrawling/task/monitor?action=option&option='+action+'&taskID='+taskID,
+              url: baseURL+'/api/datacrawling/task/monitor?action=option&option='+action+'&taskID='+taskID,
               type: 'GET',
               dataType: 'json'
             })
@@ -867,7 +868,7 @@ $(function(){
     $taskCrawlingMonitorBtn.on('click',function(){
       var tmpl=$.templates("#task-monitor-list");
       $.ajax({
-        url: 'http://localhost:8082/api/datacrawling/task/monitor?action=status',
+        url: baseURL+'/api/datacrawling/task/monitor?action=status',
         type: 'GET',
         dataType: 'json'
       })
@@ -889,7 +890,7 @@ $(function(){
 
       var handle=setInterval(function(){
         $.ajax({
-          url: 'http://localhost:8082/api/datacrawling/task/monitor?action=status',
+          url: baseURL+'/api/datacrawling/task/monitor?action=status',
           type: 'GET',
           dataType: 'json'
         })
@@ -926,7 +927,7 @@ $(function(){
     $dbConfigBtn.on('click',function(event) {
       var render=function(){
         $.ajax({
-          url: 'http://localhost:8082/api/datacrawling/config/mysql',
+          url: baseURL+'/api/datacrawling/config/mysql',
           type: 'GET',
           dataType: 'json'
         })
@@ -957,7 +958,7 @@ $(function(){
             return;
           }
           $.ajax({
-            url: 'http://localhost:8082/api/datacrawling/config/mysql',
+            url: baseURL+'/api/datacrawling/config/mysql',
             type: 'POST',
             dataType: 'json',
             data: {
