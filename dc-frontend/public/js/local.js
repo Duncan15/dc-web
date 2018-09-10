@@ -510,7 +510,6 @@ $(function(){
                   form.find("input[name='password-id']").val(data['data']['passwordID']);
                   form.find("input[name='username']").val(data['data']['username']);
                   form.find("input[name='password']").val(data['data']['password']);
-                  form.find("input[name='login-button']").val(data['data']['loginButton']);
                 }
               })
               .fail(function() {
@@ -531,8 +530,7 @@ $(function(){
                       userNameID:form.find("input[name='username-id']").val().trim(),
                       passwordID:form.find("input[name='password-id']").val().trim(),
                       username:form.find("input[name='username']").val().trim(),
-                      password:form.find("input[name='password']").val().trim(),
-                        loginButton:form.find("input[name='login-button']").val().trim()
+                      password:form.find("input[name='password']").val().trim()
                     }
                   })
                   .done(function(data) {
