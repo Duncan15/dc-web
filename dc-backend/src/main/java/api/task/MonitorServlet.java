@@ -108,20 +108,27 @@ public class MonitorServlet extends HttpServlet {
         String action=request.getParameter("action");
         if(action.equals("status")){
             List content=new ArrayList();
-            String[][] website=DBUtil.select("website",new String[]{"webId","webName"});
-            Map<String,String> idNameMap=new HashMap<>();
+            String[][] website=DBUtil.select("website",new String[]{"webId","webName","databaseSize"});
+            Map<String,Integer> idNameMap=new HashMap<>();
             for(int i=0;i<website.length;i++){
-                idNameMap.put(website[i][0],website[i][1]);
+                idNameMap.put(website[i][0],i);
             }
             String[][] current=DBUtil.select("current",new String[]{"webId","round","M1status","M2status","M3status","M4status","fQueryLink_sum","fInfoLink_sum","SampleData_sum"});
             for(int i=0;i<current.length;i++){
                 Map<String,String> unit=new HashMap<>();
                 unit.put("taskID",current[i][0]);
-                unit.put("taskName",idNameMap.get(current[i][0]));
+                unit.put("taskName",website[idNameMap.get(current[i][0])][1]);
                 unit.put("round",current[i][1]);
                 unit.put("fQueryLinkSum",current[i][6]);
                 unit.put("fInfoLinkSum",current[i][7]);
                 unit.put("sampleDataSum",current[i][8]);
+                if(website[idNameMap.get(current[i][0])][2]==null||"0".equals(website[idNameMap.get(current[i][0])][2])){
+                    unit.put("crawlRatio","未知");
+                }else {
+                    float sampleNum=Float.parseFloat(current[i][8]);
+                    float dbNum=Float.parseFloat(website[idNameMap.get(current[i][0])][2]);
+                    unit.put("crawlRatio",sampleNum/dbNum*100+"%");
+                }
                 String taskStatus="未启动";
                 if(processMap.containsKey(current[i][0])){
                     Process p=processMap.get(current[i][0]);
