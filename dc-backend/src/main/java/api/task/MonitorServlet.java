@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet(name = "MonitorServlet",urlPatterns = {"/api/datacrawling/task/monitor"})
+@WebServlet(name = "MonitorServlet",urlPatterns = {"/api/datacrawling/monitor"})
 public class MonitorServlet extends HttpServlet {
     private HashMap<String, Process> processMap=new HashMap<String, Process>();
 
