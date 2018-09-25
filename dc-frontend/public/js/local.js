@@ -3,6 +3,7 @@ $(function(){
   var $requestBtn=$("#request-btn");
   var $crawlingBtn=$("#crawling-btn");
   var $monitorBtn=$("#monitor-btn");
+  var $deliveryBtn=$("#delivery-btn");
   var $configBtn=$("#config-btn");
 
   $requestBtn.on('click',function(event) {
@@ -918,6 +919,97 @@ $(function(){
     });
     $taskCrawlingMonitorBtn.click();
   });
+  $deliveryBtn.on('click',function (event) {
+      var tmpl=$.templates("#delivery-task-list");
+      $.ajax({
+          url:baseURL+"/api/datacrawling/task/all",
+          type: 'GET',
+          dataType: 'json'
+      }).done(function (data) {
+          if(data['errno']!=0){
+            alert('服务器错误');
+          }else {
+            content=data['data'];
+            var html=tmpl.render(content);
+            $("#delivery-task-list-content").html(html);
+            $("#see-delivery-task-btn").off('click');
+            $("#see-delivery-task-btn").on('click',function (event) {
+                var $tr=$(this).parents("tr");
+                var taskID=$tr.find("th.rule-id").text();
+                $("#delivery-modal").off('shown.bs.modal');
+                $('#delivery-modal').on('shown.bs.modal', function () {
+                  var selectTmpl=$.templates("#table-name-list");
+                  $.ajax({
+                      url:baseURL+"/api/datacrawling/data/"+taskID,
+                      type:"GET",
+                      dataType:'json'
+                  }).done(function (data) {
+                      if(data['errno']!=0){
+                        alert('服务器错误');
+                      }else {
+                        //temporary
+                          var content=data['data'];
+                          var html=selectTmpl.render(content);
+                          $("#table-name-list-content").html(html);
+                      }
+                  });
+                  $("#table-data-search-btn").off('click');
+                  var getTableData=function (id,tbName,pageNum) {
+                      var tmpl=$.templates("#table-data-list");
+                      $.ajax({
+                          url:baseURL+"api/datacrawling/data/all?id="+id+"&tbName="+tbName+"&pageNum="+pageNum+"&pageSize="+10,
+                          type:"GET",
+                          dataType:"json"
+                      }).done(function (data) {
+                          if(data['errno']!=0){
+                            alert('服务器错误');
+                          }else {
+                            var content=data['data']['content'];
+                            var headContent=[];
+                            var bodyContent=[];
+                            if(content.length>=1){
+                              for(key in content[0]){
+                                headContent.push(key);
+                              }
+                              for(var i=0;i<content.length;i++){
+                                var row=[];
+                                for(key in content[i]){
+                                  row.push(content[i][key]);
+                                }
+                                bodyContent.push(row);
+                              }
+                            }
+                            content['headContent']=headContent;
+                            content['bodyContent']=bodyContent;
+                            var html=tmpl.render(content);
+                            $("#table-data-list-content").html(html);
+                          }
+                      })
+                  };
+                  $("#table-data-search-btn").on('click',function () {
+                    var tbName=$("#table-name-list-content").find("select[name='tableName']").val().trim();
+                    var pg=1;
+                    getTableData(taskID,tbName,pg);
+                    $("#pre-pg-btn").off('click');
+                    $("#next-pg-btn").off('click');
+                    $("#pre-pg-btn").on('click',function () {
+                        if(pg==1){
+                          alert("已是最前页");
+                        }else {
+                          pg--;
+                          getTableData(taskID,tbName,pg);
+                        }
+                    });
+                    $("#next-pg-btn").on('click',function () {
+                        pg++;
+                        getTableData(taskID,tbName,pg);
+                    })
+                  });
+                });
+            })
+          }
+      })
+  })
   $configBtn.on('click', function(event) {
     event.preventDefault();
     /* Act on the event */
