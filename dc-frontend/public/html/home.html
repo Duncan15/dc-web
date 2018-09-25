@@ -844,7 +844,7 @@
 						<tr>
 							<th class="task-id">{{:taskID}}</th>
 							<th>{{:taskName}}</th>
-							<th>
+							<th class="running-mode">
 							{{if runningMode=='unstructed'}}
 								文本型
 							{{else runningMode=='structed'}}
@@ -863,7 +863,11 @@
 							{{/if}}
 							</th>
 							<th>
+								{{if runningMode!='unstructed'}}
 								<a class="see-delivery-task-btn" data-toggle="modal" data-target="#delivery-modal">查看</a>
+								{{else}}
+								<a class="see-delivery-task-btn">查看</a>
+								{{/if}}
 							</th>
 						</tr>
 						{{/for}}

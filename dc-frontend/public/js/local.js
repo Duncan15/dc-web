@@ -932,10 +932,16 @@ $(function(){
             content=data['data'];
             var html=tmpl.render(content);
             $("#delivery-task-list-content").html(html);
-            $("#see-delivery-task-btn").off('click');
-            $("#see-delivery-task-btn").on('click',function (event) {
+            $(".see-delivery-task-btn").off('click');
+            $(".see-delivery-task-btn").on('click',function (event) {
                 var $tr=$(this).parents("tr");
-                var taskID=$tr.find("th.rule-id").text();
+                var taskID=$tr.find("th.task-id").text();
+                var runningMode=$tr.find("th.running-mode").text();
+                if(runningMode.trim()=="文本型"){
+                  alert("文本型数据交付请直接到工作路径下查看");
+                  event.preventDefault();
+                  return;
+                }
                 $("#delivery-modal").off('shown.bs.modal');
                 $('#delivery-modal').on('shown.bs.modal', function () {
                   var selectTmpl=$.templates("#table-name-list");
@@ -957,7 +963,7 @@ $(function(){
                   var getTableData=function (id,tbName,pageNum) {
                       var tmpl=$.templates("#table-data-list");
                       $.ajax({
-                          url:baseURL+"api/datacrawling/data/all?id="+id+"&tbName="+tbName+"&pageNum="+pageNum+"&pageSize="+10,
+                          url:baseURL+"/api/datacrawling/data/all?id="+id+"&tbName="+tbName+"&pageNum="+pageNum+"&pageSize="+10,
                           type:"GET",
                           dataType:"json"
                       }).done(function (data) {
@@ -987,7 +993,7 @@ $(function(){
                       })
                   };
                   $("#table-data-search-btn").on('click',function () {
-                    var tbName=$("#table-name-list-content").find("select[name='tableName']").val().trim();
+                    var tbName=$("#table-name-list-content").val().trim();
                     var pg=1;
                     getTableData(taskID,tbName,pg);
                     $("#pre-pg-btn").off('click');
