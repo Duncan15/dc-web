@@ -867,7 +867,7 @@ $(function(){
     $taskCrawlingMonitorBtn.on('click',function(){
       var tmpl=$.templates("#task-monitor-list");
       $.ajax({
-        url: baseURL+'/api/datacrawling/monitor?action=status',
+        url: baseURL+'/api/datacrawling/task/monitor?action=status',
         type: 'GET',
         dataType: 'json'
       })
@@ -889,7 +889,7 @@ $(function(){
 
       var handle=setInterval(function(){
         $.ajax({
-          url: baseURL+'/api/datacrawling/monitor?action=status',
+          url: baseURL+'/api/datacrawling/task/monitor?action=status',
           type: 'GET',
           dataType: 'json'
         })
