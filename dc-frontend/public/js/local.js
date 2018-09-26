@@ -939,7 +939,6 @@ $(function(){
                 var runningMode=$tr.find("th.running-mode").text();
                 if(runningMode.trim()=="文本型"){
                   alert("文本型数据交付请直接到工作路径下查看");
-                  event.preventDefault();
                   return;
                 }
                 $("#delivery-modal").off('shown.bs.modal');
@@ -968,7 +967,7 @@ $(function(){
                           dataType:"json"
                       }).done(function (data) {
                           if(data['errno']!=0){
-                            alert('服务器错误');
+                            alert(data['data']);
                           }else {
                             var content=data['data']['content'];
                             var headContent=[];
