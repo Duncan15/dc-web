@@ -984,9 +984,10 @@ $(function(){
                                 bodyContent.push(row);
                               }
                             }
-                            content['headContent']=headContent;
-                            content['bodyContent']=bodyContent;
-                            var html=tmpl.render(content);
+                            var rdata=data['data'];
+                            rdata['headContent']=headContent;
+                            rdata['bodyContent']=bodyContent;
+                            var html=tmpl.render(rdata);
                             $("#table-data-list-content").html(html);
                           }
                       })
