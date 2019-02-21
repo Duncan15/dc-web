@@ -1,11 +1,102 @@
-var baseURL="http://localhost:8082"
+﻿var baseURL="http://localhost:8082"
 $(function(){
   var $requestBtn=$("#request-btn");
   var $crawlingBtn=$("#crawling-btn");
   var $monitorBtn=$("#monitor-btn");
   var $deliveryBtn=$("#delivery-btn");
   var $configBtn=$("#config-btn");
+  var $sensingBtn=$("#sensing-btn")
+  $sensingBtn.on('click',function (event) {
 
+    var $urlsensingBtn=$("#url-sensing-btn");
+    var $resultsensingBtn=$("#result-sensing-btn");
+    $urlsensingBtn.off('click');
+    $urlsensingBtn.on('click',function () {
+      $("#page-url").val("");
+      var validator=$("#url-sensing-form").validate({
+          submitHandler:function () {
+            var  pageUrl=$("#page-url").val.trim();
+            if(pageUrl==""){
+              alert("输入不能为空");
+            }
+            $.ajax({
+                url:baseURL+'/api/datacrawling/sense/new',
+                type:'POST',
+                dataType: 'json',
+                data: {
+                    pageUrl: pageUrl,
+                }
+            })
+                .done(function(data) {
+                    console.log("success");
+                    if(data['errno']!=0){
+                        alert("服务器错误");
+                    }else{
+                        alert("新建成功");
+                        $resultsensingBtn.click();
+                    }
+                })
+                .fail(function() {
+                    console.log("error");
+                })
+                .always(function() {
+                    console.log("complete");
+                });
+          }
+      })
+        validator.resetForm();
+    })
+    $resultsensingBtn.off('click');
+    $resultsensingBtn.on('click',function () {
+        var tmpl=$.templates("#sensing-list");
+        $.ajax({
+            url: baseURL+'/api/datacrawling/sense/show',
+            type: 'GET',
+            dataType: 'json'
+
+        })
+        .done(function(data) {
+            console.log("success");
+            if(data['errno']!=0){
+                alert("服务器错误");
+            }else{
+                var html=tmpl.render(data['data']);
+                $("#url-sensing-list-content").html(html);
+            }
+        })
+        .fail(function() {
+            console.log("error");
+        })
+        .always(function() {
+            console.log("complete");
+        });
+
+        var handle=setInterval(function(){
+            $.ajax({
+                url: baseURL+'/api/datacrawling/sense/show',
+                type: 'GET',
+                dataType: 'json'
+            })
+                .done(function(data) {
+                    console.log("success");
+                    if(data['errno']!=0){
+                        alert("服务器错误");
+                    }else{
+                        var html=tmpl.render(data['data']);
+                        $("#url-sensing-list-content").html(html);
+                    }
+                })
+                .fail(function() {
+                    console.log("error");
+                })
+                .always(function() {
+                    console.log("complete");
+                });
+        },3000);
+
+
+    })
+  })
   $requestBtn.on('click',function(event) {
     var $newRequestBtn=$("#new-request-btn");
     var $requestConfirmBtn=$("#request-confirm-btn");
