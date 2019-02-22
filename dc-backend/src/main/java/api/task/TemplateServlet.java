@@ -24,19 +24,19 @@ public class TemplateServlet extends HttpServlet {
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String[] pathParam= RequestParser.parsePath(request.getRequestURI(),2);
+		Map<String,Object> data=new HashMap<>();
 
-		String [] template_params={"id","patternName","type"};//usable:true ,"formula","headerXPath"
-		String [] param={"webId","webName"};
+		String [] templateParams={"id", "patternName"};
+		String [] param={"webId", "webName"};
 		List<Map<String,Object>> dataList=new ArrayList<Map<String,Object>>();
-		if("template".equals(pathParam[0])&&"all".equals(pathParam[1])){
-
-			Map<String,Object> data=new HashMap<>();
+		if("template".equals(pathParam[0]) && "all".equals(pathParam[1])){//for task/template/all
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 			try{
 				String[][] res=util.DBUtil.select("website", param);
 				for(int i=0;i<res.length;i++){
-					String[][] template=util.DBUtil.select("pattern", template_params, Integer.parseInt(res[i][0]));
+					//use webId to search in pattern
+					String[][] template=util.DBUtil.select("pattern", templateParams, Integer.parseInt(res[i][0]));
 					if(template.length>0){
 						for(int j=0;j<template.length;j++){
 							Map<String,Object> content=new HashMap<>();
@@ -44,7 +44,6 @@ public class TemplateServlet extends HttpServlet {
 							content.put("taskName", res[i][1]);
 							content.put("templateID",template[j][0]);
 							content.put("templateName",template[j][1]);
-							content.put("templateType",template[j][2]);
 							dataList.add(content);
 						}
 					}
@@ -54,31 +53,26 @@ public class TemplateServlet extends HttpServlet {
 				data.put("msg","模板参数获取失败");
 				response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
 			}
-		}
-		else if("template".equals(pathParam[0])){
-			int templateID=0;
+		} else if("template".equals(pathParam[0])){//for task/template/:id
+			int templateID = 0;
 			try{
 				templateID=Integer.parseInt(pathParam[1]);
 			}catch (NumberFormatException e){
-				response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,null));
+				data.put("msg", "id参数解析错误");
+				response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, data));
 				return;
 			}
-			Map<String,Object> data=new HashMap<>();
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 			try{
-				String[][] template=util.DBUtil.select("pattern", new String[]{"webId","patternName","xpath","indexPath","type","formula","headerXPath"}, new String[]{"id"},new String[]{templateID+""});
+				String[][] template=util.DBUtil.select("pattern", new String[]{"webId", "patternName", "xpath"}, new String[]{"id"}, new String[]{templateID + ""});
 				Map<String, Object> content = new HashMap<>();
-				if(template!=null&&template.length>0) {
+				if(template != null && template.length>0) {
 					String[] res = util.DBUtil.select("website", param, Integer.parseInt(template[0][0]))[0];
 					content.put("taskID", res[0]);
 					content.put("taskName", res[1]);
 					content.put("templateName", template[0][1]);
 					content.put("templateXpath",template[0][2]);
-					content.put("templateIndexPath",template[0][3]);
-					content.put("templateType", template[0][4]);
-					content.put("templateFormula",template[0][5]);
-					content.put("templateHeaderXpath",template[0][6]);
 					content.put("templateID", templateID);
 				}
 				response.getWriter().println(RespWrapper.build(content));
@@ -87,7 +81,7 @@ public class TemplateServlet extends HttpServlet {
 				response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
 			}
 		} else{
-			response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,null));
+			response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
 		}
     }
 
@@ -99,63 +93,55 @@ public class TemplateServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		String[] pathParam=RequestParser.parsePath(request.getRequestURI(),2);
-		int templateID=0;
-		int webId =0;
-		 if("template".equals(pathParam[0])){
-		 	if(!"new".equals(pathParam[1])){
+		int templateID = 0;
+		int webId = 0;
+		Map<String,Object> data=new HashMap<>();
+		if("template".equals(pathParam[0])){
+		 	if(!"new".equals(pathParam[1])){//for task/template/:id
 				try{
-					templateID=Integer.parseInt(pathParam[1]);
+					templateID = Integer.parseInt(pathParam[1]);
 				}catch (NumberFormatException e){
 					response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,null));
 					return;
 				}
 			}
-			webId=Integer.parseInt(request.getParameter("taskID"));
-			Map<String,Object> data=new HashMap<>();
+			webId = Integer.parseInt(request.getParameter("taskID"));
+
 			//前端页面保证这些值均不为空，这里无需验证
 			String templateName=request.getParameter("templateName");
-			String templateType=request.getParameter("templateType");
 			String templateXpath=request.getParameter("templateXpath");
-			String templateFormula=request.getParameter("templateFormula");
-			String templateHeaderXpath=request.getParameter("templateHeaderXpath");
-			String indexPath = templateName+"index";
-			String[] p = {"patternName","webId"};
-			String[] pv = {templateName,webId+""};
+			String[] p = {"patternName", "webId"};
+			String[] pv = {templateName, webId + ""};
 
 			String[] par = {"id"};
-			 String[] parValue = {templateID+""};
+			String[] parValue = {templateID + ""};
 
-			String[] params = {"webId","patternName","xpath","indexPath","type","formula","headerXPath"};
-			String[] params_value = {webId+"",templateName,templateXpath,indexPath,templateType,templateFormula,templateHeaderXpath};
+			String[] params = {"webId","patternName","xpath"};
+			String[] paramsValue = {webId+"", templateName, templateXpath};
 
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
-			 data.put("taskID",webId);
-			 data.put("templateName",templateName);
-			 data.put("templateType",templateType);
-			 data.put("templateXpath",templateXpath);
-			 data.put("templateFormula",templateFormula);
-			 data.put("templateHeaderXpath",templateHeaderXpath);
+			data.put("taskID",webId);
+			data.put("templateName",templateName);
+			data.put("templateXpath",templateXpath);
 
-			if("new".equals(pathParam[1])){
-				 if(DBUtil.select("pattern", par,p, pv).length!=0) {
+			if("new".equals(pathParam[1])) {//for task/template/new
+				 if(DBUtil.select("pattern", par,p, pv).length != 0) {
 					 data.put("msg", "该模板名称已使用，请重新输入");
 					 response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
-				 }else{
-				 	DBUtil.insert("pattern", params, params_value);
+				 } else {
+				 	DBUtil.insert("pattern", params, paramsValue);
 					response.getWriter().println(RespWrapper.build(data));
 				}
-			}
-			else if(DBUtil.update("pattern", params, params_value,par,parValue)){
+			} else if(DBUtil.update("pattern", params, paramsValue,par,parValue)) {//for task/template/:id
 				 response.getWriter().println(RespWrapper.build(data));
-			 }
-			else {
+			} else {
 				data.clear();
 				data.put("msg","操作失败");
-				response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
+				response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, data));
 			}
 		}else {
-			response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,null));
+			response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, data));
 		}
 
 	}

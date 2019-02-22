@@ -1,5 +1,8 @@
 package api.task;
 
+import enums.Driver;
+import enums.RunningMode;
+import enums.Usable;
 import format.RespWrapper;
 import util.Config;
 import util.DBUtil;
@@ -16,7 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * servlet focus on creating task
+ */
 @WebServlet(name = "TaskServlet",urlPatterns = {"/api/datacrawling/task/*"})
 public class TaskServlet extends HttpServlet {
     /*
@@ -30,71 +35,80 @@ public class TaskServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String[] pathParam= RequestParser.parsePath(request.getRequestURI(),2);
-        if("task".equals(pathParam[0])&&"new".equals(pathParam[1])){
+        Map<String,Object> data=new HashMap<>();
+
+        if("task".equals(pathParam[0])&&"new".equals(pathParam[1])){//for task/new
             //前端页面保证这些值均不为空，这里无需验证
             String taskName=request.getParameter("taskName");
             String runningMode=request.getParameter("runningMode");
             String workPath=request.getParameter("workPath");
             String driver=request.getParameter("driver");
+            Driver d = Driver.ValueOf(driver);
+            RunningMode r = RunningMode.ValueOf(runningMode);
+
 
             String taskID="";
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            Map<String,Object> data=new HashMap<>();
             try {
-                if (Config.checkTask(taskName)) {//if have existed the website in database
+                if(r == null) {
+                    data.put("msg", "runningMode参数值错误");
+                    response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, data));
+                } else if(d == null) {
+                    data.put("msg", "driver参数值错误");
+                    response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, data));
+                } else if (Config.checkTask(taskName)) {//if have existed the website in database
                     data.put("msg", "该任务名称已使用，请重新输入");
                     response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, data));
-                } else if (Config.setInterface(runningMode, taskName, workPath, driver)) {
+                } else if (Config.setInterface(r, taskName, workPath, d)) {
                     taskID = DBUtil.getLastWebId() + "";
                     data.put("taskID", taskID);
                     data.put("taskName", taskName);
                     data.put("runningMode", runningMode);
                     data.put("workPath", workPath);
-
                     response.getWriter().println(RespWrapper.build(data));
                 }
-
             }catch(Exception e){
                 data.put("msg","任务添加失败");
                 response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
             }
-        }else if("urlparam".equals(pathParam[0])){
-            int taskID=0;
+        }else if("urlparam".equals(pathParam[0])) {//for task/urlparam/:id
+            int taskID = 0;
             try{
                 taskID=Integer.parseInt(pathParam[1]);
             }catch (NumberFormatException e){
-                response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,null));
+                data.put("msg","id参数格式错误");
+                response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
                 return;
             }
-            Map<String,Object> data=new HashMap<>();
-            int webId =taskID;
-            String[] p={"runningMode","driver","usable","charset"};
-            String[] ans =DBUtil.select("website", p,webId)[0];
-            String runningMode=ans[0];
-            String driver=ans[1];
-            String usable=ans[2];
+            int webId = taskID;
+            String[] p= {"runningMode", "driver", "usable", "charset"};
+            String[] ans = DBUtil.select("website", p, webId)[0];//here may happen nullPointerException
+            RunningMode runningMode = RunningMode.valueOf(Integer.parseInt(ans[0]));
+            Driver driver = Driver.valueOf(Integer.parseInt(ans[1]));
+            Usable usable = Usable.valueOf(Integer.parseInt(ans[2]));
 
-            String flag =ans[3];
-            if(flag!=null &&flag.length()!=0)
-				usable="true";
+            //if url and downloadparam has been configured, it can be judged that the configuration is usable
+            if (ans[3] != null && ans[3].length() != 0) {
+                usable = Usable.have;
+            }
+
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            if("false".equals(driver)){
-                System.out.println(driver);
-                String siteURL=request.getParameter("siteURL");
-                String searchURL=request.getParameter("searchURL");
-                String keywordName=request.getParameter("keywordName");
-                String pageParamName=request.getParameter("pageParamName");
-                String pageParamValue=request.getParameter("pageParamValue");
-                String otherParamName=request.getParameter("otherParamName");
-                String otherParamValue=request.getParameter("otherParamValue");
+            if(driver == Driver.none) {//driver is equal to none, it's unstructed or structed without driver
+                String siteURL = request.getParameter("siteURL");
+                String searchURL = request.getParameter("searchURL");
+                String keywordName = request.getParameter("keywordName");
+                String pageParamName = request.getParameter("pageParamName");
+                String pageParamValue = request.getParameter("pageParamValue");
+                String otherParamName = request.getParameter("otherParamName");
+                String otherParamValue = request.getParameter("otherParamValue");
 
-                String[]  param = {"indexUrl","prefix","paramQuery","paramPage","startPageNum","paramList","paramValueList","usable"};
-                String[] paramValue = {siteURL,searchURL,keywordName,pageParamName,pageParamValue,otherParamName,otherParamValue,usable};
+                String[]  param = {"indexUrl", "prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList", "usable"};
+                String[] paramValue = {siteURL,searchURL,keywordName,pageParamName,pageParamValue,otherParamName,otherParamValue,usable.getValue() + ""};
 
                 try{
-                    if(DBUtil.update("website", param, paramValue, webId)){
+                    if(DBUtil.update("website", param, paramValue, webId)) {
                         data.put("siteURL",siteURL);
                         data.put("searchURL",searchURL);
                         data.put("keywordName",keywordName);
@@ -102,7 +116,7 @@ public class TaskServlet extends HttpServlet {
                         data.put("otherParamName",otherParamName);
                         data.put("pageParamValue",pageParamValue);
                         data.put("otherParamValue",otherParamValue);
-                        if("structed".equals(runningMode)){
+                        if(runningMode == RunningMode.structed) {//it's stucted without driver
                             String paramQueryValueList=request.getParameter("paramQueryValueList");
                             String[] params = {"dataParamList"};
                             String[] paramsValue = {paramQueryValueList};
@@ -111,7 +125,7 @@ public class TaskServlet extends HttpServlet {
                         }
                         response.getWriter().println(RespWrapper.build(data));
                     } else {
-                        data.put("msg","登陆参数修改失败");
+                        data.put("msg","url参数修改失败");
                         response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
                     }
 
@@ -119,8 +133,7 @@ public class TaskServlet extends HttpServlet {
                     response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
                 }
             }
-            else if("structed".equals(runningMode)){
-                System.out.println(runningMode);
+            else if(runningMode == RunningMode.structed){//it's structed with driver
                 String iframeNav = request.getParameter("iframeNav").trim();
                 String indexUrl = request.getParameter("siteURL").trim();
                 String navValue = request.getParameter("navValue").trim();
@@ -140,9 +153,8 @@ public class TaskServlet extends HttpServlet {
                 String[] paramsValue = {webId+"",iframeNav,navValue,iframeCon,searchButton,resultRow,
                         nextPageXPath,pageNumXPath,iframeSubParam,arrow};
 
-                String[] param = {"indexUrl","paramList","paramValueList","usable"};
-                String[] paramValue = {indexUrl,paramList,paramValueList,usable};
-
+                String[] param = {"indexUrl", "paramList", "paramValueList", "usable"};
+                String[] paramValue = {indexUrl, paramList, paramValueList, usable.getValue() + ""};
                 try{
                     if(DBUtil.update("website", param, paramValue, webId)&& DBUtil.update("structedParam", params, paramsValue,webId)){
                         data.put("iframeNav",iframeNav);
@@ -158,7 +170,7 @@ public class TaskServlet extends HttpServlet {
                         data.put("paramValueList",paramValueList);
                         response.getWriter().println(RespWrapper.build(data));
                     } else {
-                        data.put("msg","链接参数修改失败");
+                        data.put("msg","url参数修改失败");
                         response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
                     }
                 }catch(Exception e){
@@ -166,74 +178,75 @@ public class TaskServlet extends HttpServlet {
                     response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
                 }
             }
-        }else if("loginparam".equals(pathParam[0])){
-            int taskID=0;
+        }else if("loginparam".equals(pathParam[0])) {//for task/loginparam/:id
+            int taskID = 0;
             try{
-                taskID=Integer.parseInt(pathParam[1]);
+                taskID = Integer.parseInt(pathParam[1]);
             }catch (NumberFormatException e){
                 response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,null));
                 return;
             }
-            Map<String,Object> data=new HashMap<>();
-            int webId =taskID;
-            String loginURL=request.getParameter("loginURL");
-            String userNameID=request.getParameter("userNameID");
-            String passwordID=request.getParameter("passwordID");
-            String username=request.getParameter("username");
-            String password=request.getParameter("password");
-            String[] p={"runningMode","driver"};
-            String[] ans =DBUtil.select("website", p,webId)[0];
+            int webId = taskID;
+            String loginURL = request.getParameter("loginURL");
+            String userNameXpath = request.getParameter("userNameID");
+            String passwordXpath = request.getParameter("passwordID");
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
+            String submitXpath = request.getParameter("submitID");
+            String[] p={ "runningMode","driver"};
+            String[] ans = DBUtil.select("website", p,webId)[0];
 
-            String[] param = {"userParam","pwdParam","userName","password","loginUrl"};
-            String[] paramValue = {userNameID,passwordID,username,password,loginURL};
+            String[] param = {"userParam","pwdParam","userName","password","loginUrl", "submitXpath"};
+            String[] paramValue = {userNameXpath, passwordXpath, username, password, loginURL, submitXpath};
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             try{
                 if(DBUtil.update("website", param, paramValue, webId)){
-                    if("structed".equals(ans[0])&&"true".equals(ans[1])){
-                        String loginButton=request.getParameter("loginButton");
+                    if(RunningMode.structed.name().equals(ans[0])&&(Driver.have.getValue() + "").equals(ans[1])) {//it's stucted with driver
+                        String loginButton = request.getParameter("loginButton");
                         String[] params = {"loginButton"};
                         String[] paramsValue = {loginButton};
                         DBUtil.update("structedParam", params, paramsValue, webId);
                         data.put("loginButton",loginButton);
                     }
                     data.put("loginURL",loginURL);
-                    data.put("userNameID",userNameID);
-                    data.put("passwordID",passwordID);
+                    data.put("userNameID",userNameXpath);
+                    data.put("passwordID",passwordXpath);
                     data.put("username",username);
                     data.put("password",password);
                     response.getWriter().println(RespWrapper.build(data));
                 }
                 else {
-                    data.put("msg","登陆参数修改失败");
+                    data.put("msg","login参数修改失败");
                     response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
                 }
             }catch(Exception e){
-                data.put("msg","登陆参数修改失败");
+                data.put("msg","login参数修改失败");
                 response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
             }
-        }else if("downloadparam".equals(pathParam[0])){
-            int taskID=0;
+        }else if("downloadparam".equals(pathParam[0])){//for task/downloadparam/:id
+            int taskID = 0;
             try{
                 taskID=Integer.parseInt(pathParam[1]);
             }catch (NumberFormatException e){
                 response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,null));
                 return;
             }
-            Map<String,Object> data=new HashMap<>();
-            int webId =taskID;
-            String threadNum=request.getParameter("threadNum");
-            System.out.println(webId);
-            String timeout=request.getParameter("timeout");
-            String charset=request.getParameter("charset");
-            String datagross=request.getParameter("datagross");
-            String usable="false";
+            int webId = taskID;
+            String threadNum = request.getParameter("threadNum");
+            String timeout = request.getParameter("timeout");
+            String charset = request.getParameter("charset");
+            String datagross = request.getParameter("datagross");
+            Usable usable = Usable.none;
+
+            //if url and downloadparam has been configured, it can be judged that the configuration is usable
             String[] p={"indexUrl"};
             String ans =DBUtil.select("website", p,webId)[0][0];
             if(ans!=null ||ans.length()!=0)
-				usable="true";
-            String[] param = {"threadNum","timeout","charset","databaseSize","usable"};
-            String[] paramValue = {threadNum,timeout,charset,datagross,usable};
+				usable = Usable.have;
+
+            String[] param = {"threadNum", "timeout", "charset", "databaseSize", "usable"};
+            String[] paramValue = {threadNum, timeout, charset, datagross, usable.getValue() + ""};
 
 
             response.setContentType("application/json");
@@ -254,7 +267,7 @@ public class TaskServlet extends HttpServlet {
                 response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
             }
         }else {
-            response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,null));
+            response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
         }
 
     }
@@ -267,61 +280,60 @@ public class TaskServlet extends HttpServlet {
 	 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
          String[] pathParam=RequestParser.parsePath(request.getRequestURI(),2);
-         if("task".equals(pathParam[0])&&"all".equals(pathParam[1])){
+         Map<String,Object> data=new HashMap<>();
+         if("task".equals(pathParam[0]) && "all".equals(pathParam[1])){//for task/all
              String [] params={"webId","webName","runningMode","workFile","driver","createtime","usable",
                      "indexUrl","prefix","paramQuery","paramPage","startPageNum","paramList","paramValueList","userParam",
-                     "pwdParam","username","password","loginURL","threadNum","timeout","charset","databaseSize","creator"};
+                     "pwdParam","username","password","loginURL","threadNum","timeout","charset","databaseSize","creator","submitXpath"};
              List<Map<String,Object>> dataList=new ArrayList<Map<String,Object>>();
-             Map<String,Object> data=new HashMap<>();
              response.setContentType("application/json");
              response.setCharacterEncoding("UTF-8");
              try {
-                 String[][] allwebsite2 = DBUtil.select("website", params);
-                 int total = allwebsite2.length;
-
+                 String[][] websites = DBUtil.select("website", params);
+                 int total = websites.length;
                  for (int i = 0; i < total; i++) {
-                     Map<String, Object> websitealone = new HashMap<>();
+                     Map<String, Object> website = new HashMap<>();
 
-                     websitealone.put("taskID", allwebsite2[i][0]);
-                     websitealone.put("taskName", allwebsite2[i][1]);
-                     websitealone.put("runningMode", allwebsite2[i][2]);
-                     websitealone.put("workPath", allwebsite2[i][3]);
-                     websitealone.put("driver", allwebsite2[i][4]);
-                     websitealone.put("createtime", allwebsite2[i][5]);
-                     websitealone.put("usable", allwebsite2[i][6]);
-                     websitealone.put("siteURL", allwebsite2[i][7]);
-                     websitealone.put("searchURL", allwebsite2[i][8]);
-                     websitealone.put("keywordName", allwebsite2[i][9]);
-                     websitealone.put("pageParamName", allwebsite2[i][10]);
-                     websitealone.put("pageParamValue", allwebsite2[i][11]);
-                     websitealone.put("otherParamName", allwebsite2[i][12]);
-                     websitealone.put("otherParamValue", allwebsite2[i][13]);
-                     websitealone.put("userNameID", allwebsite2[i][14]);
-                     websitealone.put("passwordID", allwebsite2[i][15]);
-                     websitealone.put("username", allwebsite2[i][16]);
-                     websitealone.put("password", allwebsite2[i][17]);
-                     websitealone.put("loginURL", allwebsite2[i][18]);
-                     websitealone.put("threadNum", allwebsite2[i][19]);
-                     websitealone.put("timeout", allwebsite2[i][20]);
-                     websitealone.put("charset", allwebsite2[i][21]);
-                     websitealone.put("datagross", allwebsite2[i][22]);
-                     websitealone.put("creator", allwebsite2[i][23]);
-                     dataList.add(websitealone);
+                     website.put("taskID", websites[i][0]);
+                     website.put("taskName", websites[i][1]);
+                     website.put("runningMode", websites[i][2]);
+                     website.put("workPath", websites[i][3]);
+                     website.put("driver", Driver.valueOf(Integer.parseInt(websites[i][4])));
+                     website.put("createtime", websites[i][5]);
+                     website.put("usable", Usable.valueOf(Integer.parseInt(websites[i][6])));
+                     website.put("siteURL", websites[i][7]);
+                     website.put("searchURL", websites[i][8]);
+                     website.put("keywordName", websites[i][9]);
+                     website.put("pageParamName", websites[i][10]);
+                     website.put("pageParamValue", websites[i][11]);
+                     website.put("otherParamName", websites[i][12]);
+                     website.put("otherParamValue", websites[i][13]);
+                     website.put("userNameID", websites[i][14]);
+                     website.put("passwordID", websites[i][15]);
+                     website.put("username", websites[i][16]);
+                     website.put("password", websites[i][17]);
+                     website.put("loginURL", websites[i][18]);
+                     website.put("threadNum", websites[i][19]);
+                     website.put("timeout", websites[i][20]);
+                     website.put("charset", websites[i][21]);
+                     website.put("datagross", websites[i][22]);
+                     website.put("creator", websites[i][23]);
+                     website.put("submitXpath", websites[i][24]);
+                     dataList.add(website);
                  }
                  response.getWriter().println(RespWrapper.build(dataList,dataList.size()));
              }catch(Exception e){
                  data.put("msg","获取信息失败");
                  response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
              }
-         } else if("task".equals(pathParam[0])){
-             int taskID=0;
+         } else if("task".equals(pathParam[0])){//for task/:id
+             int taskID = 0;
              try{
                  taskID=Integer.parseInt(pathParam[1]);
              }catch (NumberFormatException e){
                  response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,null));
                  return;
              }
-             Map<String,Object> data=new HashMap<>();
              int webId =taskID;
              response.setContentType("application/json");
              response.setCharacterEncoding("UTF-8");
@@ -336,19 +348,18 @@ public class TaskServlet extends HttpServlet {
 
                  for(int i=0;i<keys.length;i++)
                      data.put(keys[i], taskData[i]);
-                System.out.println(taskData[2]);
-                if("structed".equals(taskData[2]) && "true".equals(taskData[4])){
+                if(RunningMode.structed.name().equals(taskData[2]) && (Driver.have + "").equals(taskData[4])){//if structed with driver
 						String[] params = {"iframeNav","navValue","iframeCon","searchButton","resultRow","nextPageXPath"
                         ,"pageNumXPath","iframeSubParam","arrow","loginButton"};
 						String[] structedData= DBUtil.select("structedParam",params,webId)[0];
-                for(int i=0;i<params.length;i++)
-                    data.put(params[i], structedData[i]);
-            }
-            else if("structed".equals(taskData[2]) && "false".equals(taskData[4])){
-                String[] params = {"dataParamList"};
-                data.put("paramQueryValueList", DBUtil.select("queryparam", params, webId)[0][0]);
-            }
-                 response.getWriter().println(RespWrapper.build(data));
+                    for(int i=0;i<params.length;i++)
+                        data.put(params[i], structedData[i]);
+                }
+                else if(RunningMode.structed.name().equals(taskData[2]) && (Driver.none + "").equals(taskData[4])){
+                    String[] params = {"dataParamList"};
+                    data.put("paramQueryValueList", DBUtil.select("queryparam", params, webId)[0][0]);
+                }
+                response.getWriter().println(RespWrapper.build(data));
              }catch(Exception e){
                  data.put("msg","任务参数获取失败");
                  response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));

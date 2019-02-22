@@ -1,5 +1,6 @@
 package api.task;
 
+import enums.Usable;
 import format.RespWrapper;
 import util.DBUtil;
 import javax.servlet.ServletException;
@@ -33,7 +34,8 @@ public class MonitorServlet extends HttpServlet {
             }
         }
         String usable=DBUtil.select("website",new String[]{"usable"},Integer.parseInt(webid))[0][0];
-        if(!"true".equals(usable)){
+        Usable u = Usable.valueOf(Integer.parseInt(usable));
+        if(u == Usable.none){
             ans="当前配置不可用，请完善配置";
             return ans;
         }
@@ -104,28 +106,25 @@ public class MonitorServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
         String action=request.getParameter("action");
-        if(action.equals("status")){
+        if(action.equals("status")){//monitor?action=status
             List content=new ArrayList();
             String[][] website=DBUtil.select("website",new String[]{"webId","webName","databaseSize"});
             Map<String,Integer> idNameMap=new HashMap<>();
             for(int i=0;i<website.length;i++){
                 idNameMap.put(website[i][0],i);
             }
-            String[][] current=DBUtil.select("current",new String[]{"webId","round","M1status","M2status","M3status","M4status","fQueryLink_sum","fInfoLink_sum","SampleData_sum"});
+            String[][] current=DBUtil.select("current",new String[]{"webId","round","M1status","M2status","M3status","M4status","SampleData_sum"});
             for(int i=0;i<current.length;i++){
                 Map<String,String> unit=new HashMap<>();
                 unit.put("taskID",current[i][0]);
                 unit.put("taskName",website[idNameMap.get(current[i][0])][1]);
                 unit.put("round",current[i][1]);
-                unit.put("fQueryLinkSum",current[i][6]);
-                unit.put("fInfoLinkSum",current[i][7]);
-                unit.put("sampleDataSum",current[i][8]);
-                if(website[idNameMap.get(current[i][0])][2]==null||"0".equals(website[idNameMap.get(current[i][0])][2])){
+                unit.put("sampleDataSum",current[i][6]);
+                if(website[idNameMap.get(current[i][0])][2] == null || "0".equals(website[idNameMap.get(current[i][0])][2])){
                     unit.put("crawlRatio","未知");
                 }else {
-                    float sampleNum=Float.parseFloat(current[i][8]);
+                    float sampleNum=Float.parseFloat(current[i][6]);
                     float dbNum=Float.parseFloat(website[idNameMap.get(current[i][0])][2]);
                     unit.put("crawlRatio",sampleNum/dbNum*100+"%");
                 }

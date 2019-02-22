@@ -26,7 +26,7 @@ public class RequestServlet extends HttpServlet {
       */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String[] pathParam = RequestParser.parsePath(request.getRequestURI(), 2);
-        if ("request".equals(pathParam[0]) && "all".equals(pathParam[1])) {
+        if ("request".equals(pathParam[0]) && "all".equals(pathParam[1])) {//for request/all
             String[] params = {"requestID", "requestName", "requestDesc", "createdTime"};
             String[][] requesttable = DBUtil.select("requesttable", params);
             int total = requesttable.length;
@@ -42,7 +42,7 @@ public class RequestServlet extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(RespWrapper.build(strings, total));
-        } else if ("request".equals(pathParam[0])) {
+        } else if ("request".equals(pathParam[0])) {//for request/:id
             int requestID = 0;
             try {
                 requestID = Integer.parseInt(pathParam[1]);
@@ -51,9 +51,9 @@ public class RequestServlet extends HttpServlet {
                 return;
             }
             String[] params = {"requestID", "requestName", "requestDesc"};
-            String[] con_params={"requestID"};
-            String[] con_values={String.valueOf(requestID)};
-            String[][] requestData = DBUtil.select("requestTable",params,con_params,con_values);
+            String[] conParams={"requestID"};
+            String[] conPalues={String.valueOf(requestID)};
+            String[][] requestData = DBUtil.select("requestTable", params, conParams, conPalues);
             Map<String, Object> data = new HashMap<>();
             data.put("requestID",Integer.parseInt(requestData[0][0]));
             data.put("requestName",requestData[0][1]);
@@ -79,7 +79,7 @@ public class RequestServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         //前端页面保证这些值均不为空，这里无需验证
         String[] pathParam = RequestParser.parsePath(request.getRequestURI(), 2);
-        if ("request".equals(pathParam[0]) && "new".equals(pathParam[1])) {
+        if ("request".equals(pathParam[0]) && "new".equals(pathParam[1])) {//for request/new
             String taskName = request.getParameter("requestName");
             String runningMode = request.getParameter("requestDesc");
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
@@ -94,7 +94,7 @@ public class RequestServlet extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(RespWrapper.build(data));
-        } else if("request".equals(pathParam[0])){
+        } else if("request".equals(pathParam[0])){//for request/:id
             int requestID = 0;
             try {
                 requestID = Integer.parseInt(pathParam[1]);

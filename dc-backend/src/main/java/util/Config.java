@@ -1,22 +1,22 @@
 package util;
 
+import enums.Driver;
+import enums.RunningMode;
+import enums.Usable;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 public class Config {
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
-	public static boolean setInterface(String runningMode,String taskName, String workPath,String driver){
+	public static boolean setInterface(RunningMode runningMode, String taskName, String workPath, Driver driver){
 		boolean flag=false;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String[] param = {"webName","runningMode","workFile","driver","createtime","usable"};
-		String[] paramValue = {taskName,runningMode,workPath,driver,sdf.format(new Date()),"false"};
-		if("unstructed".equals(runningMode)){
-			flag=ParamSetter.setInterface_unstructed(param, paramValue);
+		String[] paramValue = {taskName, runningMode.name(), workPath, driver.getValue() + "", sdf.format(new Date()), Usable.none.getValue() + ""};
+		if(runningMode == RunningMode.unstructed){
+			flag = ParamSetter.setInterfaceUnstructed(param, paramValue);
 		}
-		else if("structed".equals(runningMode)){
+		else if(runningMode == RunningMode.structed){
 			flag=ParamSetter.setInterface(param, paramValue);
 		}
 		return flag;
