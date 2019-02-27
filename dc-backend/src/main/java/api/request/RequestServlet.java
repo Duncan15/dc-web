@@ -110,7 +110,6 @@ public class RequestServlet extends HttpServlet {
             String[] con_params={"requestID"};
             String[] con_vals={requestID+""};
             boolean isUpdated = DBUtil.update("requesttable", params, params_value, con_params,con_vals);
-            System.out.println("isUpdated ?:" + isUpdated);
             Map<String, Object> data = new HashMap<>();
             data.put("requestID", requestID);
             response.setContentType("application/json");

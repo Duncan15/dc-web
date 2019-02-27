@@ -18,6 +18,13 @@ import java.util.Properties;
 
 @WebServlet(name = "DBConfigServlet",urlPatterns = {"/api/datacrawling/config/mysql"})
 public class DBConfigServlet extends HttpServlet {
+    /**
+     * api for changing db configuration
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String mysqlURL=request.getParameter("mysqlURL");
         String mysqlUserName=request.getParameter("mysqlUserName");
@@ -36,6 +43,13 @@ public class DBConfigServlet extends HttpServlet {
 
     }
 
+    /**
+     * api for get db configuration
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Properties prop=new Properties();
         prop.load(this.getClass().getResourceAsStream("/application.properties"));

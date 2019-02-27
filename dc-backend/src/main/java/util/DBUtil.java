@@ -13,7 +13,7 @@ import java.util.Properties;
 
 public class DBUtil
 {
-	private static String dbDriver = "com.mysql.jdbc.Driver";
+	private static String dbDriver = "com.mysql.cj.jdbc.Driver";
 //	private static String dbUrl = "jdbc:mysql://127.0.0.1:3306/webcrawler?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT";
 //	private static String dbUser = "root";
 //	private static String dbPass = "2333";
@@ -21,7 +21,7 @@ public class DBUtil
 	private static String dbUrl;
 	private static String dbUser;
 	private static String dbPass;
-	public static boolean config(String mysqlURL,String mysqlUserName,String mysqlPassword){
+	public static boolean config(String mysqlURL, String mysqlUserName, String mysqlPassword) {
 		try {
 			Class.forName(dbDriver);
 		}catch (ClassNotFoundException e){
@@ -49,12 +49,12 @@ public class DBUtil
 	}
 	public static Connection getConn()
 	{
-		try {
-			Class.forName(dbDriver);
-		}catch (ClassNotFoundException e){
-			System.err.println(e);
-			return null;
-		}
+//		try {
+//			Class.forName(dbDriver);
+//		}catch (ClassNotFoundException e){
+//			System.err.println(e);
+//			return null;
+//		}
 		Connection conn;
 		if(dbUrl==null||dbUser==null||dbPass==null){
 			Properties prop=new Properties();

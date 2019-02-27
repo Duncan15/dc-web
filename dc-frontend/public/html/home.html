@@ -138,7 +138,7 @@
 							</thead>
 							<script id="site-list" type="text/x-jsrender">
 							{{for content}}
-								{{if usable=='true'}}
+								{{if usable=='have'}}
 								<tr>
 									<th>{{:taskID}}</th>
 									<th>{{:siteURL}}</th>
@@ -152,9 +152,9 @@
 										{{/if}}
 									</th>
 									<th>
-										{{if driver=='true'}}
+										{{if driver=='have'}}
 											是
-										{{else driver=='false'}}
+										{{else driver=='none'}}
 											否
 										{{else}}
 											未知
