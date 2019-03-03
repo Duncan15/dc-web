@@ -1,7 +1,11 @@
 package api.task;
 
+import enums.Driver;
+import enums.MonitorOption;
+import enums.RunningMode;
 import enums.Usable;
 import format.RespWrapper;
+import services.ConfigService;
 import util.DBUtil;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,180 +14,193 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @WebServlet(name = "MonitorServlet",urlPatterns = {"/api/datacrawling/task/monitor"})
 public class MonitorServlet extends HttpServlet {
-    private HashMap<String, Process> processMap=new HashMap<String, Process>();
 
-
-    private String start(HttpServletRequest request,String structType,String webid) throws IOException{
+    private String start(RunningMode runningMode, Driver driver, int webID) throws IOException{
         ProcessBuilder builder=null;
-        Process p=null;
-        String ans;
-        if(processMap.containsKey(webid)){
-            p=processMap.get(webid);
-            if(p.isAlive()){
-                ans= "该爬虫已处于运行状态";
-                return ans;
-            }else {
-                processMap.remove(webid);
-            }
+        String[][] ans = DBUtil.select("current", new String[]{"run"}, webID);
+        if (ans.length == 0) {
+            return "webID所对应的网站信息不存在";
         }
-        String usable=DBUtil.select("website",new String[]{"usable"},Integer.parseInt(webid))[0][0];
+        if(!ans[0][0].equals("0")) {
+            return "该爬虫正处于运行状态，禁止重复操作";
+        }
+
+        String usable=DBUtil.select("website",new String[]{"usable"}, webID)[0][0];
         Usable u = Usable.valueOf(Integer.parseInt(usable));
         if(u == Usable.none){
-            ans="当前配置不可用，请完善配置";
-            return ans;
+            return "当前配置不可用，请先完善配置";
         }
+
+        Properties properties = ConfigService.getBackMap();
+        String mysqlURL = properties.getProperty("mysqlURL");
+        String mysqlUserName = properties.getProperty("mysqlUserName");
+        String msyqlPassword = properties.getProperty("mysqlPassword");
 
          //此处为爬取的jar包path
 //        String jarPath=new File(getServletContext().getRealPath("/"),"WEB-INF/lib/lp2.jar").getAbsolutePath();
 //        builder=new ProcessBuilder("java","-jar",jarPath,webid);
-        if("unstructed".equals(structType)){
-            //WEB-INF/lib/ControllerNew.jar
-            String jarPath=new File(getServletContext().getRealPath("/"),"WEB-INF/lib/local.jar").getAbsolutePath();
-            builder=new ProcessBuilder("java","-Xmx200G","-Xms20G","-jar",jarPath,webid);
+        if(runningMode == RunningMode.unstructed && driver == Driver.none){
+//            --web-id=116
+//            --jdbc-url=jdbc:mysql://localhost:3306/webcrawler?characterEncoding=UTF-8&useSSL=false&useAffectedRows=true&allowPublicKeyRetrieval=true
+//            --username=root
+//            --password=12345678
+            String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_unstructed.jar").getAbsolutePath();
+            builder = new ProcessBuilder("java","-Xmx20G","-Xms20G","-jar",jarPath, "--web-id=" + webID, "--jdbc-url=" + mysqlURL, "--username=" + mysqlUserName, "--password=" + msyqlPassword);
+        } else if(runningMode == RunningMode.structed && driver == Driver.none){//以下启动模式根据自定义进行修改
+            String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed.jar").getAbsolutePath();
+            builder = new ProcessBuilder("java","-jar",jarPath, webID + "");
+        } else if(runningMode == RunningMode.structed && driver == Driver.have){
+            String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed_js.jar").getAbsolutePath();
+            builder = new ProcessBuilder("java","-jar", jarPath, webID + "");
         }
-        else if("structed".equals(structType)){
-            String jarPath=new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structured.jar").getAbsolutePath();
-            builder=new ProcessBuilder("java","-jar",jarPath,webid);
-        }
-        else if("structed_js".equals(structType)){
-            String jarPath=new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structured_js.jar").getAbsolutePath();
-            builder=new ProcessBuilder("java","-jar",jarPath,webid);
-        }
-        p=builder.start();
+        Process p = builder.start();
         try{
             Thread.sleep(1000l);
         }catch (InterruptedException e){
-            e.printStackTrace();
+            //ignored
         }
-        if(p.isAlive()){
-            ans="爬虫启动成功";
-            processMap.put(webid, p);
+        if(p.isAlive()) {
+            return "爬虫成功启动";
         }else {
-            ans="爬虫启动失败，请检查参数是否配置正确";
+
+            return "爬虫启动失败，请重新检查参数配置是正确，或查看输出日志进行问题定位";
         }
-        return ans;
 
     }
 
-    private String stop(HttpServletRequest request,String webid){
-        Process p=null;
-        String ans;
-        if(processMap.containsKey(webid)){
-            p=processMap.get(webid);
-            if(!p.isAlive()){
-                ans="爬虫未处于运行状态";
-            }else {
-                p.destroyForcibly();
-                try{
-                    Thread.sleep(1000l);
-                }catch (InterruptedException e){
-                    e.printStackTrace();
-                }
-                if(p.isAlive()){
-                     ans="爬虫未正常停止";
-                }else {
-                    DBUtil.update("current",new String[]{"M1status","M2status","M3status","M4status"},new String[]{"stoped","stoped","stoped","stoped"},Integer.parseInt(webid));
-                    ans="爬虫正常停止";
-                    processMap.remove(webid);
-                }
-            }
-        }else {
-            ans = "系统未检索到爬虫运行信息，无法停止";
+    private String stop(int webID){
+        String[][] ans = DBUtil.select("current", new String[]{"run"}, webID);
+        if (ans.length == 0) {
+            return "webID所对应的网站不存在";
         }
-        return ans;
+        if(ans[0][0].equals("0")) {
+            return "该爬虫正处于未启动状态，无权进行暂停操作";
+        }
+        long pid = Long.parseLong(ans[0][0]);
+        Runtime rt = Runtime.getRuntime();
+        if (System.getProperty("os.name").toLowerCase().indexOf("windows") > -1) {
+            try {
+                rt.exec("taskkill /F /IM /pid " + pid);
+            } catch (IOException ex) {
+                //ignored
+            }
+        } else {
+            try {
+                rt.exec("kill " + pid);
+            } catch (IOException ex) {
+                //ignored
+            }
+        }
+        try {
+            Thread.sleep(2000l);
+        } catch (InterruptedException ex) {
+            //ignored
+        }
+        ans = DBUtil.select("current", new String[]{"run"}, webID);
+        if (ans[0][0].equals("0")) {
+            return "爬虫成功暂停";
+        } else {
+            return "爬虫暂停异常，请稍后重试，或查看输出日志进行问题定位";
+        }
     }
     /*
     for api: /api/datacrawling/task/monitor?action=status
     for api: /api/datacrawling/task/monitor?action=option&option=start or stop&taskID=1
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Map<String,Object> data=new HashMap<>();
         request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
         String action=request.getParameter("action");
         if(action.equals("status")){//monitor?action=status
             List content=new ArrayList();
-            String[][] website=DBUtil.select("website",new String[]{"webId","webName","databaseSize"});
-            Map<String,Integer> idNameMap=new HashMap<>();
-            for(int i=0;i<website.length;i++){
-                idNameMap.put(website[i][0],i);
+            //只显示配置可用的爬虫状态
+            String[][] website = DBUtil.select("website",new String[]{"webId", "webName", "databaseSize", "runningMode", "driver"}, new String[]{"usable"}, new String[]{Usable.have.getValue() + ""});
+            Map<String,Integer> idNameMap = new HashMap<>();
+            for(int i = 0; i < website.length; i++){
+                idNameMap.put(website[i][0], i);
             }
-            String[][] current=DBUtil.select("current",new String[]{"webId","round","M1status","M2status","M3status","M4status","SampleData_sum"});
-            for(int i=0;i<current.length;i++){
-                Map<String,String> unit=new HashMap<>();
-                unit.put("taskID",current[i][0]);
-                unit.put("taskName",website[idNameMap.get(current[i][0])][1]);
-                unit.put("round",current[i][1]);
-                unit.put("sampleDataSum",current[i][6]);
+            String[][] current=DBUtil.select("current",new String[]{"webId","round","M1status","M2status","M3status","M4status","SampleData_sum", "run"});
+            for(int i = 0; i < current.length; i++){
+                Map<String,String> unit = new HashMap<>();
+                unit.put("taskID", current[i][0]);
+                unit.put("taskName", website[idNameMap.get(current[i][0])][1]);
+                unit.put("round", current[i][1]);
+                unit.put("sampleDataSum", current[i][6]);
+                //如果databaseSize值为0，则爬取比例为未知状态
                 if(website[idNameMap.get(current[i][0])][2] == null || "0".equals(website[idNameMap.get(current[i][0])][2])){
                     unit.put("crawlRatio","未知");
                 }else {
-                    float sampleNum=Float.parseFloat(current[i][6]);
-                    float dbNum=Float.parseFloat(website[idNameMap.get(current[i][0])][2]);
+                    float sampleNum = Float.parseFloat(current[i][6]);
+                    float dbNum = Float.parseFloat(website[idNameMap.get(current[i][0])][2]);
                     unit.put("crawlRatio",sampleNum/dbNum*100+"%");
                 }
-                String taskStatus="未启动";
-                if(processMap.containsKey(current[i][0])){
-                    Process p=processMap.get(current[i][0]);
-                    if(p.isAlive()){
-                        for(int j=2;j<6;j++){
-                            if(current[i][j].equals("active")){
-                                switch (j){
-                                    case 2:
-                                        taskStatus="获取数据链接";
-                                        break;
-                                    case 3:
-                                        taskStatus="下载数据";
-                                        break;
-                                    case 4:
-                                        taskStatus="模版数据抽取";
-                                        break;
-                                    case 5:
-                                        taskStatus="获取关键词";
-                                        break;
-                                }
+                if("0".equals(current[i][7])) {
+                    unit.put("status", "未启动");
+                } else {
+                    Properties properties = ConfigService.getBackMap();
+                    String[] websiteRow = website[idNameMap.get(current[i][0])];
+                    RunningMode runningMode = RunningMode.ValueOf(websiteRow[3]);
+                    Driver driver = Driver.ValueOf(websiteRow[4]);
+                    String status = "未知";
+                    if(runningMode == RunningMode.unstructed && driver == Driver.none) {
+                        for (int j = 2; j < 6; j++) {
+                            if(current[i][j].equals("active")) {
+                                status = properties.getProperty(runningMode.name() + "." +driver.name() + "." +"status" + (j - 1));
                                 break;
                             }
                         }
+                    } else {//structed模式下根据具体定制自定义
+
                     }
+                    unit.put("status", status);
                 }
-                unit.put("status",taskStatus);
                 content.add(unit);
             }
-            //String[] param2={"M1status","M2status","M3status","M4status"};
-            //String currentStatus= DBUtil.select("current", param2,Integer.parseInt(taskId))[0][0];
-
-            //if(!currentStatus.equals("stoped")){
-            //    taskstatus="started";
-            //}
-            Map<String,Object> data=new HashMap<String, Object>();
             data.put("content",content);
             data.put("total",content.size());
             response.getWriter().println(RespWrapper.build(data));
+            return;
         }else if(action.equals("option")){
-            String taskId=request.getParameter("taskID");
-            String option=request.getParameter("option");
-            String param1[]={"runningMode"};
-            String structType=DBUtil.select("website",param1 , Integer.parseInt(taskId))[0][0];
-            Map<String,Object> data=new HashMap<>();
-            if(option.equals("start")){
-                //此处为调用start函数
-                String msg=start(request,structType,taskId);
-                data.put("msg",msg);
+            String taskIDStr = request.getParameter("taskID");
+            String option = request.getParameter("option");
+
+            int webID = 0;
+            MonitorOption monitorOption = null;
+            try {
+                webID = Integer.parseInt(taskIDStr);
+            } catch (NumberFormatException ex) {
+                //ingored
+                data.put("msg", "taskID参数格式错误");
                 response.getWriter().println(RespWrapper.build(data));
+                return;
             }
-            else if(option.equals("stop")) {
-                //此处为stop函数
-                String msg = stop(request, taskId);
+            String param1[] = {"runningMode", "driver"};
+            String[][] ans =DBUtil.select("website",param1 , webID);
+            if(ans.length == 0) {
+                data.put("msg", "webID所对应的网站不存在");
+                response.getWriter().println(RespWrapper.build(data));
+                return;
+            }
+            RunningMode runningMode = RunningMode.ValueOf(ans[0][0]);
+            Driver driver = Driver.ValueOf(ans[0][1]);
+            monitorOption = MonitorOption.valueOf(option);
+            if (monitorOption == MonitorOption.start) {
+                String msg = start(runningMode, driver, webID);
                 data.put("msg", msg);
-                response.getWriter().println(RespWrapper.build(data));
+            } else if (monitorOption == MonitorOption.stop) {
+                String msg = stop(webID);
+                data.put("msg", msg);
+            } else {
+                data.put("msg", "该操作未定义，无法执行");
             }
+            response.getWriter().println(RespWrapper.build(data));
+            return;
         }
     }
 }

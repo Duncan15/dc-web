@@ -49,12 +49,6 @@ public class DBUtil
 	}
 	public static Connection getConn()
 	{
-//		try {
-//			Class.forName(dbDriver);
-//		}catch (ClassNotFoundException e){
-//			System.err.println(e);
-//			return null;
-//		}
 		Connection conn;
 		if(dbUrl==null||dbUser==null||dbPass==null){
 			Properties prop=new Properties();
@@ -173,7 +167,7 @@ public class DBUtil
 			conn = getConn();
 			try
 			{
-				st = (PreparedStatement) conn.prepareStatement(sql);
+				st = conn.prepareStatement(sql);
 			} catch (SQLException e)
 			{
 				e.printStackTrace();
@@ -1005,44 +999,11 @@ public class DBUtil
 	}
 
 	public static void main(String[] args){
-		//String[] params = {"xpath","indexPath"};
 		String[] params_value = {"aaaa","prefix"};
-		//boolean flag = DBUtil.update("pattern", params, params_value, 2);
-		//ArrayList<String> aa = DBUtil.getLastInfoLinks(1+"");
-		//for(int i = 0; i < aa.size(); i ++ ){
-		//	System.out.println(aa.get(i));
-		//}
-
 		String[] params= {"requestName","requestDesc"};
 		boolean flag = DBUtil.insert("requesttable", params, params_value);
 		System.out.println("insert or not ?"+flag);
-		/*String[] getP = {"*"};
-		String[] p = {"webName"};
-		String[] v = {"3"};
-		System.out.println(DBUtil.select("website",getP,p,v).length);
-	if(	DBUtil.select("website",getP,p,v).length!=0)
-		System.out.println(DBUtil.select("website",getP,p,v)[0][0]);*/
-//	String[][] website=DBUtil.select("requesttable", params);
-//	for(int i=0;i<website.length;i++)
-//	{
-//		String[] a={website[i][0],website[i][1]};
-//	System.out.println(website[i][0]);
-//
-//	}
-		//select test
-//		String[] params = {"patternName","indexPath"};
-//		String[] con = {"webId"};
-//		String[] con_val = {"1"};
-//
-//		String[][] result = DBUtil.select("pattern", params,con, con_val);
-//		for(int i = 0; i < result.length; i ++ ){
-//			for(int j = 0; j < result[i].length; j ++ ){
-//				System.out.print(result[i][j]+"\t");
-//			}
-//			System.out.println();
-//		}
-//		//System.out.println(result);
-//
+
 	}
 
 }

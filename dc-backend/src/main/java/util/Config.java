@@ -17,7 +17,7 @@ public class Config {
 			flag = ParamSetter.setInterfaceUnstructed(param, paramValue);
 		}
 		else if(runningMode == RunningMode.structed){
-			flag=ParamSetter.setInterface(param, paramValue);
+			flag = ParamSetter.setInterface(param, paramValue);
 		}
 		return flag;
 	}

@@ -4,6 +4,7 @@ import enums.Driver;
 import enums.RunningMode;
 import enums.Usable;
 import format.RespWrapper;
+import services.ConfigService;
 import util.Config;
 import util.DBUtil;
 import util.RequestParser;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +53,12 @@ public class TaskServlet extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             try {
+                if(workPath.contains("/") || workPath.contains("\\")) {
+                    data.put("msg", "工作路径后缀不包含斜杠或反斜杠");
+                    response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, data));
+                    return;
+                }
+                workPath = Paths.get(ConfigService.getBaseWorkDir(), workPath).toString();
                 if(r == null) {
                     data.put("msg", "runningMode参数值错误");
                     response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, data));
@@ -84,7 +92,7 @@ public class TaskServlet extends HttpServlet {
             int webId = taskID;
             String[] p= {"runningMode", "driver", "usable", "charset"};
             String[] ans = DBUtil.select("website", p, webId)[0];//here may happen nullPointerException
-            RunningMode runningMode = RunningMode.valueOf(Integer.parseInt(ans[0]));
+            RunningMode runningMode = RunningMode.ValueOf(ans[0]);
             Driver driver = Driver.valueOf(Integer.parseInt(ans[1]));
             Usable usable = Usable.valueOf(Integer.parseInt(ans[2]));
 
@@ -192,7 +200,7 @@ public class TaskServlet extends HttpServlet {
             String passwordXpath = request.getParameter("passwordID");
             String username = request.getParameter("username");
             String password = request.getParameter("password");
-            String submitXpath = request.getParameter("submitID");
+            String submitXpath = request.getParameter("submitXpath");
             String[] p={ "runningMode","driver"};
             String[] ans = DBUtil.select("website", p,webId)[0];
 
@@ -214,6 +222,7 @@ public class TaskServlet extends HttpServlet {
                     data.put("passwordID",passwordXpath);
                     data.put("username",username);
                     data.put("password",password);
+                    data.put("submitXpath", submitXpath);
                     response.getWriter().println(RespWrapper.build(data));
                 }
                 else {
@@ -340,11 +349,11 @@ public class TaskServlet extends HttpServlet {
              try{
                  String[]  param = {"webId","webName","runningMode","workFile","driver","createtime","usable",
                          "indexUrl","prefix","paramQuery","paramPage","startPageNum","paramList","paramValueList",
-                         "userParam","pwdParam","userName","password","loginUrl","threadNum","timeout","charset","databaseSize"};
+                         "userParam","pwdParam","userName","password","loginUrl","threadNum","timeout","charset","databaseSize", "submitXpath"};
                  String[] taskData= DBUtil.select("website",param,webId)[0];
                  String[]  keys = {"taskID","taskName","runningMode","workPath","driver","createtime","usable",
                          "siteURL","searchURL","keywordName","pageParamName","pageParamValue","otherParamName","otherParamValue",
-                         "userNameID","passwordID","username","password","loginURL","threadNum","timeout","charset","datagross"};
+                         "userNameID","passwordID","username","password","loginURL","threadNum","timeout","charset","datagross", "submitXpath"};
 
                  for(int i=0;i<keys.length;i++)
                      data.put(keys[i], taskData[i]);
@@ -355,7 +364,7 @@ public class TaskServlet extends HttpServlet {
                     for(int i=0;i<params.length;i++)
                         data.put(params[i], structedData[i]);
                 }
-                else if(RunningMode.structed.name().equals(taskData[2]) && (Driver.none + "").equals(taskData[4])){
+                else if(RunningMode.structed.name().equals(taskData[2]) && (Driver.none + "").equals(taskData[4])){//structed without driver
                     String[] params = {"dataParamList"};
                     data.put("paramQueryValueList", DBUtil.select("queryparam", params, webId)[0][0]);
                 }

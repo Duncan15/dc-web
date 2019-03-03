@@ -1,5 +1,6 @@
 package listener;
 
+import services.ConfigService;
 import util.DBUtil;
 
 import javax.servlet.ServletContextEvent;
@@ -18,12 +19,8 @@ public class ConfigListener implements ServletContextListener {
     }
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        Properties prop=new Properties();
-        try {
-            prop.load(this.getClass().getResourceAsStream("/application.properties"));
-        } catch (IOException ex) {
-            //ignored
-        }
+        ConfigService.load();
+        Properties prop = ConfigService.getBackMap();
         String mysqlURL = prop.getProperty("mysqlURL");
         String mysqlUserName = prop.getProperty("mysqlUserName");
         String mysqlPassword = prop.getProperty("mysqlPassword");

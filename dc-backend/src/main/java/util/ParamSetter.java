@@ -2,6 +2,7 @@ package util;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 public class ParamSetter {
 	private int threadNum = 20;
@@ -19,16 +20,16 @@ public class ParamSetter {
 		workfile = DBUtil.select("website", filePara, Integer.parseInt(webId))[0][0];
 
 		//initialByWebId(webId);//initiate database
-		createNewfile( workfile, webId);
+		createNewfile(workfile, webId);
 		return websiteParam;
 	}
 
 	public static void createNewfile(String workfile,String webId){
 
 		//create work dir
-		File workFilff = new File(workfile);
-		if(!workFilff.exists()){
-			workFilff.mkdirs();
+		File workDir = new File(workfile);
+		if(!workDir.exists()){
+			workDir.mkdirs();
 		}
 		//subpage dir
 		File subpage = new File(workfile+webId+"/subpage");
@@ -135,16 +136,14 @@ public class ParamSetter {
 		String[] filePara = {"workFile"};
 		workfile = DBUtil.select("website", filePara, Integer.parseInt(webId))[0][0];
 
+		/**
+		 * note: here the only mkdirs need is to create the work directory
+		 */
 		//create work dir
-		File workFilff = new File(workfile);
-		if(!workFilff.exists()){
-			workFilff.mkdirs();
+		File workDir = Paths.get(workfile, webId).toFile();
+		if(!workDir.exists()){
+			workDir.mkdirs();
 		}
-		//html dir
-		File f = new File(workfile+webId+"/html");
-		if(!f.exists())
-			f.mkdirs();
-
 		return websiteParam;
 	}
 	public static boolean createPattern(String webId,String patternName, String xpath,String indexPath){

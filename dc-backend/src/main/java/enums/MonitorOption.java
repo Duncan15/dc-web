@@ -1,19 +1,16 @@
 package enums;
 
-public enum  RunningMode {
-    structed,unstructed;
-
-
-
+public enum  MonitorOption {
+    start, stop;
     /**
      * use this method to replace valueOf method
      * @param name
      * @return
      */
-    public static RunningMode ValueOf(String name) {
-        RunningMode d;
+    public static MonitorOption ValueOf(String name) {
+        MonitorOption d;
         try {
-            d = RunningMode.valueOf(RunningMode.class, name);
+            d = MonitorOption.valueOf(MonitorOption.class, name);
         } catch (Exception ex) {
             //ignored
             d = null;

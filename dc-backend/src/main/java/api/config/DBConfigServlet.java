@@ -1,6 +1,7 @@
 package api.config;
 
 import format.RespWrapper;
+import services.ConfigService;
 import util.DBUtil;
 
 import javax.servlet.ServletContext;
@@ -11,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,16 +28,11 @@ public class DBConfigServlet extends HttpServlet {
      * @throws ServletException
      * @throws IOException
      */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String mysqlURL=request.getParameter("mysqlURL");
         String mysqlUserName=request.getParameter("mysqlUserName");
         String mysqlPassword=request.getParameter("mysqlPassword");
-        Properties prop=new Properties();
-        prop.load(this.getClass().getResourceAsStream("/application.properties"));
-        prop.setProperty("mysqlURL",mysqlURL);
-        prop.setProperty("mysqlUserName",mysqlUserName);
-        prop.setProperty("mysqlPassword",mysqlPassword);
-        prop.store(new FileOutputStream(this.getClass().getResource("/application.properties").getFile()),"");
+        ConfigService.setDB(mysqlURL, mysqlUserName, mysqlPassword);
         if (DBUtil.config(mysqlURL,mysqlUserName,mysqlPassword)){
             response.getWriter().println(RespWrapper.build("success"));
         }else {
@@ -50,31 +48,14 @@ public class DBConfigServlet extends HttpServlet {
      * @throws ServletException
      * @throws IOException
      */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Properties prop=new Properties();
-        prop.load(this.getClass().getResourceAsStream("/application.properties"));
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Properties prop = ConfigService.getBackMap();
         Map<String,String> ans=new HashMap<>();
-        boolean flag=true;
-        if(prop.getProperty("mysqlURL")!=null){
-            ans.put("mysqlURL",prop.getProperty("mysqlURL"));
-        }else {
-            flag=false;
-        }
-        if(prop.getProperty("mysqlUserName")!=null){
-            ans.put("mysqlUserName",prop.getProperty("mysqlUserName"));
-        }else {
-            flag=false;
-        }
-        if(prop.getProperty("mysqlPassword")!=null){
-            ans.put("mysqlPassword",prop.getProperty("mysqlPassword"));
-        }else {
-            flag=false;
-        }
-        if(flag){
-            response.getWriter().println(RespWrapper.build(ans));
-        }else {
-            response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,ans));
-        }
+        ans.put("mysqlURL",prop.getProperty("mysqlURL"));
+        ans.put("mysqlUserName",prop.getProperty("mysqlUserName"));
+        ans.put("mysqlPassword",prop.getProperty("mysqlPassword"));
+        response.getWriter().println(RespWrapper.build(ans));
+
 
     }
 }
