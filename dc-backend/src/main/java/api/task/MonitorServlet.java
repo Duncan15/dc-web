@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 
 @WebServlet(name = "MonitorServlet",urlPatterns = {"/api/datacrawling/task/monitor"})
@@ -29,7 +30,8 @@ public class MonitorServlet extends HttpServlet {
             return "该爬虫正处于运行状态，禁止重复操作";
         }
 
-        String usable=DBUtil.select("website",new String[]{"usable"}, webID)[0][0];
+        String[] websiteInfo=DBUtil.select("website",new String[]{"usable","workFile"}, webID)[0];
+        String usable = websiteInfo[0];
         Usable u = Usable.valueOf(Integer.parseInt(usable));
         if(u == Usable.none){
             return "当前配置不可用，请先完善配置";
@@ -57,6 +59,22 @@ public class MonitorServlet extends HttpServlet {
             String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed_js.jar").getAbsolutePath();
             builder = new ProcessBuilder("java","-jar", jarPath, webID + "");
         }
+
+
+        File logFile = Paths.get(websiteInfo[1], webID + "", ConfigService.LOG_FILE).toFile();
+        File logErr = Paths.get(websiteInfo[1], webID + "", ConfigService.LOG_ERR).toFile();
+        if(logFile.exists()) {
+            logFile.delete();
+        }
+        if(logErr.exists()) {
+            logErr.delete();
+        }
+
+
+
+        builder.redirectOutput(logFile);
+        builder.redirectError(logErr);
+
         Process p = builder.start();
         try{
             Thread.sleep(1000l);
@@ -66,7 +84,6 @@ public class MonitorServlet extends HttpServlet {
         if(p.isAlive()) {
             return "爬虫成功启动";
         }else {
-
             return "爬虫启动失败，请重新检查参数配置是正确，或查看输出日志进行问题定位";
         }
 
@@ -146,7 +163,7 @@ public class MonitorServlet extends HttpServlet {
                     Properties properties = ConfigService.getBackMap();
                     String[] websiteRow = website[idNameMap.get(current[i][0])];
                     RunningMode runningMode = RunningMode.ValueOf(websiteRow[3]);
-                    Driver driver = Driver.ValueOf(websiteRow[4]);
+                    Driver driver = Driver.valueOf(Integer.parseInt(websiteRow[4]));
                     String status = "未知";
                     if(runningMode == RunningMode.unstructed && driver == Driver.none) {
                         for (int j = 2; j < 6; j++) {
@@ -188,7 +205,7 @@ public class MonitorServlet extends HttpServlet {
                 return;
             }
             RunningMode runningMode = RunningMode.ValueOf(ans[0][0]);
-            Driver driver = Driver.ValueOf(ans[0][1]);
+            Driver driver = Driver.valueOf(Integer.parseInt(ans[0][1]));
             monitorOption = MonitorOption.valueOf(option);
             if (monitorOption == MonitorOption.start) {
                 String msg = start(runningMode, driver, webID);

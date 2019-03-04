@@ -1,13 +1,21 @@
 package services;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Objects;
 import java.util.Properties;
 
 public class ConfigService {
+    /**
+     * the log file name
+     */
+    public static String LOG_FILE = "dw.log";
+    public static String LOG_ERR = "dw.log.err";
+
+
+
+
+
+
     /**
      * base addresss of work directory
      */
@@ -22,7 +30,7 @@ public class ConfigService {
      */
     public static void load() {
         try (InputStream inputStream = ConfigService.class.getResourceAsStream("/application.properties")) {
-            backMap.load(inputStream);
+            backMap.load(new InputStreamReader(inputStream, "UTF-8"));
         } catch (IOException ex) {
             //ignored
         }
@@ -30,7 +38,7 @@ public class ConfigService {
     }
     public static void save() {
         try (OutputStream outputStream = new FileOutputStream(ConfigService.class.getResource("/application.properties").getFile())) {
-            backMap.store(outputStream, "");
+            backMap.store(new OutputStreamWriter(outputStream, "UTF-8"), "");
         } catch (IOException ex) {
             //ignored
         }

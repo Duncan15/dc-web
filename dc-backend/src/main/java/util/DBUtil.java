@@ -10,7 +10,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Properties;
 
-
+/**
+ * 数据库操作类
+ */
 public class DBUtil
 {
 	private static String dbDriver = "com.mysql.cj.jdbc.Driver";

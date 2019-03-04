@@ -293,11 +293,8 @@ $(function(){
             alert("输入不能为空");
             return;
           }
-          if(workPath[workPath.length-1]!='/'){
-            workPath=workPath+'/';
-          }
           if(runningMode=='unstructed'){
-            driver='false';
+            driver='none';
           }
           $.ajax({
             url: baseURL+'/api/datacrawling/task/new',
@@ -408,6 +405,11 @@ $(function(){
                 var validator=$("#unstructed-undriver").validate({
                   submitHandler:function(){
                     var id=form.find("input.rule-id").val();
+                    var pageParamValue = form.find("input[name='page-value']").val().trim();
+                    if(pageParamValue.split(",").length != 2) {
+                      alert("开始页面号输入错误");
+                      return;
+                    }
                     $.ajax({
                       url: baseURL+'/api/datacrawling/task/urlparam/'+id,
                       type: 'POST',
@@ -600,6 +602,7 @@ $(function(){
                   form.find("input[name='login-link']").val(data['data']['loginURL']);
                   form.find("input[name='username-id']").val(data['data']['userNameID']);
                   form.find("input[name='password-id']").val(data['data']['passwordID']);
+                  form.find("input[name='submitXpath']").val(data['data']['submitXpath']);
                   form.find("input[name='username']").val(data['data']['username']);
                   form.find("input[name='password']").val(data['data']['password']);
                 }
@@ -621,6 +624,7 @@ $(function(){
                       loginURL:form.find("input[name='login-link']").val().trim(),
                       userNameID:form.find("input[name='username-id']").val().trim(),
                       passwordID:form.find("input[name='password-id']").val().trim(),
+                      submitXpath:form.find("input[name='submitXpath']").val().trim(),
                       username:form.find("input[name='username']").val().trim(),
                       password:form.find("input[name='password']").val().trim()
                     }
@@ -773,10 +777,7 @@ $(function(){
                 }else{
                   form.find("input[name='task-id']").val(data['data']['taskID']);
                   form.find("p[name='pattern-name']").text(data['data']['templateName']);
-                  form.find("input[name='pattern-type']").val(data['data']['templateType']);
                   form.find("input[name='pattern-xpath']").val(data['data']['templateXpath']);
-                  form.find("input[name='pattern-title-xpath']").val(data['data']['templateHeaderXpath']);
-                  form.find("input[name='pattern-formula']").val(data['data']['templateFormula']);
                 }
               })
               .fail(function() {
@@ -796,10 +797,7 @@ $(function(){
                     data: {
                       taskID:form.find("input[name='task-id']").val().trim(),
                       templateName:form.find("p[name='pattern-name']").text().trim(),
-                      templateType:form.find("input[name='pattern-type']").val().trim(),
-                      templateXpath:form.find("input[name='pattern-xpath']").val().trim(),
-                      templateFormula:form.find("input[name='pattern-formula']").val().trim(),
-                      templateHeaderXpath:form.find("input[name='pattern-title-xpath']").val().trim()
+                      templateXpath:form.find("input[name='pattern-xpath']").val().trim()
                     }
                   })
                   .done(function(data) {
@@ -859,10 +857,7 @@ $(function(){
         });
         var form=$("#new-template-form");
         form.find("input[name='pattern-name']").val("");
-        form.find("input[name='pattern-type']").val("");
         form.find("input[name='pattern-xpath']").val("");
-        form.find("input[name='pattern-formula']").val("");
-        form.find("input[name='pattern-title-xpath']").val("");
         var validator=form.validate({
           submitHandler:function(){
             $.ajax({
@@ -872,10 +867,7 @@ $(function(){
               data:{
                 taskID:form.find("select[name='task-id']").val().trim(),
                 templateName:form.find("input[name='pattern-name']").val().trim(),
-                templateType:form.find("input[name='pattern-type']").val().trim(),
-                templateXpath:form.find("input[name='pattern-xpath']").val().trim(),
-                templateFormula:form.find("input[name='pattern-formula']").val().trim(),
-                templateHeaderXpath:form.find("input[name='pattern-title-xpath']").val().trim()
+                templateXpath:form.find("input[name='pattern-xpath']").val().trim()
               }
             })
             .done(function(data) {
@@ -1002,11 +994,19 @@ $(function(){
         if(handle==undefined){
           console.log("undefined");
         }else{
-          if(!$("#task-crawling-monitor").hasClass('active')){
+          if(!$("#monitor").hasClass('active')){
             clearInterval(handle);
           }
         }
       },3000);
+      // setTimeout(function(){
+      //   var $menuBar = $("#menu-bar");
+      //   $menuBar.on("click", function(event) {
+      //     //$("#task-crawling-monitor").removeClass('active');
+      //     $menuBar.off();
+      //   });
+      // }, 1000);
+      
     });
     $taskCrawlingMonitorBtn.click();
   });
@@ -1111,6 +1111,8 @@ $(function(){
     event.preventDefault();
     /* Act on the event */
     var $dbConfigBtn=$("#db-config-btn");
+    var $plaConfigBtn=$("#pla-config-btn");
+    $dbConfigBtn.off();
     $dbConfigBtn.on('click',function(event) {
       var render=function(){
         $.ajax({
@@ -1157,6 +1159,62 @@ $(function(){
           .done(function(data) {
             if(data['errno']!=0){
               alert('服务器错误');
+            }else{
+              alert("修改成功");
+              render();
+            }
+          })
+          .fail(function() {
+            console.log("error");
+          })
+          .always(function() {
+            console.log("complete");
+          });
+        }
+      });
+      validator.resetForm();
+      render();
+    });
+    $plaConfigBtn.off();
+    $plaConfigBtn.on('click', function(event){
+      var render = function() {
+        $.ajax({
+          url: baseURL+'/api/datacrawling/config/platform',
+          type: 'GET',
+          dataType: 'json'
+        })
+        .done(function(data) {
+          if(data['errno']!=0){
+            alert('服务器错误');
+          }else{
+            $("#base-work-dir").val(data['data']['baseWorkDir']);
+          }
+        })
+        .fail(function() {
+          console.log("error");
+        })
+        .always(function() {
+          console.log("complete");
+        });
+      };
+      var validator = $("#pla-form").validate({
+        submitHandler:function() {
+          var baseWorkDir=$("#base-work-dir").val().trim();
+          if(baseWorkDir==""){
+            alert("输入不能为空");
+            return;
+          }
+          $.ajax({
+            url: baseURL+'/api/datacrawling/config/platform',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              baseWorkDir: baseWorkDir
+            }
+          })
+          .done(function(data) {
+            if(data['errno']!=0){
+              alert(data['data']);
             }else{
               alert("修改成功");
               render();
