@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 用于解析请求url中的参数
+ */
 public class RequestParser {
     public static String[] parsePath(String uri,int paramNum){
         String[] ans=new String[paramNum];

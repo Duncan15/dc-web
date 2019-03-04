@@ -1,6 +1,5 @@
 package util;
 
-import util.mywebclient3;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -105,7 +104,7 @@ public class WebCrawlerDemo {
 //                                     	mywebclient2.method1("C:\\Users\\27148\\Desktop\\pp8.txt",newLink);
 //                                     
 //                                     }
-                                  if(mywebclient3.judgeurl(newLink)){
+                                  if(CusWebClient.judgeurl(newLink)){
                                  	//mywebclient3.method1("C:\\Users\\27148\\Desktop\\pp8.txt",newLink);
                                       String [] p1={"homeUrl","targetUrl"};
                                       String [] p2={oldLinkHost,newLink};
