@@ -23,10 +23,7 @@ public class MonitorServlet extends HttpServlet {
     private String start(RunningMode runningMode, Driver driver, int webID) throws IOException{
         ProcessBuilder builder=null;
         String[][] ans = DBUtil.select("current", new String[]{"run"}, webID);
-        if (ans.length == 0) {
-            return "webID所对应的网站信息不存在";
-        }
-        if(!ans[0][0].equals("0")) {
+        if(ans.length != 0 &&!ans[0][0].equals("0")) {
             return "该爬虫正处于运行状态，禁止重复操作";
         }
 
@@ -52,6 +49,9 @@ public class MonitorServlet extends HttpServlet {
 //            --password=12345678
             String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_unstructed.jar").getAbsolutePath();
             builder = new ProcessBuilder("java","-Xmx20G","-Xms20G","-jar",jarPath, "--web-id=" + webID, "--jdbc-url=" + mysqlURL, "--username=" + mysqlUserName, "--password=" + msyqlPassword);
+
+            //设置工作目录，主要作用是支持ansj的配置载入
+            builder.directory(new File(getServletContext().getRealPath("/"), "WEB-INF"));
         } else if(runningMode == RunningMode.structed && driver == Driver.none){//以下启动模式根据自定义进行修改
             String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed.jar").getAbsolutePath();
             builder = new ProcessBuilder("java","-jar",jarPath, webID + "");
@@ -77,7 +77,7 @@ public class MonitorServlet extends HttpServlet {
 
         Process p = builder.start();
         try{
-            Thread.sleep(1000l);
+            Thread.sleep(5000l);
         }catch (InterruptedException e){
             //ignored
         }
