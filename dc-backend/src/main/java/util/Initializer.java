@@ -1,30 +1,50 @@
 package util;
 
+import enums.Driver;
+import enums.RunningMode;
+import enums.Usable;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public class ParamSetter {
-	private int threadNum = 20;
-	private int timeout = 10000;
-	private String charset = "gbk";
-	private static String workfile = "D:/crawler/";
+public class Initializer {
+
+	public static boolean initStructed(RunningMode runningMode, String taskName, String workPath, Driver driver){
+		boolean flag=false;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String[] param = {"webName","runningMode","workFile","driver","createtime","usable"};
+		String[] paramValue = {taskName, runningMode.name(), workPath, driver.getValue() + "", sdf.format(new Date()), Usable.none.getValue() + ""};
+
+		boolean websiteParam = DBUtil.insert("website", param, paramValue);
+		if(!websiteParam) return false;//if can't insert, return directly
+		String webId = DBUtil.getLastWebId()+"";
+
+		if(runningMode == RunningMode.unstructed){
+			flag = Initializer.initUnstructed(workPath, webId);
+		}
+		else if(runningMode == RunningMode.structed){
+			flag = Initializer.initStructed(workPath, webId);
+		}
+		return flag;
+	}
 	
 	//should be change!
-	public static boolean setInterface(String[] param,String[] paramValue ){
-		
-		boolean websiteParam = DBUtil.insert("website", param, paramValue);
-		if(!websiteParam)return false;//if can't insert, return directly
-		String webId = DBUtil.getLastWebId()+"";
-		String[] filePara = {"workFile"};
-		workfile = DBUtil.select("website", filePara, Integer.parseInt(webId))[0][0];
+	private static boolean initStructed(String workPath, String webId){
 
 		//initialByWebId(webId);//initiate database
-		createNewfile(workfile, webId);
-		return websiteParam;
+		createNewfile(workPath, webId);
+		return true;
 	}
 
-	public static void createNewfile(String workfile,String webId){
+	/**
+	 * for structed
+	 * @param workfile
+	 * @param webId
+	 */
+	private static void createNewfile(String workfile,String webId){
 
 		//create work dir
 		File workDir = new File(workfile);
@@ -121,35 +141,22 @@ public class ParamSetter {
 
 
 	/**
-	 * the initial options for a specified crawler, for example some insert options and makedir options
+	 * the initial options for a specified crawler, for example some makedir options
 	 * for unstructed crawler
 	 * notes: the current crawler implementation make sure that when initiating, only need to insert website table
-	 * @param param
-	 * @param paramValue
 	 * @return
 	 */
-	public static boolean setInterfaceUnstructed(String[] param, String[] paramValue) {
-
-		boolean websiteParam = DBUtil.insert("website", param, paramValue);
-		if(!websiteParam) return false;//if can't insert, return directly
-		String webId = DBUtil.getLastWebId() + "";
-		String[] filePara = {"workFile"};
-		workfile = DBUtil.select("website", filePara, Integer.parseInt(webId))[0][0];
+	private static boolean initUnstructed(String workPath, String webId) {
 
 		/**
 		 * note: here the only mkdirs need is to create the work directory
 		 */
 		//create work dir
-		File workDir = Paths.get(workfile, webId).toFile();
+		File workDir = Paths.get(workPath, webId).toFile();
 		if(!workDir.exists()){
 			workDir.mkdirs();
 		}
-		return websiteParam;
-	}
-	public static boolean createPattern(String webId,String patternName, String xpath,String indexPath){
-		String[] params = {"webId","patternName","xpath","indexPath"};
-		String[] params_value = {webId,patternName,xpath,indexPath};
-		return DBUtil.insert("pattern", params, params_value);
+		return true;
 	}
 
 }

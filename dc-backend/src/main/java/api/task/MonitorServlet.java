@@ -137,11 +137,19 @@ public class MonitorServlet extends HttpServlet {
         if(action.equals("status")){//monitor?action=status
             List content=new ArrayList();
             //只显示配置可用的爬虫状态
-            String[][] website = DBUtil.select("website",new String[]{"webId", "webName", "databaseSize", "runningMode", "driver"}, new String[]{"usable"}, new String[]{Usable.have.getValue() + ""});
+            String[][] website = DBUtil.select("website",new String[]{"webId", "webName", "runningMode", "driver"}, new String[]{"usable"}, new String[]{Usable.have.getValue() + ""});
             Map<String,Integer> idNameMap = new HashMap<>();
             for(int i = 0; i < website.length; i++){
                 idNameMap.put(website[i][0], i);
             }
+
+            String[] p = new String[]{"webId", "databaseSize"};
+            String[][] ans = DBUtil.select("extraConf", p);
+            Map<String, Long> sizeMap = new HashMap<>();
+            for (int i = 0; i < ans.length; i++) {
+                sizeMap.put(ans[i][0], Long.parseLong(ans[i][1]));
+            }
+
             String[][] current=DBUtil.select("current",new String[]{"webId","round","M1status","M2status","M3status","M4status","SampleData_sum", "run"});
             for(int i = 0; i < current.length; i++){
                 Map<String,String> unit = new HashMap<>();
@@ -149,12 +157,13 @@ public class MonitorServlet extends HttpServlet {
                 unit.put("taskName", website[idNameMap.get(current[i][0])][1]);
                 unit.put("round", current[i][1]);
                 unit.put("sampleDataSum", current[i][6]);
+
                 //如果databaseSize值为0，则爬取比例为未知状态
-                if(website[idNameMap.get(current[i][0])][2] == null || "0".equals(website[idNameMap.get(current[i][0])][2])){
+                if(sizeMap.get(current[i][0]) == null || sizeMap.get(current[i][0]) == 0){
                     unit.put("crawlRatio","未知");
                 }else {
                     float sampleNum = Float.parseFloat(current[i][6]);
-                    float dbNum = Float.parseFloat(website[idNameMap.get(current[i][0])][2]);
+                    float dbNum = sizeMap.get(current[i][0]);
                     unit.put("crawlRatio",sampleNum/dbNum*100+"%");
                 }
                 if("0".equals(current[i][7])) {
