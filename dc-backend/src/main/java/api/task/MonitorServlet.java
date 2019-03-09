@@ -164,7 +164,7 @@ public class MonitorServlet extends HttpServlet {
                 }else {
                     float sampleNum = Float.parseFloat(current[i][6]);
                     float dbNum = sizeMap.get(current[i][0]);
-                    unit.put("crawlRatio",sampleNum/dbNum*100+"%");
+                    unit.put("crawlRatio",sampleNum / dbNum * 100 + "%");
                 }
                 if("0".equals(current[i][7])) {
                     unit.put("status", "未启动");
