@@ -1,5 +1,6 @@
 package util;
 
+import enums.Base;
 import enums.Driver;
 import enums.RunningMode;
 import enums.Usable;
@@ -12,11 +13,11 @@ import java.util.Date;
 
 public class Initializer {
 
-	public static boolean initStructed(RunningMode runningMode, String taskName, String workPath, Driver driver){
+	public static boolean init(RunningMode runningMode, Driver driver, Base base, String taskName, String workPath, String siteURL){
 		boolean flag=false;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String[] param = {"webName","runningMode","workFile","driver","createtime","usable"};
-		String[] paramValue = {taskName, runningMode.name(), workPath, driver.getValue() + "", sdf.format(new Date()), Usable.none.getValue() + ""};
+		String[] param = {"webName", "runningMode", "workFile", "driver", "createtime", "usable", "base", "indexUrl"};
+		String[] paramValue = {taskName, runningMode.name(), workPath, driver.getValue() + "", sdf.format(new Date()), Usable.none.getValue() + "", base.getValue() + "", siteURL};
 
 		boolean websiteParam = DBUtil.insert("website", param, paramValue);
 		if(!websiteParam) return false;//if can't insert, return directly

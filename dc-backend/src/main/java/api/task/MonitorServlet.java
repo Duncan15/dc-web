@@ -1,9 +1,6 @@
 package api.task;
 
-import enums.Driver;
-import enums.MonitorOption;
-import enums.RunningMode;
-import enums.Usable;
+import enums.*;
 import format.RespWrapper;
 import services.ConfigService;
 import util.DBUtil;
@@ -130,14 +127,11 @@ public class MonitorServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Map<String,Object> data=new HashMap<>();
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json");
         String action=request.getParameter("action");
         if(action.equals("status")){//monitor?action=status
             List content=new ArrayList();
             //只显示配置可用的爬虫状态
-            String[][] website = DBUtil.select("website",new String[]{"webId", "webName", "runningMode", "driver"}, new String[]{"usable"}, new String[]{Usable.have.getValue() + ""});
+            String[][] website = DBUtil.select("website",new String[]{"webId", "webName", "runningMode", "driver", "base"}, new String[]{"usable"}, new String[]{Usable.have.getValue() + ""});
             Map<String,Integer> idNameMap = new HashMap<>();
             for(int i = 0; i < website.length; i++){
                 idNameMap.put(website[i][0], i);
@@ -159,22 +153,23 @@ public class MonitorServlet extends HttpServlet {
                 unit.put("sampleDataSum", current[i][6]);
 
                 //如果databaseSize值为0，则爬取比例为未知状态
-                if(sizeMap.get(current[i][0]) == null || sizeMap.get(current[i][0]) == 0){
-                    unit.put("crawlRatio","未知");
-                }else {
+                if (sizeMap.get(current[i][0]) == null || sizeMap.get(current[i][0]) == 0){
+                    unit.put("crawlRatio", "未知");
+                } else {
                     float sampleNum = Float.parseFloat(current[i][6]);
                     float dbNum = sizeMap.get(current[i][0]);
-                    unit.put("crawlRatio",sampleNum / dbNum * 100 + "%");
+                    unit.put("crawlRatio", sampleNum / dbNum * 100 + "%");
                 }
-                if("0".equals(current[i][7])) {
+                if ("0".equals(current[i][7])) {
                     unit.put("status", "未启动");
                 } else {
                     Properties properties = ConfigService.getBackMap();
                     String[] websiteRow = website[idNameMap.get(current[i][0])];
-                    RunningMode runningMode = RunningMode.ValueOf(websiteRow[3]);
-                    Driver driver = Driver.valueOf(Integer.parseInt(websiteRow[4]));
+                    RunningMode runningMode = RunningMode.ValueOf(websiteRow[2]);
+                    Driver driver = Driver.valueOf(Integer.parseInt(websiteRow[3]));
+                    Base base = Base.valueOf(Integer.parseInt(websiteRow[4]));
                     String status = "未知";
-                    if(runningMode == RunningMode.unstructed && driver == Driver.none) {
+                    if(runningMode == RunningMode.unstructed && base == Base.urlBased) {
                         for (int j = 2; j < 6; j++) {
                             if(current[i][j].equals("active")) {
                                 status = properties.getProperty(runningMode.name() + "." +driver.name() + "." +"status" + (j - 1));

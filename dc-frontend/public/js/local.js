@@ -274,27 +274,35 @@ $(function(){
     $newTaskBtn.on('click',function(){
       $("input[name='running-mode'][value='unstructed']").on("click",function(){
         $("#driver-select-group").hide("slow");
+        $("#base-select-group").show('slow');
       });
       $("input[name='running-mode'][value='structed']").on("click",function(){
         $("#driver-select-group").show("slow");
+        $("#base-select-group").hide('slow');
       })
       $("input[name='running-mode'][value='unstructed']").click();
       var $taskName=$("#task-name");
       var $workPath=$("#work-path");
+      var $siteLink = $("site-link");
       $taskName.val("");
       $workPath.val("");
+      $siteLink.val("");
       var validator=$("#task-form").validate({
         submitHandler:function(){
           var taskName=$taskName.val();
           var workPath=$workPath.val();
           var runningMode=$("input[name='running-mode']:checked").val();
           var driver=$("input[name='driver-select']:checked").val();
-          if(taskName==""||workPath==""){
+          var base=$("input[name='base-select']:checked").val();
+          var siteURL = $siteLink.val();
+          if(taskName==""||workPath==""||siteURL==""){
             alert("输入不能为空");
             return;
           }
           if(runningMode=='unstructed'){
             driver='none';
+          } else if (runningMode == 'structed') {
+            base="apiBased";
           }
           $.ajax({
             url: baseURL+'/api/datacrawling/task/new',
@@ -304,7 +312,9 @@ $(function(){
               taskName: taskName,
               workPath: workPath,
               runningMode:runningMode,
-              driver:driver
+              driver:driver,
+              base:base,
+              siteURL:siteURL,
             }
           })
           .done(function(data) {
@@ -348,103 +358,117 @@ $(function(){
             var $tr=$(this).parents("tr");
             var runningMode=$tr.find("th[name='running-mode']").text().trim();
             var driver=$tr.find("th[name='driver']").text().trim();
-            var $unstructedUndriver=$("#unstructed-undriver");
+            var base = $tr.find("th[name='base']").text().trim();
+            var $unstructedUrlbased=$("#unstructed-urlbased");
+            var $unstructedApibased=$("#unstructed-apibased");
             var $structedUndriver=$("#structed-undriver");
             var $structedDriver=$("#structed-driver");
             if(runningMode=="文本型"){
-              $unstructedUndriver.show();
+              if (base == "基于页面刷新") {
+                $unstructedUrlbased.show();
+                $unstructedApibased.hide();
+              } else {
+                $unstructedUrlbased.hide();
+                $unstructedApibased.show();
+              } 
               $structedDriver.hide();
               $structedUndriver.hide();
-            }else{
-              if(driver=="是"){
-                $unstructedUndriver.hide();
+            }else if (runningMode == "结构型") {
+              if (driver=="是") {
                 $structedDriver.show();
                 $structedUndriver.hide();
               }else{
-                $unstructedUndriver.hide();
                 $structedDriver.hide();
                 $structedUndriver.show();
               }
+              $unstructedApibased.hide();
+              $unstructedUrlbased.hide();
+
             }
-            var taskID=$tr.find("th.rule-id").text();
+            var taskID = $tr.find("th.rule-id").text();
             $(".rule-config-form .rule-id").val(taskID);
+
             var $urlParamConfigBtn=$("#url-param-config-btn");
             var $loginParamConfigBtn=$("#login-param-config-btn");
             var $downloadParamConfigBtn=$("#download-param-config-btn");
             $urlParamConfigBtn.off('click');
-            $urlParamConfigBtn.on('click',{taskID:taskID,runningMode:runningMode,driver:driver},function(event){
+            $urlParamConfigBtn.on('click',{taskID : taskID, runningMode : runningMode, driver : driver, base: base},function(event){
               var taskID=event.data.taskID;
               var form=null;
-              if(runningMode=='文本型'){
-                form=$("#unstructed-undriver");
-                $.ajax({
-                  url: baseURL+'/api/datacrawling/task/'+taskID,
-                  type: 'GET',
-                  dataType: 'json'
-                })
-                .done(function(data) {
-                  console.log("success");
-                  if(data['errno']!=0){
-                    alert("服务器错误");
-                  }else{
-                    form.find("input[name='site-link']").val(data['data']['siteURL']);
-                    form.find("input[name='search-link']").val(data['data']['searchURL']);
-                    form.find("input[name='keyword-name']").val(data['data']['keywordName']);
-                    form.find("input[name='page-name']").val(data['data']['pageParamName']);
-                    form.find("input[name='page-value']").val(data['data']['pageParamValue']);
-                    form.find("input[name='other-param-name']").val(data['data']['otherParamName']);
-                    form.find("input[name='other-param-value']").val(data['data']['otherParamValue']);
-                  }
-                })
-                .fail(function() {
-                  console.log("error");
-                })
-                .always(function() {
-                  console.log("complete");
-                });
-                var validator=$("#unstructed-undriver").validate({
-                  submitHandler:function(){
-                    var id=form.find("input.rule-id").val();
-                    var pageParamValue = form.find("input[name='page-value']").val().trim();
-                    if(pageParamValue.split(",").length != 2) {
-                      alert("开始页面号输入错误");
-                      return;
+              if (runningMode == '文本型') {
+                if (base == "基于页面刷新") {
+                  form=$("#unstructed-urlbased");
+                  $.ajax({
+                    url: baseURL+'/api/datacrawling/task/'+taskID,
+                    type: 'GET',
+                    dataType: 'json'
+                  })
+                  .done(function(data) {
+                    console.log("success");
+                    if(data['errno']!=0){
+                      alert("服务器错误");
+                    }else{
+                      form.find("p[name='site-link']").text(data['data']['siteURL']);
+                      form.find("input[name='search-link']").val(data['data']['searchURL']);
+                      form.find("input[name='keyword-name']").val(data['data']['keywordName']);
+                      form.find("input[name='page-name']").val(data['data']['pageParamName']);
+                      form.find("input[name='page-value']").val(data['data']['pageParamValue']);
+                      form.find("input[name='other-param-name']").val(data['data']['otherParamName']);
+                      form.find("input[name='other-param-value']").val(data['data']['otherParamValue']);
                     }
-                    $.ajax({
-                      url: baseURL+'/api/datacrawling/task/urlparam/'+id,
-                      type: 'POST',
-                      dataType: 'json',
-                      data: {
-                        siteURL:form.find("input[name='site-link']").val().trim(),
-                        searchURL:form.find("input[name='search-link']").val().trim(),
-                        keywordName:form.find("input[name='keyword-name']").val().trim(),
-                        pageParamName:form.find("input[name='page-name']").val().trim(),
-                        pageParamValue:form.find("input[name='page-value']").val().trim(),
-                        otherParamName:form.find("input[name='other-param-name']").val().trim(),
-                        otherParamValue:form.find("input[name='other-param-value']").val().trim()
+                  })
+                  .fail(function() {
+                    console.log("error");
+                  })
+                  .always(function() {
+                    console.log("complete");
+                  });
+                  var validator=form.validate({
+                    submitHandler:function(){
+                      var id=form.find("input.rule-id").val();
+                      var pageParamValue = form.find("input[name='page-value']").val().trim();
+                      if(pageParamValue.split(",").length != 2) {
+                        alert("开始页面号输入错误");
+                        return;
                       }
-                    })
-                    .done(function(data) {
-                      console.log("success");
-                      if(data['errno']!=0){
-                        alert(data['data']['msg']);
-                      }else{
-                        alert('修改成功');
-                        form.find("button[type='submit']").blur();
-                        $urlParamConfigBtn.click();
-                      }
-                    })
-                    .fail(function() {
-                      console.log("error");
-                    })
-                    .always(function() {
-                      console.log("complete");
-                    });
-                  }
-                });
-                validator.resetForm();
-              }else if(driver=='是'){
-                form=$("#structed-driver");
+                      $.ajax({
+                        url: baseURL+'/api/datacrawling/task/urlparam/'+id,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                          searchURL:form.find("input[name='search-link']").val().trim(),
+                          keywordName:form.find("input[name='keyword-name']").val().trim(),
+                          pageParamName:form.find("input[name='page-name']").val().trim(),
+                          pageParamValue:form.find("input[name='page-value']").val().trim(),
+                          otherParamName:form.find("input[name='other-param-name']").val().trim(),
+                          otherParamValue:form.find("input[name='other-param-value']").val().trim()
+                        }
+                      })
+                      .done(function(data) {
+                        console.log("success");
+                        if(data['errno']!=0){
+                          alert(data['data']['msg']);
+                        }else{
+                          alert('修改成功');
+                          form.find("button[type='submit']").blur();
+                          $urlParamConfigBtn.click();
+                        }
+                      })
+                      .fail(function() {
+                        console.log("error");
+                      })
+                      .always(function() {
+                        console.log("complete");
+                      });
+                    }
+                  });
+                  validator.resetForm();
+                } else {
+                  form = $("#unstructed-apibased");
+                }
+              }else {
+                if(driver=='是'){
+                  form=$("#structed-driver");
                 $.ajax({
                   url: baseURL+'/api/datacrawling/task/'+taskID,
                   type: 'GET',
@@ -455,7 +479,7 @@ $(function(){
                   if(data['errno']!=0){
                     alert("服务器错误");
                   }else{
-                    form.find("input[name='site-link']").val(data['data']['siteURL']);
+                    form.find("p[name='site-link']").text(data['data']['siteURL']);
                     form.find("input[name='nav-frame']").val(data['data']['iframeNav']);
                     form.find("input[name='nav-value']").val(data['data']['navValue']);
                     form.find("input[name='search-iframe']").val(data['data']['iframeCon']);
@@ -476,7 +500,7 @@ $(function(){
                 .always(function() {
                   console.log("complete");
                 });
-                var validator=$("#structed-driver").validate({
+                var validator=form.validate({
                   submitHandler:function(){
                     var id=form.find("input.rule-id").val();
                     $.ajax({
@@ -484,7 +508,6 @@ $(function(){
                       type: 'POST',
                       dataType: 'json',
                       data: {
-                        siteURL:form.find("input[name='site-link']").val().trim(),
                         iframeNav:form.find("input[name='nav-frame']").val().trim(),
                         navValue:form.find("input[name='nav-value']").val().trim(),
                         iframeCon:form.find("input[name='search-iframe']").val().trim(),
@@ -494,7 +517,7 @@ $(function(){
                         pageNumXPath:form.find("input[name='cur-pg-xpath']").val().trim(),
                         iframeSubParam:form.find("input[name='sub-pg-iframe']").val().trim(),
                         arrow:form.find("input[name='dropdown-list-class-name']").val().trim(),
-                          loginButton:form.find("input[name='login-button']").val().trim(),
+                        loginButton:form.find("input[name='login-button']").val().trim(),
                         otherParamName:form.find("input[name='other-param-name']").val().trim(),
                         otherParamValue:form.find("input[name='other-param-value']").val().trim()
                       }
@@ -518,7 +541,7 @@ $(function(){
                   }
                 });
                 validator.resetForm();
-              }else{
+                } else {
                 form=$("#structed-undriver");
                 $.ajax({
                   url: baseURL+'/api/datacrawling/task/'+taskID,
@@ -530,7 +553,7 @@ $(function(){
                   if(data['errno']!=0){
                     alert("服务器错误");
                   }else{
-                    form.find("input[name='site-link']").val(data['data']['siteURL']);
+                    form.find("p[name='site-link']").text(data['data']['siteURL']);
                     form.find("input[name='search-link']").val(data['data']['searchURL']);
                     form.find("input[name='keyword-name']").val(data['data']['keywordName']);
                     form.find("input[name='page-name']").val(data['data']['pageParamName']);
@@ -546,7 +569,7 @@ $(function(){
                 .always(function() {
                   console.log("complete");
                 });
-                var validator=$("#structed-undriver").validate({
+                var validator=form.validate({
                   submitHandler:function(){
                     var id=form.find("input.rule-id").val();
                     $.ajax({
@@ -554,7 +577,6 @@ $(function(){
                       type: 'POST',
                       dataType: 'json',
                       data: {
-                        siteURL:form.find("input[name='site-link']").val().trim(),
                         searchURL:form.find("input[name='search-link']").val().trim(),
                         keywordName:form.find("input[name='keyword-name']").val().trim(),
                         pageParamName:form.find("input[name='page-name']").val().trim(),
@@ -583,6 +605,7 @@ $(function(){
                   }
                 });
                 validator.resetForm();
+                }
               }
             });
             $loginParamConfigBtn.off('click');
