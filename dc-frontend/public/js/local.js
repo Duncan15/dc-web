@@ -283,7 +283,7 @@ $(function(){
       $("input[name='running-mode'][value='unstructed']").click();
       var $taskName=$("#task-name");
       var $workPath=$("#work-path");
-      var $siteLink = $("site-link");
+      var $siteLink = $("#site-link");
       $taskName.val("");
       $workPath.val("");
       $siteLink.val("");
