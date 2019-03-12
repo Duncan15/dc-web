@@ -27,6 +27,8 @@ public class Initializer {
 			flag = Initializer.initUnstructed(workPath, webId);
 		}
 		else if(runningMode == RunningMode.structed){
+			DBUtil.insert("structedParam", new String[]{"webId"}, new String[]{"" + webId});
+
 			flag = Initializer.initStructed(workPath, webId);
 		}
 		return flag;

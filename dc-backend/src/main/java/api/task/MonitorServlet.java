@@ -51,10 +51,10 @@ public class MonitorServlet extends HttpServlet {
             builder.directory(new File(getServletContext().getRealPath("/"), "WEB-INF"));
         } else if(runningMode == RunningMode.structed && driver == Driver.none){//以下启动模式根据自定义进行修改
             String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed.jar").getAbsolutePath();
-            builder = new ProcessBuilder("java","-jar",jarPath, webID + "");
+            builder = new ProcessBuilder("java","-Xmx20G","-Xms20G","-jar",jarPath, "--web-id=" + webID, "--jdbc-url=" + mysqlURL, "--username=" + mysqlUserName, "--password=" + msyqlPassword);
         } else if(runningMode == RunningMode.structed && driver == Driver.have){
             String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed_js.jar").getAbsolutePath();
-            builder = new ProcessBuilder("java","-jar", jarPath, webID + "");
+            builder = new ProcessBuilder("java","-Xmx20G","-Xms20G","-jar", jarPath, "--web-id=" + webID, "--jdbc-url=" + mysqlURL, "--username=" + mysqlUserName, "--password=" + msyqlPassword);
         }
 
 
@@ -177,7 +177,12 @@ public class MonitorServlet extends HttpServlet {
                             }
                         }
                     } else {//structed模式下根据具体定制自定义
-
+                        for (int j = 2; j < 6; j++) {
+                            if(current[i][j].equals("active")) {
+                                status = properties.getProperty(runningMode.name() + "." +driver.name() + "." +"status" + (j - 1));
+                                break;
+                            }
+                        }
                     }
                     unit.put("status", status);
                 }

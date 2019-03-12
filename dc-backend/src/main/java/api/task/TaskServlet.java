@@ -39,7 +39,8 @@ public class TaskServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String[] pathParam = RequestParser.parsePath(request.getRequestURI(), 2);
         Map<String,Object> data = new HashMap<>();
-
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
         if("task".equals(pathParam[0]) && "new".equals(pathParam[1])){//for task/new
             String taskName = request.getParameter("taskName");
             String runningMode = request.getParameter("runningMode");
@@ -155,13 +156,13 @@ public class TaskServlet extends HttpServlet {
                         String paramList = request.getParameter("otherParamName").trim();
                         String paramValueList = request.getParameter("otherParamValue").trim();
 
-                        String[] param = {"paramList", "paramValueList", "usable"};
-                        String[] paramValue = {paramList, paramValueList, usable.getValue() + ""};
+                        String[] param = { "usable"};
+                        String[] paramValue = { usable.getValue() + ""};
 
                         String[] params = {"webId","iframeNav","navValue","iframeCon","searchButton","resultRow","nextPageXPath"
-                                ,"pageNumXPath","iframeSubParam","arrow"};
+                                ,"pageNumXPath","iframeSubParam","arrow","paramList", "paramValueList"};
                         String[] paramsValue = {webId+"",iframeNav,navValue,iframeCon,searchButton,resultRow,
-                                nextPageXPath,pageNumXPath,iframeSubParam,arrow};
+                                nextPageXPath,pageNumXPath,iframeSubParam,arrow,paramList,paramValueList};
 
                         if(DBUtil.update("website", param, paramValue, webId) && DBUtil.update("structedParam", params, paramsValue,webId)){
                             data.put("iframeNav",iframeNav);
@@ -182,9 +183,6 @@ public class TaskServlet extends HttpServlet {
                         }
                     } else if (Driver.none == driver) {
                         //TODO
-
-
-
                         String paramQueryValueList = request.getParameter("paramQueryValueList");
                         String[] params = {"dataParamList"};
                         String[] paramsValue = {paramQueryValueList};
@@ -194,7 +192,6 @@ public class TaskServlet extends HttpServlet {
                 }
 
             } else if("loginparam".equals(pathParam[0])) {//for task/loginparam/:id
-
                 String loginURL = request.getParameter("loginURL");
                 String userNameXpath = request.getParameter("userNameID");
                 String passwordXpath = request.getParameter("passwordID");
@@ -350,10 +347,12 @@ public class TaskServlet extends HttpServlet {
              } else if (RunningMode.structed == r) {
                  if (Driver.have == v) {
                      String[] params = {"iframeNav","navValue","iframeCon","searchButton","resultRow","nextPageXPath"
-                             ,"pageNumXPath","iframeSubParam","arrow","loginButton"};
+                             ,"pageNumXPath","iframeSubParam","arrow","paramList","paramValueList"};
                      String[] structedData = DBUtil.select("structedParam",params,webId)[0];
                      for(int i=0;i<params.length;i++)
                          data.put(params[i], structedData[i]);
+                     data.put("otherParamName",structedData[9]);
+                     data.put("otherParamValue",structedData[10]);
                  } else if (Driver.none == v) {
                      String[] params = {"dataParamList"};
                      data.put("paramQueryValueList", DBUtil.select("queryparam", params, webId)[0][0]);
