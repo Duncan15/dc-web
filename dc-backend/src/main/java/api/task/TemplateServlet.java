@@ -48,15 +48,17 @@ public class TemplateServlet extends HttpServlet {
 							content.put("templateName",template[j][1]);
 							dataList.add(content);
 						}
-						String[][] template_structed=util.DBUtil.select("pattern_structed", templateParams, Integer.parseInt(res[i][0]));
-						for(int j=0;j<template_structed.length;j++){
-							Map<String,Object> content=new HashMap<>();
-							content.put("taskID", res[i][0]);
-							content.put("taskName", res[i][1]);
-							content.put("templateID",template_structed[j][0]);
-							content.put("templateName",template_structed[j][1]);
-							dataList.add(content);
-						}
+
+					}
+
+					String[][] template_structed=util.DBUtil.select("pattern_structed", templateParams, Integer.parseInt(res[i][0]));
+					for(int j=0;j<template_structed.length;j++){
+						Map<String,Object> content=new HashMap<>();
+						content.put("taskID", res[i][0]);
+						content.put("taskName", res[i][1]);
+						content.put("templateID",template_structed[j][0]);
+						content.put("templateName",template_structed[j][1]);
+						dataList.add(content);
 					}
 				}
 				response.getWriter().println(RespWrapper.build(dataList,dataList.size()));
@@ -69,7 +71,7 @@ public class TemplateServlet extends HttpServlet {
 			int webId = 0;
 			try{
 				templateID=Integer.parseInt(pathParam[1]);
-				webId=Integer.parseInt( RequestParser.parsePath(request.getRequestURI(),3)[2]);
+				webId = Integer.parseInt(request.getParameter("taskID"));
 			}catch (NumberFormatException e){
 				data.put("msg", "id参数解析错误");
 				response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, data));
@@ -184,20 +186,15 @@ public class TemplateServlet extends HttpServlet {
 					 }
 				}
 			} else if(!"new".equals(pathParam[1])) {//for task/template/:id
-				if(DBUtil.select("pattern", par,p, pv).length > 1||DBUtil.select("pattern_structed", par,p, pv).length >1) {
-					data.put("msg", "该模板名称已使用，请重新输入");
-					response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
+				if (r == RunningMode.unstructed) {
+					DBUtil.update("pattern", params, paramsValue, par, parValue);
+					response.getWriter().println(RespWrapper.build(data));
 				} else {
-					if (r == RunningMode.unstructed) {
-						DBUtil.update("pattern", params, paramsValue, par, parValue);
-						response.getWriter().println(RespWrapper.build(data));
-					} else {
-						data.put("templateFormula", templateFormula);
-						data.put("templateType", templateType);
-						data.put("templateHeaderXPath", templateHeaderXPath);
-						DBUtil.update("pattern_structed", params_struct, paramsValue_struct, par, parValue);
-						response.getWriter().println(RespWrapper.build(data));
-					}
+					data.put("templateFormula", templateFormula);
+					data.put("templateType", templateType);
+					data.put("templateHeaderXPath", templateHeaderXPath);
+					DBUtil.update("pattern_structed", params_struct, paramsValue_struct, par, parValue);
+					response.getWriter().println(RespWrapper.build(data));
 				}
 			} else {
 				data.clear();
