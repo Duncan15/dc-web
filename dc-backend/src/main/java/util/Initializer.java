@@ -17,7 +17,7 @@ public class Initializer {
 		boolean flag=false;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String[] param = {"webName", "runningMode", "workFile", "driver", "createtime", "usable", "base", "indexUrl"};
-		String[] paramValue = {taskName, runningMode.name(), workPath, driver.getValue() + "", sdf.format(new Date()), Usable.none.getValue() + "", base.getValue() + "", siteURL};
+		String[] paramValue = {taskName, runningMode.name(), workPath.replace("\\","\\\\"), driver.getValue() + "", sdf.format(new Date()), Usable.none.getValue() + "", base.getValue() + "", siteURL};
 
 		boolean websiteParam = DBUtil.insert("website", param, paramValue);
 		if(!websiteParam) return false;//if can't insert, return directly
@@ -52,91 +52,7 @@ public class Initializer {
 		if(!workDir.exists()){
 			workDir.mkdirs();
 		}
-		//subpage dir
-		File subpage = new File(workfile+webId+"/subpage");
-		//if(!subpage.exists())	
-			subpage.mkdirs();
-		File subpageMD5 = new File(workfile+webId+"/subpage/subpageMD5.txt");
-		//if(!subpageMD5.exists())
-		//{
-			try {
-				subpageMD5.createNewFile();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		//}
-		
-		//html dir
-		File f = new File(workfile+webId+"/html");
-		//if(!f.exists())
-			f.mkdirs();
-		//query dir
-		f = new File(workfile+webId+"/query");
-		//if(!f.exists())
-			f.mkdir();
-		File queries = new File(workfile+webId+"/query/queries.txt");
-		
-			try {
-				queries.createNewFile();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		
-		File unqueries = new File(workfile+webId+"/query/unusedQueries.txt");
-		
-			try {
-				unqueries.createNewFile();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		
-		File usedQueries = new File(workfile+webId+"/query/usedQueries.txt");
-		
-			try {
-				usedQueries.createNewFile();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		
-		File logging = new File(workfile+webId+"/logging.txt");
-		
-			try {
-				logging.createNewFile();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		
-		f = new File(workfile+webId+"/failedQueryLinks.txt");
-		
-			try {
-				f.createNewFile();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		
-		f = new File(workfile+webId+"/ParamValuelist.txt");
-		
-			try {
-				f.createNewFile();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		
-		f = new File(workfile+webId+"/dataMD5.txt");
-		
-			try {
-				f.createNewFile();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
 		
 	}
 
