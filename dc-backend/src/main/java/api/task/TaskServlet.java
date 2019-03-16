@@ -377,22 +377,34 @@ public class TaskServlet extends HttpServlet {
                      //TODO:
                  }
              } else if (RunningMode.structed == r) {
-                 if (Driver.have == v) {
-                     String[] structedDataparams = {"iframeNav","navValue","iframeCon","searchButton","resultRow","nextPageXPath"
-                             ,"pageNumXPath","iframeSubParam","arrow","paramList","paramValueList"};
-                     String[] structedData = DBUtil.select("structedparam",structedDataparams,webId)[0];
-                     for(int i=0;i<structedDataparams.length;i++)
-                         data.put(structedDataparams[i], structedData[i]);
-                     data.put("otherParamName",structedData[9]);
-                     data.put("otherParamValue",structedData[10]);
-                 } else if (Driver.none == v) {
-                     for (int i = 0; i < params.length; i++) {
-                         data.put(ansKeys[i], urlBasedData[i]);
-                     }
-                     String[] param = {"dataParamList"};
-                     data.put("paramQueryValueList", DBUtil.select("queryparam", param, webId)[0][0]);
-                 }
-             }
+				 if (Driver.have == v) {
+					 if (Verifier.verifyExist(webId, "structedparam")) {
+						 String[] structedDataparams = {"iframeNav","navValue","iframeCon","searchButton","resultRow","nextPageXPath"
+								 ,"pageNumXPath","iframeSubParam","arrow","paramList","paramValueList"};
+						 String[] structedData = DBUtil.select("structedparam",structedDataparams,webId)[0];
+						 for(int i=0;i<structedDataparams.length;i++)
+							 data.put(structedDataparams[i], structedData[i]);
+						 data.put("otherParamName",structedData[9]);
+						 data.put("otherParamValue",structedData[10]);
+					 }else{
+						 for(int i=0;i<structedDataparams.length;i++)
+							 data.put(structedDataparams[i], "");
+						 data.put("otherParamName","");
+						 data.put("otherParamValue","");
+					 }
+				 } else if (Driver.none == v) {
+					  if (Verifier.verifyExist(webId, "structedparam")) {
+						 for (int i = 0; i < params.length; i++) {
+							 data.put(ansKeys[i], urlBasedData[i]);
+						 }
+						 String[] param = {"dataParamList"};
+						 data.put("paramQueryValueList", DBUtil.select("queryparam", param, webId)[0][0]);
+					  }else{
+						 for (int i = 0; i < params.length; i++) 
+							 data.put(ansKeys[i],"");
+							data.put("paramQueryValueList","");						 
+					  }
+				 }             
              response.getWriter().println(RespWrapper.build(data));
          }else {
              response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,null));
