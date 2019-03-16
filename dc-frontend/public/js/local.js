@@ -465,6 +465,69 @@ $(function(){
                   validator.resetForm();
                 } else {
                   form = $("#unstructed-apibased");
+                  $.ajax({
+                    url: baseURL+'/api/datacrawling/task/'+taskID,
+                    type: 'GET',
+                    dataType: 'json'
+                  })
+                  .done(function(data) {
+                    console.log("success");
+                    if(data['errno']!=0){
+                      alert("服务器错误");
+                    }else{
+                      form.find("p[name='site-link']").text(data['data']['siteURL']);
+                      form.find("input[name='search-link']").val(data['data']['searchURL']);
+                      form.find("input[name='inputXpath']").val(data['data']['inputXpath']);
+                      form.find("input[name='submitXpath']").val(data['data']['inputSubmitXpath']);
+                      form.find("input[name='infoLinkXpath']").val(data['data']['infoLinkXpath']);
+                      form.find("input[name='payloadXpath']").val(data['data']['payloadXpath']);
+                    }
+                  })
+                  .fail(function() {
+                    console.log("error");
+                  })
+                  .always(function() {
+                    console.log("complete");
+                  });
+                  var validator=form.validate({
+                    submitHandler:function(){
+                      var id=form.find("input.rule-id").val();
+                      var payloadXpath = form.find("input[name='payloadXpath']").val().trim();
+                      if (payloadXpath.split(",").length != 2) {
+                        alert("数据Xpath输入格式错误");
+                        return;
+                      }
+                      $.ajax({
+                        url: baseURL+'/api/datacrawling/task/urlparam/'+id,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                          searchURL:form.find("input[name='search-link']").val().trim(),
+                          inputXpath:form.find("input[name='inputXpath']").val().trim(),
+                          inputSubmitXpath:form.find("input[name='submitXpath']").val().trim(),
+                          infoLinkXpath:form.find("input[name='infoLinkXpath']").val().trim(),
+                          payloadXpath: payloadXpath,
+                        }
+                      })
+                      .done(function(data) {
+                        console.log("success");
+                        if(data['errno']!=0){
+                          alert(data['data']['msg']);
+                        }else{
+                          alert('修改成功');
+                          form.find("button[type='submit']").blur();
+                          $urlParamConfigBtn.click();
+                        }
+                      })
+                      .fail(function() {
+                        console.log("error");
+                      })
+                      .always(function() {
+                        console.log("complete");
+                      });
+                    }
+                  });
+                  validator.resetForm();
                 }
               }else {
                 if(driver=='是'){
@@ -489,7 +552,6 @@ $(function(){
                     form.find("input[name='cur-pg-xpath']").val(data['data']['pageNumXPath']);
                     form.find("input[name='sub-pg-iframe']").val(data['data']['iframeSubParam']);
                     form.find("input[name='dropdown-list-class-name']").val(data['data']['arrow']);
-                    form.find("input[name='login-button']").val(data['data']['loginButton']);
                     form.find("input[name='other-param-name']").val(data['data']['otherParamName']);
                     form.find("input[name='other-param-value']").val(data['data']['otherParamValue']);
                   }
@@ -517,7 +579,6 @@ $(function(){
                         pageNumXPath:form.find("input[name='cur-pg-xpath']").val().trim(),
                         iframeSubParam:form.find("input[name='sub-pg-iframe']").val().trim(),
                         arrow:form.find("input[name='dropdown-list-class-name']").val().trim(),
-                        loginButton:form.find("input[name='login-button']").val().trim(),
                         otherParamName:form.find("input[name='other-param-name']").val().trim(),
                         otherParamValue:form.find("input[name='other-param-value']").val().trim()
                       }
@@ -786,10 +847,11 @@ $(function(){
               });
               var $tr=$(this).parents("tr");
               var templateID=$tr.find("th[name='template-id']").text().trim();
+              var taskID = $tr.find("th[name='rule-id']").text().trim();
               var form=$("#change-template-form");
               form.find("input[name='template-id']").val(templateID);
               $.ajax({
-                url: baseURL+'/api/datacrawling/task/template/'+templateID,
+                url: baseURL+'/api/datacrawling/task/template/'+templateID + '?taskID=' + taskID,
                 type: 'GET',
                 dataType: 'json'
               })
@@ -801,6 +863,22 @@ $(function(){
                   form.find("input[name='task-id']").val(data['data']['taskID']);
                   form.find("p[name='pattern-name']").text(data['data']['templateName']);
                   form.find("input[name='pattern-xpath']").val(data['data']['templateXpath']);
+                  if (data['data']['runningMode']=='structed') {
+                    form.find("input[name='pattern-type']").show();
+                    form.find("input[name='pattern-formula']").show();
+                    form.find("input[name='pattern-header-xpath']").show();
+                    form.find("input[name='pattern-type']").val(data['data']['templateType']);
+                    form.find("input[name='pattern-formula']").val(data['data']['templateFormula']);
+                    form.find("input[name='pattern-header-xpath']").val(data['data']['templateHeaderXpath']);
+                  } else {
+                    form.find("input[name='pattern-type']").val("");
+                    form.find("input[name='pattern-formula']").val("");
+                    form.find("input[name='pattern-header-xpath']").val("");
+                    form.find("input[name='pattern-type']").hide();
+                    form.find("input[name='pattern-formula']").hide();
+                    form.find("input[name='pattern-header-xpath']").hide();
+                
+                  }
                 }
               })
               .fail(function() {
@@ -820,7 +898,10 @@ $(function(){
                     data: {
                       taskID:form.find("input[name='task-id']").val().trim(),
                       templateName:form.find("p[name='pattern-name']").text().trim(),
-                      templateXpath:form.find("input[name='pattern-xpath']").val().trim()
+                      templateXpath:form.find("input[name='pattern-xpath']").val().trim(),
+                      templateType:form.find("input[name='pattern-type']").val().trim(),
+                      templateFormula:form.find("input[name='pattern-formula']").val().trim(),
+                      templateHeaderXpath:form.find("input[name='pattern-header-xpath']").val().trim(),
                     }
                   })
                   .done(function(data) {
@@ -856,28 +937,80 @@ $(function(){
       });
       $newTemplateBtn.off('click');
       $newTemplateBtn.on('click',function(){
-        var tmpl=$.templates("#task-id-list");
-        $.ajax({
+        $("input[name='pattern-mode'][value='unstructed']").off();
+        $("input[name='pattern-mode'][value='unstructed']").on('click', function() {
+          var form = $("#new-template-form");
+          var tmpl=$.templates("#task-id-list");
+          $.ajax({
           url: baseURL+'/api/datacrawling/task/all',
           type: 'GET',
           dataType: 'json',
-        })
-        .done(function(data) {
+          })
+          .done(function(data) {
           console.log("success");
           if(data['errno']!=0){
             alert("服务器错误");
           }else{
-            var content=data['data'];
-            var html=tmpl.render(content);
+            var content=data['data']['content'];
+            var newContent = [];
+            for (item in content) {
+              if (content[item]['runningMode']=='unstructed') {
+                newContent.push(content[item]);
+              }
+            }
+            var html=tmpl.render(newContent);
             $("#task-id-list-content").html(html);
           }
-        })
-        .fail(function() {
+          })
+          .fail(function() {
           console.log("error");
-        })
-        .always(function() {
+          })
+          .always(function() {
           console.log("complete");
+          });
+
+          form.find("input[name='pattern-type']").hide();
+          form.find("input[name='pattern-formula']").hide();
+          form.find("input[name='pattern-header-xpath']").hide();
         });
+        $("input[name='pattern-mode'][value='structed']").off();
+        $("input[name='pattern-mode'][value='structed']").on('click', function() {
+          var tmpl=$.templates("#task-id-list");
+          $.ajax({
+            url: baseURL+'/api/datacrawling/task/all',
+            type: 'GET',
+            dataType: 'json',
+          })
+          .done(function(data) {
+            console.log("success");
+            if(data['errno']!=0){
+              alert("服务器错误");
+            }else{
+              var content=data['data']['content'];
+              var newContent = [];
+              for (item in content) {
+                if (content[item]['runningMode'] == 'structed') {
+                  newContent.push(content[item]);
+                }
+              }
+
+              var html=tmpl.render(newContent);
+              $("#task-id-list-content").html(html);
+            }
+          })
+          .fail(function() {
+            console.log("error");
+          })
+          .always(function() {
+            console.log("complete");
+          });
+
+
+          form.find("input[name='pattern-type']").show();
+          form.find("input[name='pattern-formula']").show();
+          form.find("input[name='pattern-header-xpath']").show();
+        });
+        $("input[name='pattern-mode'][value='unstructed']").click();
         var form=$("#new-template-form");
         form.find("input[name='pattern-name']").val("");
         form.find("input[name='pattern-xpath']").val("");
@@ -890,7 +1023,10 @@ $(function(){
               data:{
                 taskID:form.find("select[name='task-id']").val().trim(),
                 templateName:form.find("input[name='pattern-name']").val().trim(),
-                templateXpath:form.find("input[name='pattern-xpath']").val().trim()
+                templateXpath:form.find("input[name='pattern-xpath']").val().trim(),
+                templateType:form.find("input[name='pattern-type']").val().trim(),
+                templateFormula:form.find("input[name='pattern-formula']").val().trim(),
+                templateHeaderXpath:form.find("input[name='pattern-header-xpath']").val().trim(),
               }
             })
             .done(function(data) {

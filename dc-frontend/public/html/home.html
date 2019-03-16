@@ -4,14 +4,15 @@
 	<meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>Home</title>
-	<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+	<!-- 以下链接禁止随意修改 -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/local.css" rel="stylesheet">
-	<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
-	<script src="http://static.runoob.com/assets/jquery-validation-1.14.0/dist/jquery.validate.min.js"></script>
-	<script src="https://cdn.bootcss.com/jquery-loading-overlay/2.1.3/loadingoverlay.min.js"></script>
-	<script src="http://static.runoob.com/assets/jquery-validation-1.14.0/dist/localization/messages_zh.js"></script>
-	<script src="https://cdn.bootcss.com/jsrender/1.0.0-rc.70/jsrender.min.js"></script>
-	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-loading-overlay/2.1.6/loadingoverlay.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/localization/messages_zh.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/1.0.2/jsrender.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <!--<script src="https://cdn.bootcss.com/vue/2.5.17-beta.0/vue.min.js"></script>-->
 	<script src="js/local.js"></script>
 </head>
@@ -430,7 +431,7 @@
 										<div class="form-group">
 												<label for="payloadXpath" class="control-label col-xs-2">数据Xpath</label>
 												<div class="col-xs-6 has-valid">
-													<input required name="payloadXpath" type="text" class="form-control" placeholder="搜索结果页面中需要索引的信息的Xpath">
+													<input required name="payloadXpath" type="text" class="form-control" placeholder="搜索结果页面中需要索引的信息的Xpath,format:xpath,attribute">
 												</div>
 										</div>
 										<div class="form-group">
@@ -562,12 +563,7 @@
 											<input required type="text" name="dropdown-list-class-name" placeholder="下拉列表框的class name" class="form-control">
 										</div>
 									</div>
-									<div class="form-group">
-										<label class="control-label col-xs-2">登录按钮</label>
-										<div class="col-xs-6 has-valid">
-											<input name="login-button" type="text" class="form-control">
-										</div>
-									</div>
+								
 									<div class="form-group">
 										<label for="other-param-name" class="control-label col-xs-2">其他参数名称列表</label>
 										<div class="col-xs-6">
@@ -711,11 +707,24 @@
 							</div>
 							<div class="tab-pane" id="new-template">
 								<form class="form-horizontal" id="new-template-form">
+									
+										<div class="form-group">
+												<label class="col-xs-2 control-label">运行模式</label>
+												<div class="col-xs-6">
+													<label class="radio-inline">
+														<input type="radio" name="pattern-mode" value="structed">结构型</input>
+													</label>
+													<label class="radio-inline">
+														<input type="radio" name="pattern-mode" value="unstructed">非结构型</input>
+													</label>
+												</div>
+										</div>
+
 									<div class="form-group">
 										<label class="col-sm-2 control-label">绑定任务</label>
 										<div class="col-sm-6 has-valid">
 											<script type="text/x-jsrender" id="task-id-list">
-												{{for content}}
+												{{for}}
 												<option value="{{:taskID}}">{{:taskName}}</option>
 												{{/for}}
 											</script>
@@ -729,15 +738,35 @@
 					    			<div class="col-sm-6 has-valid">
 					      			<input required type="text" class="form-control" name="pattern-name" placeholder="模板的名称">
 					    			</div>
-					  			</div>
+								  </div>
+								<div class="form-group">
+										<label class="col-sm-2 control-label">模板类型</label>
+										<div class="col-sm-6 has-valid">
+											  <input required type="text" class="form-control" name="pattern-type" placeholder="模板的类型">
+										</div>
+								</div>
 					  			
 								<div class="form-group">
 					    			<label class="col-sm-2 control-label">模板Xpath</label>
 					    			<div class="col-sm-6 has-valid">
-					      				<input required type="text" class="form-control" name="pattern-xpath" placeholder="模板的xpath, 如果超过一个xpath，用'#'分开">
+					      				<input required type="text" class="form-control" name="pattern-xpath" placeholder="模板的xpath">
 					    			</div>
-					  			</div>
-					  			
+								</div>
+								  
+								<div class="form-group">
+										<label class="col-sm-2 control-label">模板formula</label>
+										<div class="col-sm-6 has-valid">
+											  <input required type="text" class="form-control" name="pattern-formula" placeholder="模板的formula">
+										</div>
+								</div>
+								<div class="form-group">
+										<label class="col-sm-2 control-label">模板headerXpath</label>
+										<div class="col-sm-6 has-valid">
+											  <input required type="text" class="form-control" name="pattern-header-xpath" placeholder="模板的headerXpath">
+										</div>
+								</div>
+								
+								  
 					  			<div class="form-group">
 					    			<div class="col-sm-offset-2 col-sm-6">
 					      			<button type="submit" class="btn btn-primary">提交</button>
@@ -754,13 +783,31 @@
 					    			<div class="col-sm-6">
 											<p class="form-control-static" name="pattern-name"></p>
 					    			</div>
-					  			</div>
+								</div>
+								<div class="form-group">
+										<label class="col-sm-2 control-label">模板类型</label>
+										<div class="col-sm-6 has-valid">
+											  <input required type="text" class="form-control" name="pattern-type" placeholder="模板的类型">
+										</div>
+								</div>  
 								<div class="form-group">
 					    			<label class="col-sm-2 control-label">模板Xpath</label>
 					    			<div class="col-sm-6 has-valid">
 					      				<input required type="text" class="form-control" name="pattern-xpath" placeholder="模板的xpath, 如果超过一个xpath，用'#'分开">
 					    			</div>
-					  			</div>
+								</div>
+								<div class="form-group">
+										<label class="col-sm-2 control-label">模板formula</label>
+										<div class="col-sm-6 has-valid">
+											  <input required type="text" class="form-control" name="pattern-formula" placeholder="模板的formula">
+										</div>
+								</div>
+								<div class="form-group">
+										<label class="col-sm-2 control-label">模板headerXpath</label>
+										<div class="col-sm-6 has-valid">
+											  <input required type="text" class="form-control" name="pattern-header-xpath" placeholder="模板的headerXpath">
+										</div>
+								</div>
 					  			<div class="form-group">
 					    			<div class="col-sm-offset-2 col-sm-6">
 					      			<button type="submit" class="btn btn-primary">提交</button>

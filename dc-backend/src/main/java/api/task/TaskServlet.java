@@ -133,12 +133,32 @@ public class TaskServlet extends HttpServlet {
                         }
                     } else if (Base.apiBased == base) {
                         //TODO
+                        String searchURL = request.getParameter("searchURL");
+                        String inputXpath = request.getParameter("inputXpath");
+                        String submitXpath = request.getParameter("inputSubmitXpath");
+                        String infoLinkXpath = request.getParameter("infoLinkXpath");
+                        String payloadXpath = request.getParameter("payloadXpath");
+
 
                         //check whether apiBaseConf exists or not
                         if (!Verifier.verifyExist(webId, "apiBaseConf")) {
                             DBUtil.insert("apiBaseConf", new String[]{"webId"}, new String[]{"" + webId});
                         }
 
+                        String[] params = {"prefix", "inputXpath", "submitXpath", "infoLinkXpath", "payloadXpath"};
+                        String[] values = {searchURL, inputXpath, submitXpath, infoLinkXpath, payloadXpath};
+                        if (DBUtil.update("apiBaseConf", params, values, webId)) {
+                            DBUtil.update("website", new String[]{"usable"}, new String[]{"" + usable.getValue()}, webId);
+                            data.put("searchURL",searchURL);
+                            data.put("inputXpath", infoLinkXpath);
+                            data.put("inputSubmitXpath", submitXpath);
+                            data.put("infoLinkXpath", infoLinkXpath);
+                            data.put("payloadXpath", payloadXpath);
+                            response.getWriter().println(RespWrapper.build(data));
+                        } else {
+                            data.put("msg","url参数修改失败");
+                            response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
+                        }
                     }
                 } else if (RunningMode.structed == runningMode) {
                     if (Driver.have == driver) {
@@ -331,11 +351,11 @@ public class TaskServlet extends HttpServlet {
                  return;
              }
 
-             String[]  websiteParam = {"webId", "webName", "runningMode", "workFile", "driver", "createtime", "usable", "indexUrl", "base"};
+             String[] websiteParam = {"webId", "webName", "runningMode", "workFile", "driver", "createtime", "usable", "indexUrl", "base"};
              String[] extraParam = {"userNameXpath", "passwordXpath", "userName", "password", "loginUrl", "threadNum",
                      "timeout", "charset", "databaseSize", "submitXpath"};
-             String[]  keys = {"taskID", "taskName", "runningMode", "workPath", "driver", "createtime", "usable", "siteURL", "base",
-                     "userNameID","passwordID","username","password","loginURL","threadNum","timeout","charset","datagross", "submitXpath"};
+             String[] keys = {"taskID", "taskName", "runningMode", "workPath", "driver", "createtime", "usable", "siteURL", "base",
+                     "userNameID", "passwordID", "username", "password", "loginURL", "threadNum", "timeout", "charset", "datagross", "submitXpath"};
 
              int step = 0;
              String[] taskData = DBUtil.select("website", websiteParam, webId)[0];
@@ -344,7 +364,7 @@ public class TaskServlet extends HttpServlet {
              Driver v = Driver.valueOf(Integer.parseInt(taskData[4]));
              Base b = Base.valueOf(Integer.parseInt(taskData[8]));
 
-             for(int i = 0; i < taskData.length; step++, i++)
+             for (int i = 0; i < taskData.length; step++, i++)
                  data.put(keys[step], taskData[i]);
              if (Verifier.verifyExist(webId, "extraConf")) {
                  taskData = DBUtil.select("extraConf", extraParam, webId)[0];
@@ -356,52 +376,74 @@ public class TaskServlet extends HttpServlet {
                      data.put(keys[step], "");
                  }
              }
-             String[] params = {"prefix","paramQuery","paramPage","startPageNum","paramList","paramValueList"};
-             String[] urlBasedData = DBUtil.select("urlBaseConf", params, webId)[0];
-             String[] ansKeys = {"searchURL","keywordName","pageParamName","pageParamValue","otherParamName","otherParamValue"};
 
              if (RunningMode.unstructed == r) {
                  if (Base.urlBased == b) {
-                     for (int i = 0; i < params.length; i++) {
-                         data.put(ansKeys[i], urlBasedData[i]);
+                     String[] params = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList"};
+                     String[] ansKeys = {"searchURL", "keywordName", "pageParamName", "pageParamValue", "otherParamName", "otherParamValue"};
+                     if (Verifier.verifyExist(webId, "urlBaseConf")) {
+                         String[] urlBasedData = DBUtil.select("urlBaseConf", params, webId)[0];
+                         for (int i = 0; i < params.length; i++) {
+                             data.put(ansKeys[i], urlBasedData[i]);
+                         }
+                     } else {
+                         for (int i = 0; i <params.length; i++) {
+                             data.put(ansKeys[i], "");
+                         }
                      }
-                 } else if(Base.apiBased == b) {
-                     //TODO:
+
+                 } else if (Base.apiBased == b) {
+                     String[] params = {"prefix", "inputXpath", "submitXpath", "infoLinkXpath", "payloadXpath"};
+                     String[] ansKeys = {"searchURL", "inputXpath", "inputSubmitXpath", "infoLinkXpath", "payloadXpath"};
+                     if (Verifier.verifyExist(webId, "apiBaseConf")) {
+                         String[] apiBasedData = DBUtil.select("apiBaseConf", params, webId)[0];
+                         for (int i = 0; i < params.length; i++) {
+                             data.put(ansKeys[i], apiBasedData[i]);
+                         }
+                     } else {
+                         for (int i = 0; i <params.length; i++) {
+                             data.put(ansKeys[i], "");
+                         }
+                     }
                  }
+                 response.getWriter().println(RespWrapper.build(data));
              } else if (RunningMode.structed == r) {
-				 if (Driver.have == v) {
-					 if (Verifier.verifyExist(webId, "structedparam")) {
-						 String[] structedDataparams = {"iframeNav","navValue","iframeCon","searchButton","resultRow","nextPageXPath"
-								 ,"pageNumXPath","iframeSubParam","arrow","paramList","paramValueList"};
-						 String[] structedData = DBUtil.select("structedparam",structedDataparams,webId)[0];
-						 for(int i=0;i<structedDataparams.length;i++)
-							 data.put(structedDataparams[i], structedData[i]);
-						 data.put("otherParamName",structedData[9]);
-						 data.put("otherParamValue",structedData[10]);
-					 }else{
-						 for(int i=0;i<structedDataparams.length;i++)
-							 data.put(structedDataparams[i], "");
-						 data.put("otherParamName","");
-						 data.put("otherParamValue","");
-					 }
-				 } else if (Driver.none == v) {
-					  if (Verifier.verifyExist(webId, "queryparam")&&Verifier.verifyExist(webId, "urlBaseConf")) {
-						 for (int i = 0; i < params.length; i++) {
-							 data.put(ansKeys[i], urlBasedData[i]);
-						 }
-						 String[] param = {"dataParamList"};
-						 data.put("paramQueryValueList", DBUtil.select("queryparam", param, webId)[0][0]);
-					  }else{
-						 for (int i = 0; i < params.length; i++) 
-							 data.put(ansKeys[i],"");
-							data.put("paramQueryValueList","");						 
-					  }
-				 }             
-             response.getWriter().println(RespWrapper.build(data));
-         }else {
-             response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,null));
+                 if (Driver.have == v) {
+                     String[] structedDataparams = {"iframeNav", "navValue", "iframeCon", "searchButton", "resultRow", "nextPageXPath"
+                             , "pageNumXPath", "iframeSubParam", "arrow", "paramList", "paramValueList"};
+
+                     if (Verifier.verifyExist(webId, "structedparam")) {
+                         String[] structedData = DBUtil.select("structedparam", structedDataparams, webId)[0];
+                         for (int i = 0; i < structedDataparams.length; i++)
+                             data.put(structedDataparams[i], structedData[i]);
+                         data.put("otherParamName", structedData[9]);
+                         data.put("otherParamValue", structedData[10]);
+                     } else {
+                         for (int i = 0; i < structedDataparams.length; i++)
+                             data.put(structedDataparams[i], "");
+                         data.put("otherParamName", "");
+                         data.put("otherParamValue", "");
+                     }
+                 } else if (Driver.none == v) {
+                     String[] params = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList"};
+                     String[] ansKeys = {"searchURL", "keywordName", "pageParamName", "pageParamValue", "otherParamName", "otherParamValue"};
+                     if (Verifier.verifyExist(webId, "queryparam") && Verifier.verifyExist(webId, "urlBaseConf")) {
+                         String[] urlBasedData = DBUtil.select("urlBaseConf", params, webId)[0];
+                         for (int i = 0; i < params.length; i++) {
+                             data.put(ansKeys[i], urlBasedData[i]);
+                         }
+                         String[] param = {"dataParamList"};
+                         data.put("paramQueryValueList", DBUtil.select("queryparam", param, webId)[0][0]);
+                     } else {
+                         for (int i = 0; i < params.length; i++)
+                             data.put(ansKeys[i], "");
+                         data.put("paramQueryValueList", "");
+                     }
+                 }
+                 response.getWriter().println(RespWrapper.build(data));
+             } else {
+                 response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, null));
+             }
          }
-
-
     }
 }

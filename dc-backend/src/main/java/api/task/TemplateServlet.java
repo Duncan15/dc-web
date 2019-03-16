@@ -16,6 +16,7 @@ import enums.RunningMode;
 import format.RespWrapper;
 import util.DBUtil;
 import util.RequestParser;
+import util.Verifier;
 
 
 @WebServlet(name = "TemplateServlet",urlPatterns = {"/api/datacrawling/task/template/*"})
@@ -38,21 +39,18 @@ public class TemplateServlet extends HttpServlet {
 				String[][] res=util.DBUtil.select("website", param);
 				for(int i=0;i<res.length;i++){
 					//use webId to search in pattern
-					String[][] template=util.DBUtil.select("pattern", templateParams, Integer.parseInt(res[i][0]));
-					if(template.length>0){
-						for(int j=0;j<template.length;j++){
-							Map<String,Object> content=new HashMap<>();
-							content.put("taskID", res[i][0]);
-							content.put("taskName", res[i][1]);
-							content.put("templateID",template[j][0]);
-							content.put("templateName",template[j][1]);
-							dataList.add(content);
-						}
-
+					String[][] template= DBUtil.select("pattern", templateParams, Integer.parseInt(res[i][0]));
+					for(int j = 0; j < template.length; j++){
+						Map<String,Object> content = new HashMap<>();
+						content.put("taskID", res[i][0]);
+						content.put("taskName", res[i][1]);
+						content.put("templateID",template[j][0]);
+						content.put("templateName",template[j][1]);
+						dataList.add(content);
 					}
 
-					String[][] template_structed=util.DBUtil.select("pattern_structed", templateParams, Integer.parseInt(res[i][0]));
-					for(int j=0;j<template_structed.length;j++){
+					String[][] template_structed = DBUtil.select("pattern_structed", templateParams, Integer.parseInt(res[i][0]));
+					for(int j = 0; j < template_structed.length; j++){
 						Map<String,Object> content=new HashMap<>();
 						content.put("taskID", res[i][0]);
 						content.put("taskName", res[i][1]);
@@ -67,23 +65,20 @@ public class TemplateServlet extends HttpServlet {
 				response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
 			}
 		} else if("template".equals(pathParam[0])){//for task/template/:id
-			int templateID = 0;
-			int webId = 0;
-			try{
-				templateID=Integer.parseInt(pathParam[1]);
-				webId = Integer.parseInt(request.getParameter("taskID"));
-			}catch (NumberFormatException e){
+			Integer templateID = 0;
+			Integer webId = 0;
+			if ((webId = Verifier.verifyInt(request.getParameter("taskID"))) == null || (templateID = Verifier.verifyInt(pathParam[1])) == null) {
 				data.put("msg", "id参数解析错误");
 				response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, data));
 				return;
 			}
-			response.setContentType("application/json");
-			response.setCharacterEncoding("UTF-8");
 			try{
 				RunningMode r = RunningMode.ValueOf(DBUtil.select("website", new String[]{"runningMode"},webId)[0][0]);
+				Map<String, Object> content = new HashMap<>();
+				content.put("runningMode", r);
 				if (r == RunningMode.unstructed) {
 					String[][] template=util.DBUtil.select("pattern", new String[]{"webId", "patternName", "xpath"}, new String[]{"id"}, new String[]{templateID + ""});
-					Map<String, Object> content = new HashMap<>();
+
 					if(template != null && template.length>0) {
 						String[] res = util.DBUtil.select("website", param, Integer.parseInt(template[0][0]))[0];
 						content.put("taskID", res[0]);
@@ -93,10 +88,8 @@ public class TemplateServlet extends HttpServlet {
 						content.put("templateID", templateID);
 					}
 					response.getWriter().println(RespWrapper.build(content));
-				}
-				else{
+				} else {
 					String[][] template=util.DBUtil.select("pattern_structed", new String[]{"webId", "patternName", "xpath","formula","type","headerXPath"}, new String[]{"id"}, new String[]{templateID + ""});
-					Map<String, Object> content = new HashMap<>();
 					if(template != null && template.length>0) {
 						String[] res = util.DBUtil.select("website", param, Integer.parseInt(template[0][0]))[0];
 						content.put("taskID", res[0]);
@@ -106,7 +99,7 @@ public class TemplateServlet extends HttpServlet {
 						content.put("templateID", templateID);
 						content.put("templateFormula", template[0][3]);
 						content.put("templateType", template[0][4]);
-						content.put("templateHeaderXPath", template[0][5]);
+						content.put("templateHeaderXpath", template[0][5]);
 					}
 					response.getWriter().println(RespWrapper.build(content));
 				}
@@ -141,11 +134,12 @@ public class TemplateServlet extends HttpServlet {
 			}
 			webId = Integer.parseInt(request.getParameter("taskID"));
 			RunningMode r = RunningMode.ValueOf(DBUtil.select("website", new String[]{"runningMode"},webId)[0][0]);
+
 			//前端页面保证这些值均不为空，这里无需验证
 			String templateName=request.getParameter("templateName");
 			String templateXpath=request.getParameter("templateXpath");
 			String templateType=request.getParameter("templateType");
-			String templateHeaderXPath=request.getParameter("templateHeaderXPath");
+			String templateHeaderXPath=request.getParameter("templateHeaderXpath");
 			String templateFormula=request.getParameter("templateFormula");
 
 			String[] p = {"patternName", "webId"};
@@ -155,9 +149,6 @@ public class TemplateServlet extends HttpServlet {
 			String[] parValue = {templateID + ""};
 
 
-
-			response.setContentType("application/json");
-			response.setCharacterEncoding("UTF-8");
 			data.put("taskID",webId);
 			data.put("templateName",templateName);
 			data.put("templateXpath",templateXpath);
@@ -176,8 +167,7 @@ public class TemplateServlet extends HttpServlet {
 					 if (r == RunningMode.unstructed) {
 						DBUtil.insert("pattern", params, paramsValue);
 						response.getWriter().println(RespWrapper.build(data));
-					 }
-					 else{
+					 } else {
 						 data.put("templateFormula",templateFormula);
 						 data.put("templateType", templateType);
 						 data.put("templateHeaderXPath",templateHeaderXPath);

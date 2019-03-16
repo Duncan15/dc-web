@@ -26,6 +26,7 @@ public class Verifier {
         if (!verifyExist(webID, "extraConf")) {
             return false;
         }
+
         String[] p = new String[] {"indexUrl"};
         String[][] ans = DBUtil.select("website", p, webID);
         if (ans.length != 0 && (!"".equals(ans[0][0]))) {
