@@ -393,7 +393,7 @@ public class TaskServlet extends HttpServlet {
 						 data.put("otherParamValue","");
 					 }
 				 } else if (Driver.none == v) {
-					  if (Verifier.verifyExist(webId, "structedparam")) {
+					  if (Verifier.verifyExist(webId, "queryparam")&&Verifier.verifyExist(webId, "urlBaseConf")) {
 						 for (int i = 0; i < params.length; i++) {
 							 data.put(ansKeys[i], urlBasedData[i]);
 						 }
