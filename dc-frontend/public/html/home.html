@@ -395,7 +395,50 @@
 
 								</form>
 								<form id="unstructed-apibased" class="form-horizontal rule-config-form" style="display:none;">
-								
+										<input type="text" class="hidden rule-id">
+										<div class="form-group">
+											<label for="site-link" class="control-label col-xs-2">网站链接</label>
+											<div class="col-xs-6">
+													<p class="form-control-static" name="site-link"></p>
+											</div>
+										</div>
+										<div class="form-group">
+												<div class="form-title">搜索页面配置</div>
+												<label for="search-link" class="control-label col-xs-2">搜索页面链接</label>
+												<div class="col-xs-6 has-valid">
+													<input required name="search-link" type="text" class="form-control" placeholder="">
+												</div>
+										</div>
+										<div class="form-group">
+											<label for="inputXpath" class="control-label col-xs-2">搜索框Xpath</label>
+												<div class="col-xs-6 has-valid">
+													<input required name="inputXpath" type="text" class="form-control" placeholder="搜索关键词输入框的Xpath">
+												</div>
+										</div>
+										<div class="form-group">
+												<label for="submitXpath" class="control-label col-xs-2">搜索按钮Xpath</label>
+												<div class="col-xs-6 has-valid">
+													<input name="submitXpath" type="text" class="form-control" placeholder="搜索按钮的Xpath，若无搜索按钮则不填">
+												</div>
+										</div>
+										<div class="form-group">
+												<label for="infoLinkXpath" class="control-label col-xs-2">数据链接Xpath</label>
+												<div class="col-xs-6 has-valid">
+													<input required name="infoLinkXpath" type="text" class="form-control" placeholder="搜索结果页面中数据链接的Xpath">
+												</div>
+										</div>
+										<div class="form-group">
+												<label for="payloadXpath" class="control-label col-xs-2">数据Xpath</label>
+												<div class="col-xs-6 has-valid">
+													<input required name="payloadXpath" type="text" class="form-control" placeholder="搜索结果页面中需要索引的信息的Xpath">
+												</div>
+										</div>
+										<div class="form-group">
+												<div class="col-xs-offset-2 col-xs-6">
+													<button type="submit" class="btn btn-primary">提交</button>
+													<button class="btn btn-default return-btn">返回</button>
+												</div>
+										</div>
 								</form>
 								<form id="structed-undriver" class="form-horizontal rule-config-form" style="display:none;">
 									<input type="text" class="hidden rule-id">

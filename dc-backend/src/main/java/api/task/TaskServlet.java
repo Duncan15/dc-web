@@ -290,14 +290,13 @@ public class TaskServlet extends HttpServlet {
 	/*
     for api: /api/datacrawling/task/:id
     for api: /api/datacrawling/task/all
-          
      */
 	 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
          String[] pathParam=RequestParser.parsePath(request.getRequestURI(),2);
          Map<String,Object> data=new HashMap<>();
          if("task".equals(pathParam[0]) && "all".equals(pathParam[1])){//for task/all
-             String [] params={"webId", "webName", "runningMode", "workFile", "driver", "createtime", "usable",
-                     "indexUrl", "creator", "base"};
+             String [] params={"webId", "webName", "runningMode", "workFile", "driver",
+                     "createtime", "usable", "indexUrl", "creator", "base"};
              //"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList"
              List<Map<String,Object>> dataList=new ArrayList<Map<String,Object>>();
              String[][] websites = DBUtil.select("website", params);
@@ -308,16 +307,9 @@ public class TaskServlet extends HttpServlet {
                  website.put("taskName", websites[i][1]);
                  website.put("runningMode", websites[i][2]);
                  website.put("workPath", websites[i][3]);
-
                  website.put("createtime", websites[i][5]);
                  website.put("usable", Usable.valueOf(Integer.parseInt(websites[i][6])));
                  website.put("siteURL", websites[i][7]);
-//                 website.put("searchURL", websites[i][8]);
-//                 website.put("keywordName", websites[i][9]);
-//                 website.put("pageParamName", websites[i][10]);
-//                 website.put("pageParamValue", websites[i][11]);
-//                 website.put("otherParamName", websites[i][12]);
-//                 website.put("otherParamValue", websites[i][13]);
                  website.put("creator", websites[i][8]);
                  RunningMode r = RunningMode.ValueOf(websites[i][2]);
                  if (r == RunningMode.unstructed) {
