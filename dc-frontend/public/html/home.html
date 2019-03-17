@@ -33,7 +33,9 @@
 				<li ><a id="monitor-btn" href="#monitor" data-toggle="tab">监控</a></li>
 				<li ><a id="delivery-btn" href="#delivery" data-toggle="tab">交付</a></li>
 				<li ><a id="config-btn" href="#config" data-toggle="tab">设置</a></li>
-                <li ><a id="sensing-btn" href="#sensing" data-toggle="tab">侦测</a></li>
+				<li ><a id="sensing-btn" href="#sensing" data-toggle="tab">侦测</a></li>
+				<li><a id="estimate-btn" href="#estimate" data-toggle="tab">估测</a></li>
+
 			</ul>
 </div>
 <div class="tab-content main-content">
@@ -1093,7 +1095,130 @@
                 </div>
             </div>
         </div>
-    </div>
+	</div>
+	
+
+	
+	<div id="estimate" class="tab-pane">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-xs-3 text-center">
+					<ul class="nav nav-pills nav-stacked">
+						<li>
+							<a id="esti-operate-btn" href="#esti-task-monitor" data-toggle="pill">开始估测</a>
+						</li>
+					</ul>
+				</div>
+
+				<div class="col-xs-9 tab-content">
+
+
+					<div id="edit-estimate" class="tab-pane">
+						<form class="form-horizontal" id="confirm-estimate-form">
+
+							<input class="hidden" type="text" id="conf-estiId" value="">
+
+
+							<div class="form-group">
+								<label for="linksXpath" class="col-xs-2 control-label">结果链接Xpath</label>
+								<div class="col-xs-8">
+									<input type="text" class="form-control" id="conf-linksXpath" placeholder="">
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="pagesInfoId" class="col-xs-2 control-label">结果总数信息Xpath</label>
+								<div class="col-xs-8">
+									<input type="text" class="form-control" id="conf-pagesInfoId" placeholder="">
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="contentXpath" class="col-xs-2 control-label">文档内容Xpath</label>
+								<div class="col-xs-8">
+									<input type="text" class="form-control" id="conf-contentXpath" placeholder="">
+								</div>
+							</div>
+
+
+							<div class="form-group">
+								<label for="contentXpath" class="col-xs-2 control-label">种子关键词</label>
+								<div class="col-xs-8">
+									<input type="text" class="form-control" id="conf-startWord" placeholder="">
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="walkTimes" class="col-xs-2 control-label">游走次数</label>
+								<div class="col-xs-8">
+									<input type="text" class="form-control" id="conf-walkTimes" placeholder="">
+								</div>
+							</div>
+
+							<div class="form-group">
+								<div class="col-xs-offset-2 col-xs-8">
+									<button type="submit" class="btn btn-primary">提交</button>
+									<button class="btn btn-default return-btn">返回</button>
+								</div>
+							</div>
+						</form>
+					</div>
+
+					<div id="esti-task-monitor" class="tab-pane">
+						<table class="table table-striped table-hover">
+							<caption>开始估测</caption>
+							<thead>
+								<tr>
+									<th>编号</th>
+									<th>网站名称</th>
+									<th>URL</th>
+									<th>估测大小</th>
+									<th>状态</th>
+									<th>进度</th>
+									<th>配置</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+							<script type="text/x-jsrender" id="esti-control-list">
+						{{for content}}
+						<tr>
+							<th class="esti-id">{{:webId}}</th>
+							<th>{{:webName}}</th>
+					
+							<th>
+								{{:indexUrl}}
+							</th>
+							<th>
+								{{:result}}
+							</th>
+							<th>
+								{{:status}}									
+							</th>
+							<th>
+								{{:rateBar}}									
+							</th>
+							<th>
+								<a class="change-estimate" href="#edit-estimate" data-toggle="pill">修改</a>
+							</th>
+
+							<th>
+								<a class="esti-control-btn" name="start">启动</a>
+								/
+								<a class="esti-control-btn" name="stop">停止</a>
+							</th>
+						</tr>
+						{{/for}}
+					</script>
+							<tbody id="esti-control-list-content"></tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	
 </div>
 <!--以下为模态框html代码位置-->
 <div class="modal fade bs-example-modal-lg" id="delivery-modal" tabindex="-1" role="dialog" aria-labelledby="delivery-modal-label">
