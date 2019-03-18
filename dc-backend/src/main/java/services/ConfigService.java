@@ -37,7 +37,7 @@ public class ConfigService {
         baseWorkDir = backMap.getProperty("baseWorkDir");
     }
     public static void save() {
-        try (OutputStream outputStream = new FileOutputStream(ConfigService.class.getResource("/application.properties").getFile())) {
+        try (OutputStream outputStream = new FileOutputStream(ConfigService.class.getResource("/webapp/WEB-INF/application.properties").getFile())) {
             backMap.store(new OutputStreamWriter(outputStream, "UTF-8"), "");
         } catch (IOException ex) {
             //ignored
