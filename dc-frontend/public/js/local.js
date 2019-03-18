@@ -6,6 +6,304 @@ $(function(){
   var $deliveryBtn=$("#delivery-btn");
   var $configBtn=$("#config-btn");
   var $sensingBtn=$("#sensing-btn")
+  var $estimateBtn = $("#estimate-btn")
+
+  //Bellow is code for estimate. 
+
+  $estimateBtn.on('click', function (event) {
+
+    var $estiOperateBtn = $("#esti-operate-btn");
+
+    $estiOperateBtn.off('click');
+    $estiOperateBtn.on('click', function () {
+      var tmpl = $.templates("#esti-control-list");
+      $.ajax({
+        url: baseURL + '/api/datacrawling/estimate/show/all',
+        type: 'GET',
+        dataType: 'json',
+      })
+        .done(function (data) {
+          if (data['errno'] != 0) {
+            alert("服务器错误");
+          } else {
+            var html = tmpl.render(data['data']);
+            $("#esti-control-list-content").html(html);
+
+            //点击修改按钮之后就进入了另外的一个GET请求。
+            $(".change-estimate").off('click');
+            $(".change-estimate").on('click', function (event) {
+              //获取到按钮父标签的id才能GET到这一行的信息
+              var $a = $(event.target);
+              var $th = $a.parent('th');
+              var $id = $th.siblings('.esti-id');
+              var id = $id.text();
+              // console.log("id is "+id);
+              $.ajax({
+                url: baseURL + '/api/datacrawling/estimate/change/' + id,
+                type: 'GET',
+                dataType: 'json'
+              })
+                .done(function (data) {
+                  console.log("success");
+                  if (data['errno'] != 0) {
+                    alert("服务器错误");
+                  } else {
+                    //下面用获取到的这一行的数据对相对应的html表格进行赋值。
+                    $("#conf-estiId").val(id);
+                    $("#conf-linksXpath").val(data['data']['linksXpath']);
+                    $("#conf-pagesInfoId").val(data['data']['pagesInfoId']);
+                    $("#conf-contentXpath").val(data['data']['contentXpath']);
+                    $("#conf-walkTimes").val(data['data']['walkTimes']);
+                    $("#conf-startWord").val(data['data']['startWord']);
+                  }
+
+                  $("#edit-estiamte .return-btn").off('click');
+                  $("#edit-estimate .return-btn").on('click', function (event) {
+                    event.preventDefault();
+                    /* Act on the event */
+                    //移除当前的div，激活原来的div。
+                    $("#edit-estimate").removeClass("active");
+                    $("#esti-task-monitor").addClass('active');
+                    //confirmBtn的作用是返回到列表页面。
+                    $estiOperateBtn.click();
+                  });
+                  var validator = $("#confirm-estimate-form").validate({
+                    submitHandler: function () {
+                      var id = $("#conf-estiId").val();
+                      var linksXpath = $("#conf-linksXpath").val().trim();
+                      var pagesInfoId = $("#conf-pagesInfoId").val().trim();
+                      var contentXpath = $("#conf-contentXpath").val().trim();
+                      var walkTimes = $("#conf-walkTimes").val().trim();
+                      var startWord = $("#conf-startWord").val().trim();
+
+                      if (linksXpath == "") {
+                        alert("输入不能为空");
+                      }
+
+                      $.ajax({
+                        url: baseURL + '/api/datacrawling/estimate/update/' + id,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                          linksXpath: linksXpath,
+                          pagesInfoId: pagesInfoId,
+                          contentXpath: contentXpath,
+                          walkTimes: walkTimes,
+                          startWord: startWord
+                        }
+                      })
+                        .done(function (data) {
+                          console.log("success");
+                          if (data['errno'] != 0) {
+                            alert("服务器错误");
+                          } else {
+                            alert("修改成功");
+                            $("#edit-estimate .return-btn").click();
+                          }
+                        })
+                        .fail(function () {
+                          console.log("error");
+                        })
+                        .always(function () {
+                          console.log("complete");
+                        });
+                    }
+                  });
+                  validator.resetForm();
+                })
+                .fail(function () {
+                  console.log("error");
+                })
+                .always(function () {
+                  console.log("complete");
+                });
+            });//change js end
+
+            //表格数据传输正常。
+            //下面总体逻辑运转正常。
+            //接下来解决后端接受GET请求，启动线程的问题。
+
+            $(".esti-control-btn").off('click');
+            $(".esti-control-btn").on('click', function () {
+              var $tr = $(this).parents("tr");
+              var estiId = $tr.find("th.esti-id").text().trim();
+              var action = $(this).attr("name");
+              $.LoadingOverlay("show");
+              $.ajax({
+                url: baseURL + '/api/datacrawling/estimoni?action=option&option=' + action + '&estiId=' + estiId,
+                type: 'GET',
+                dataType: 'json'
+              })
+                .done(function (data) {
+                  // console.log(data['data']);
+                  $.LoadingOverlay("hide", true);
+                  alert(data['data']['msg']);
+                })
+                .fail(function () {
+                  console.log("error");
+                })
+                .always(function () {
+                  console.log("complete");
+                });
+            });
+
+
+          }
+        })
+        .fail(function () {
+          console.log("error");
+        })
+        .always(function () {
+          console.log("complete");
+        });
+
+
+      // setInterval每隔一定时间就调用一次函数。3000毫秒=3秒。
+      var handle = setInterval(function () {
+        var tmpl = $.templates("#esti-control-list");
+        $.ajax({
+          url: baseURL + '/api/datacrawling/estimate/show/all',
+          type: 'GET',
+          dataType: 'json',
+
+        })
+          .done(function (data) {
+            if (data['errno'] != 0) {
+              alert("服务器错误");
+            } else {
+              var html = tmpl.render(data['data']);
+              $("#esti-control-list-content").html(html);
+
+              //点击修改按钮之后就进入了另外的一个GET请求。
+              $(".change-estimate").off('click');
+              $(".change-estimate").on('click', function (event) {
+                //获取到按钮父标签的id才能GET到这一行的信息
+                var $a = $(event.target);
+                var $th = $a.parent('th');
+                var $id = $th.siblings('.esti-id');
+                var id = $id.text();
+                // console.log("id is "+id);
+                $.ajax({
+                  url: baseURL + '/api/datacrawling/estimate/change/' + id,
+                  type: 'GET',
+                  dataType: 'json'
+                })
+                  .done(function (data) {
+                    console.log("success");
+                    if (data['errno'] != 0) {
+                      alert("服务器错误");
+                    } else {
+                      //下面用获取到的这一行的数据对相对应的html表格进行赋值。
+                      $("#conf-estiId").val(id);
+                      $("#conf-linksXpath").val(data['data']['linksXpath']);
+                      $("#conf-pagesInfoId").val(data['data']['pagesInfoId']);
+                      $("#conf-contentXpath").val(data['data']['contentXpath']);
+                      $("#conf-walkTimes").val(data['data']['walkTimes']);
+                      $("#conf-startWord").val(data['data']['startWord']);
+                    }
+
+                    $("#edit-estiamte .return-btn").off('click');
+                    $("#edit-estimate .return-btn").on('click', function (event) {
+                      event.preventDefault();
+                      /* Act on the event */
+                      //移除当前的div，激活原来的div。
+                      $("#edit-estimate").removeClass("active");
+                      $("#esti-task-monitor").addClass('active');
+                      //confirmBtn的作用是返回到列表页面。
+                      $estiOperateBtn.click();
+                    });
+                    var validator = $("#confirm-estimate-form").validate({
+                      submitHandler: function () {
+                        var id = $("#conf-estiId").val();
+                        var linksXpath = $("#conf-linksXpath").val().trim();
+                        var pagesInfoId = $("#conf-pagesInfoId").val().trim();
+                        var contentXpath = $("#conf-contentXpath").val().trim();
+                        var walkTimes = $("#conf-walkTimes").val().trim();
+                        var startWord = $("#conf-startWord").val().trim();
+
+                        if (linksXpath == "") {
+                          alert("输入不能为空");
+                        }
+
+                        $.ajax({
+                          url: baseURL + '/api/datacrawling/estimate/update/' + id,
+                          type: 'POST',
+                          dataType: 'json',
+                          data: {
+                            linksXpath: linksXpath,
+                            pagesInfoId: pagesInfoId,
+                            contentXpath: contentXpath,
+                            walkTimes: walkTimes,
+                            startWord: startWord
+                          }
+                        })
+                          .done(function (data) {
+                            console.log("success");
+                            if (data['errno'] != 0) {
+                              alert("服务器错误");
+                            } else {
+                              alert("修改成功");
+                              $("#edit-estimate .return-btn").click();
+                            }
+                          })
+                          .fail(function () {
+                            console.log("error");
+                          })
+                          .always(function () {
+                            console.log("complete");
+                          });
+                      }
+                    });
+                    validator.resetForm();
+                  })
+                  .fail(function () {
+                    console.log("error");
+                  })
+                  .always(function () {
+                    console.log("complete");
+                  });
+              });//change js end
+
+              $(".esti-control-btn").off('click');
+              $(".esti-control-btn").on('click', function () {
+                var $tr = $(this).parents("tr");
+                var estiId = $tr.find("th.esti-id").text().trim();
+                var action = $(this).attr("name");
+                $.LoadingOverlay("show");
+                $.ajax({
+                  url: baseURL + '/api/datacrawling/estimoni?action=option&option=' + action + '&estiId=' + estiId,
+                  type: 'GET',
+                  dataType: 'json'
+                })
+                  .done(function (data) {
+                    $.LoadingOverlay("hide", true);
+                    alert(data['data']['msg']);
+                  })
+                  .fail(function () {
+                    console.log("error");
+                  })
+                  .always(function () {
+                    console.log("complete");
+                  });
+              });
+            }
+          })
+          .fail(function () {
+            console.log("error");
+          })
+          .always(function () {
+            console.log("complete");
+          });
+      }, 3000);
+
+
+    });
+
+    $estiOperateBtn.click();
+  })
+
+
+  
   $sensingBtn.on('click',function (event) {
 
     var $urlsensingBtn=$("#url-sensing-btn");
