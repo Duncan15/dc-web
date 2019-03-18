@@ -13,13 +13,40 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
  
 public class WebCrawlerDemo {
- 
+    private String baseLink1="";
+
+
+    public void setBaseLink1(String url){
+        baseLink1=url;
+    }
     public static void main(String[] args) {
         WebCrawlerDemo webCrawlerDemo = new WebCrawlerDemo();
-        webCrawlerDemo.myPrint("http://www.zkztmy.com/index.aspx");
+        webCrawlerDemo.setBaseLink1("http://www.caai.cn/");
+        webCrawlerDemo.myPrint("http://www.caai.cn/");
     }
  
     public void myPrint(String baseUrl) {
+
+        if(CusWebClient.judgeurl(baseUrl)){
+            //	CusWebClient.method1("C:\\Users\\27148\\Desktop\\pp8.txt",newLink);
+            System.out.println("+++++++++++");
+            System.out.println("发现正确url"+baseUrl);
+            System.out.println("+++++++++++");
+            try{
+                String [] p1={"homeUrl","targetUrl"};
+                String [] p2={baseUrl,baseUrl};
+                DBUtil.insert("sense",p1,p2);}
+            catch (Exception e){
+
+                System.out.println("写入数据库error");
+
+                System.out.println("[[[[[[[[[[[[[[[[[[[[");
+                System.out.println(e);
+                System.out.println("[[[[[[[[[[[[[[[[[[[");
+            }
+        }
+
+
         Map<String, Boolean> oldMap = new LinkedHashMap<String, Boolean>(); // 存储链接-是否被遍历
                                                                             // 键值对
         String oldLinkHost = "";  //host
@@ -105,10 +132,26 @@ public class WebCrawlerDemo {
 //                                     
 //                                     }
                                   if(CusWebClient.judgeurl(newLink)){
-                                 	//mywebclient3.method1("C:\\Users\\27148\\Desktop\\pp8.txt",newLink);
+                                 //	CusWebClient.method1("C:\\Users\\27148\\Desktop\\pp8.txt",newLink);
+                                      System.out.println("+++++++++++");
+                                      System.out.println("发现正确url"+newLink);
+                                      System.out.println("+++++++++++");
+                                      try{
                                       String [] p1={"homeUrl","targetUrl"};
-                                      String [] p2={oldLinkHost,newLink};
-                                    DBUtil.insert("sense",p1,p2);
+                                      String [] p2={baseLink1,newLink};
+//
+//                                      System.out.println(baseLink1);
+//                                          System.out.println(oldLink);
+//                                          System.out.println(newLink);
+                                    DBUtil.insert("sense",p1,p2);}
+                                    catch (Exception e){
+
+                                          System.out.println("写入数据库error");
+
+                                        System.out.println("[[[[[[[[[[[[[[[[[[[[");
+                                        System.out.println(e);
+                                        System.out.println("[[[[[[[[[[[[[[[[[[[");
+                                    }
                                  }
                                     
                                     
