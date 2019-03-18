@@ -1,9 +1,6 @@
 package api.task;
 
-import enums.Driver;
-import enums.MonitorOption;
-import enums.RunningMode;
-import enums.Usable;
+import enums.*;
 import format.RespWrapper;
 import services.ConfigService;
 import util.DBUtil;
@@ -23,10 +20,7 @@ public class MonitorServlet extends HttpServlet {
     private String start(RunningMode runningMode, Driver driver, int webID) throws IOException{
         ProcessBuilder builder=null;
         String[][] ans = DBUtil.select("current", new String[]{"run"}, webID);
-        if (ans.length == 0) {
-            return "webID所对应的网站信息不存在";
-        }
-        if(!ans[0][0].equals("0")) {
+        if(ans.length != 0 &&!ans[0][0].equals("0")) {
             return "该爬虫正处于运行状态，禁止重复操作";
         }
 
@@ -52,12 +46,15 @@ public class MonitorServlet extends HttpServlet {
 //            --password=12345678
             String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_unstructed.jar").getAbsolutePath();
             builder = new ProcessBuilder("java","-Xmx20G","-Xms20G","-jar",jarPath, "--web-id=" + webID, "--jdbc-url=" + mysqlURL, "--username=" + mysqlUserName, "--password=" + msyqlPassword);
+
+            //设置工作目录，主要作用是支持ansj的配置载入
+            builder.directory(new File(getServletContext().getRealPath("/"), "WEB-INF"));
         } else if(runningMode == RunningMode.structed && driver == Driver.none){//以下启动模式根据自定义进行修改
             String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed.jar").getAbsolutePath();
-            builder = new ProcessBuilder("java","-jar",jarPath, webID + "");
+            builder = new ProcessBuilder("java","-Xmx20G","-Xms20G","-jar",jarPath, "--web-id=" + webID, "--jdbc-url=" + mysqlURL, "--username=" + mysqlUserName, "--password=" + msyqlPassword);
         } else if(runningMode == RunningMode.structed && driver == Driver.have){
             String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed_js.jar").getAbsolutePath();
-            builder = new ProcessBuilder("java","-jar", jarPath, webID + "");
+            builder = new ProcessBuilder("java","-Xmx20G","-Xms20G","-jar", jarPath, "--web-id=" + webID, "--jdbc-url=" + mysqlURL, "--username=" + mysqlUserName, "--password=" + msyqlPassword);
         }
 
 
@@ -77,7 +74,7 @@ public class MonitorServlet extends HttpServlet {
 
         Process p = builder.start();
         try{
-            Thread.sleep(1000l);
+            Thread.sleep(5000l);
         }catch (InterruptedException e){
             //ignored
         }
@@ -130,18 +127,23 @@ public class MonitorServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Map<String,Object> data=new HashMap<>();
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json");
         String action=request.getParameter("action");
         if(action.equals("status")){//monitor?action=status
             List content=new ArrayList();
             //只显示配置可用的爬虫状态
-            String[][] website = DBUtil.select("website",new String[]{"webId", "webName", "databaseSize", "runningMode", "driver"}, new String[]{"usable"}, new String[]{Usable.have.getValue() + ""});
+            String[][] website = DBUtil.select("website",new String[]{"webId", "webName", "runningMode", "driver", "base"}, new String[]{"usable"}, new String[]{Usable.have.getValue() + ""});
             Map<String,Integer> idNameMap = new HashMap<>();
             for(int i = 0; i < website.length; i++){
                 idNameMap.put(website[i][0], i);
             }
+
+            String[] p = new String[]{"webId", "databaseSize"};
+            String[][] ans = DBUtil.select("extraConf", p);
+            Map<String, Long> sizeMap = new HashMap<>();
+            for (int i = 0; i < ans.length; i++) {
+                sizeMap.put(ans[i][0], Long.parseLong(ans[i][1]));
+            }
+
             String[][] current=DBUtil.select("current",new String[]{"webId","round","M1status","M2status","M3status","M4status","SampleData_sum", "run"});
             for(int i = 0; i < current.length; i++){
                 Map<String,String> unit = new HashMap<>();
@@ -149,23 +151,25 @@ public class MonitorServlet extends HttpServlet {
                 unit.put("taskName", website[idNameMap.get(current[i][0])][1]);
                 unit.put("round", current[i][1]);
                 unit.put("sampleDataSum", current[i][6]);
+
                 //如果databaseSize值为0，则爬取比例为未知状态
-                if(website[idNameMap.get(current[i][0])][2] == null || "0".equals(website[idNameMap.get(current[i][0])][2])){
-                    unit.put("crawlRatio","未知");
-                }else {
+                if (sizeMap.get(current[i][0]) == null || sizeMap.get(current[i][0]) == 0){
+                    unit.put("crawlRatio", "未知");
+                } else {
                     float sampleNum = Float.parseFloat(current[i][6]);
-                    float dbNum = Float.parseFloat(website[idNameMap.get(current[i][0])][2]);
-                    unit.put("crawlRatio",sampleNum/dbNum*100+"%");
+                    float dbNum = sizeMap.get(current[i][0]);
+                    unit.put("crawlRatio", sampleNum / dbNum * 100 + "%");
                 }
-                if("0".equals(current[i][7])) {
+                if ("0".equals(current[i][7])) {
                     unit.put("status", "未启动");
                 } else {
                     Properties properties = ConfigService.getBackMap();
                     String[] websiteRow = website[idNameMap.get(current[i][0])];
-                    RunningMode runningMode = RunningMode.ValueOf(websiteRow[3]);
-                    Driver driver = Driver.valueOf(Integer.parseInt(websiteRow[4]));
+                    RunningMode runningMode = RunningMode.ValueOf(websiteRow[2]);
+                    Driver driver = Driver.valueOf(Integer.parseInt(websiteRow[3]));
+                    Base base = Base.valueOf(Integer.parseInt(websiteRow[4]));
                     String status = "未知";
-                    if(runningMode == RunningMode.unstructed && driver == Driver.none) {
+                    if(runningMode == RunningMode.unstructed && base == Base.urlBased) {
                         for (int j = 2; j < 6; j++) {
                             if(current[i][j].equals("active")) {
                                 status = properties.getProperty(runningMode.name() + "." +driver.name() + "." +"status" + (j - 1));
@@ -173,7 +177,12 @@ public class MonitorServlet extends HttpServlet {
                             }
                         }
                     } else {//structed模式下根据具体定制自定义
-
+                        for (int j = 2; j < 6; j++) {
+                            if(current[i][j].equals("active")) {
+                                status = properties.getProperty(runningMode.name() + "." +driver.name() + "." +"status" + (j - 1));
+                                break;
+                            }
+                        }
                     }
                     unit.put("status", status);
                 }

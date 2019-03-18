@@ -12,6 +12,9 @@ public class CORSFilter implements Filter {
     }
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
         String origin=((HttpServletRequest)req).getHeader("Origin");
         HttpServletResponse httpServletResponse=(HttpServletResponse)resp;
         httpServletResponse.addHeader("Access-Control-Allow-Origin",origin);

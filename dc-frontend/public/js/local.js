@@ -6,6 +6,304 @@ $(function(){
   var $deliveryBtn=$("#delivery-btn");
   var $configBtn=$("#config-btn");
   var $sensingBtn=$("#sensing-btn")
+  var $estimateBtn = $("#estimate-btn")
+
+  //Bellow is code for estimate. 
+
+  $estimateBtn.on('click', function (event) {
+
+    var $estiOperateBtn = $("#esti-operate-btn");
+
+    $estiOperateBtn.off('click');
+    $estiOperateBtn.on('click', function () {
+      var tmpl = $.templates("#esti-control-list");
+      $.ajax({
+        url: baseURL + '/api/datacrawling/estimate/show/all',
+        type: 'GET',
+        dataType: 'json',
+      })
+        .done(function (data) {
+          if (data['errno'] != 0) {
+            alert("服务器错误");
+          } else {
+            var html = tmpl.render(data['data']);
+            $("#esti-control-list-content").html(html);
+
+            //点击修改按钮之后就进入了另外的一个GET请求。
+            $(".change-estimate").off('click');
+            $(".change-estimate").on('click', function (event) {
+              //获取到按钮父标签的id才能GET到这一行的信息
+              var $a = $(event.target);
+              var $th = $a.parent('th');
+              var $id = $th.siblings('.esti-id');
+              var id = $id.text();
+              // console.log("id is "+id);
+              $.ajax({
+                url: baseURL + '/api/datacrawling/estimate/change/' + id,
+                type: 'GET',
+                dataType: 'json'
+              })
+                .done(function (data) {
+                  console.log("success");
+                  if (data['errno'] != 0) {
+                    alert("服务器错误");
+                  } else {
+                    //下面用获取到的这一行的数据对相对应的html表格进行赋值。
+                    $("#conf-estiId").val(id);
+                    $("#conf-linksXpath").val(data['data']['linksXpath']);
+                    $("#conf-pagesInfoId").val(data['data']['pagesInfoId']);
+                    $("#conf-contentXpath").val(data['data']['contentXpath']);
+                    $("#conf-walkTimes").val(data['data']['walkTimes']);
+                    $("#conf-startWord").val(data['data']['startWord']);
+                  }
+
+                  $("#edit-estiamte .return-btn").off('click');
+                  $("#edit-estimate .return-btn").on('click', function (event) {
+                    event.preventDefault();
+                    /* Act on the event */
+                    //移除当前的div，激活原来的div。
+                    $("#edit-estimate").removeClass("active");
+                    $("#esti-task-monitor").addClass('active');
+                    //confirmBtn的作用是返回到列表页面。
+                    $estiOperateBtn.click();
+                  });
+                  var validator = $("#confirm-estimate-form").validate({
+                    submitHandler: function () {
+                      var id = $("#conf-estiId").val();
+                      var linksXpath = $("#conf-linksXpath").val().trim();
+                      var pagesInfoId = $("#conf-pagesInfoId").val().trim();
+                      var contentXpath = $("#conf-contentXpath").val().trim();
+                      var walkTimes = $("#conf-walkTimes").val().trim();
+                      var startWord = $("#conf-startWord").val().trim();
+
+                      if (linksXpath == "") {
+                        alert("输入不能为空");
+                      }
+
+                      $.ajax({
+                        url: baseURL + '/api/datacrawling/estimate/update/' + id,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                          linksXpath: linksXpath,
+                          pagesInfoId: pagesInfoId,
+                          contentXpath: contentXpath,
+                          walkTimes: walkTimes,
+                          startWord: startWord
+                        }
+                      })
+                        .done(function (data) {
+                          console.log("success");
+                          if (data['errno'] != 0) {
+                            alert("服务器错误");
+                          } else {
+                            alert("修改成功");
+                            $("#edit-estimate .return-btn").click();
+                          }
+                        })
+                        .fail(function () {
+                          console.log("error");
+                        })
+                        .always(function () {
+                          console.log("complete");
+                        });
+                    }
+                  });
+                  validator.resetForm();
+                })
+                .fail(function () {
+                  console.log("error");
+                })
+                .always(function () {
+                  console.log("complete");
+                });
+            });//change js end
+
+            //表格数据传输正常。
+            //下面总体逻辑运转正常。
+            //接下来解决后端接受GET请求，启动线程的问题。
+
+            $(".esti-control-btn").off('click');
+            $(".esti-control-btn").on('click', function () {
+              var $tr = $(this).parents("tr");
+              var estiId = $tr.find("th.esti-id").text().trim();
+              var action = $(this).attr("name");
+              $.LoadingOverlay("show");
+              $.ajax({
+                url: baseURL + '/api/datacrawling/estimoni?action=option&option=' + action + '&estiId=' + estiId,
+                type: 'GET',
+                dataType: 'json'
+              })
+                .done(function (data) {
+                  // console.log(data['data']);
+                  $.LoadingOverlay("hide", true);
+                  alert(data['data']['msg']);
+                })
+                .fail(function () {
+                  console.log("error");
+                })
+                .always(function () {
+                  console.log("complete");
+                });
+            });
+
+
+          }
+        })
+        .fail(function () {
+          console.log("error");
+        })
+        .always(function () {
+          console.log("complete");
+        });
+
+
+      // setInterval每隔一定时间就调用一次函数。3000毫秒=3秒。
+      var handle = setInterval(function () {
+        var tmpl = $.templates("#esti-control-list");
+        $.ajax({
+          url: baseURL + '/api/datacrawling/estimate/show/all',
+          type: 'GET',
+          dataType: 'json',
+
+        })
+          .done(function (data) {
+            if (data['errno'] != 0) {
+              alert("服务器错误");
+            } else {
+              var html = tmpl.render(data['data']);
+              $("#esti-control-list-content").html(html);
+
+              //点击修改按钮之后就进入了另外的一个GET请求。
+              $(".change-estimate").off('click');
+              $(".change-estimate").on('click', function (event) {
+                //获取到按钮父标签的id才能GET到这一行的信息
+                var $a = $(event.target);
+                var $th = $a.parent('th');
+                var $id = $th.siblings('.esti-id');
+                var id = $id.text();
+                // console.log("id is "+id);
+                $.ajax({
+                  url: baseURL + '/api/datacrawling/estimate/change/' + id,
+                  type: 'GET',
+                  dataType: 'json'
+                })
+                  .done(function (data) {
+                    console.log("success");
+                    if (data['errno'] != 0) {
+                      alert("服务器错误");
+                    } else {
+                      //下面用获取到的这一行的数据对相对应的html表格进行赋值。
+                      $("#conf-estiId").val(id);
+                      $("#conf-linksXpath").val(data['data']['linksXpath']);
+                      $("#conf-pagesInfoId").val(data['data']['pagesInfoId']);
+                      $("#conf-contentXpath").val(data['data']['contentXpath']);
+                      $("#conf-walkTimes").val(data['data']['walkTimes']);
+                      $("#conf-startWord").val(data['data']['startWord']);
+                    }
+
+                    $("#edit-estiamte .return-btn").off('click');
+                    $("#edit-estimate .return-btn").on('click', function (event) {
+                      event.preventDefault();
+                      /* Act on the event */
+                      //移除当前的div，激活原来的div。
+                      $("#edit-estimate").removeClass("active");
+                      $("#esti-task-monitor").addClass('active');
+                      //confirmBtn的作用是返回到列表页面。
+                      $estiOperateBtn.click();
+                    });
+                    var validator = $("#confirm-estimate-form").validate({
+                      submitHandler: function () {
+                        var id = $("#conf-estiId").val();
+                        var linksXpath = $("#conf-linksXpath").val().trim();
+                        var pagesInfoId = $("#conf-pagesInfoId").val().trim();
+                        var contentXpath = $("#conf-contentXpath").val().trim();
+                        var walkTimes = $("#conf-walkTimes").val().trim();
+                        var startWord = $("#conf-startWord").val().trim();
+
+                        if (linksXpath == "") {
+                          alert("输入不能为空");
+                        }
+
+                        $.ajax({
+                          url: baseURL + '/api/datacrawling/estimate/update/' + id,
+                          type: 'POST',
+                          dataType: 'json',
+                          data: {
+                            linksXpath: linksXpath,
+                            pagesInfoId: pagesInfoId,
+                            contentXpath: contentXpath,
+                            walkTimes: walkTimes,
+                            startWord: startWord
+                          }
+                        })
+                          .done(function (data) {
+                            console.log("success");
+                            if (data['errno'] != 0) {
+                              alert("服务器错误");
+                            } else {
+                              alert("修改成功");
+                              $("#edit-estimate .return-btn").click();
+                            }
+                          })
+                          .fail(function () {
+                            console.log("error");
+                          })
+                          .always(function () {
+                            console.log("complete");
+                          });
+                      }
+                    });
+                    validator.resetForm();
+                  })
+                  .fail(function () {
+                    console.log("error");
+                  })
+                  .always(function () {
+                    console.log("complete");
+                  });
+              });//change js end
+
+              $(".esti-control-btn").off('click');
+              $(".esti-control-btn").on('click', function () {
+                var $tr = $(this).parents("tr");
+                var estiId = $tr.find("th.esti-id").text().trim();
+                var action = $(this).attr("name");
+                $.LoadingOverlay("show");
+                $.ajax({
+                  url: baseURL + '/api/datacrawling/estimoni?action=option&option=' + action + '&estiId=' + estiId,
+                  type: 'GET',
+                  dataType: 'json'
+                })
+                  .done(function (data) {
+                    $.LoadingOverlay("hide", true);
+                    alert(data['data']['msg']);
+                  })
+                  .fail(function () {
+                    console.log("error");
+                  })
+                  .always(function () {
+                    console.log("complete");
+                  });
+              });
+            }
+          })
+          .fail(function () {
+            console.log("error");
+          })
+          .always(function () {
+            console.log("complete");
+          });
+      }, 3000);
+
+
+    });
+
+    $estiOperateBtn.click();
+  })
+
+
+  
   $sensingBtn.on('click',function (event) {
 
     var $urlsensingBtn=$("#url-sensing-btn");
@@ -274,27 +572,35 @@ $(function(){
     $newTaskBtn.on('click',function(){
       $("input[name='running-mode'][value='unstructed']").on("click",function(){
         $("#driver-select-group").hide("slow");
+        $("#base-select-group").show('slow');
       });
       $("input[name='running-mode'][value='structed']").on("click",function(){
         $("#driver-select-group").show("slow");
+        $("#base-select-group").hide('slow');
       })
       $("input[name='running-mode'][value='unstructed']").click();
       var $taskName=$("#task-name");
       var $workPath=$("#work-path");
+      var $siteLink = $("#site-link");
       $taskName.val("");
       $workPath.val("");
+      $siteLink.val("");
       var validator=$("#task-form").validate({
         submitHandler:function(){
           var taskName=$taskName.val();
           var workPath=$workPath.val();
           var runningMode=$("input[name='running-mode']:checked").val();
           var driver=$("input[name='driver-select']:checked").val();
-          if(taskName==""||workPath==""){
+          var base=$("input[name='base-select']:checked").val();
+          var siteURL = $siteLink.val();
+          if(taskName==""||workPath==""||siteURL==""){
             alert("输入不能为空");
             return;
           }
           if(runningMode=='unstructed'){
             driver='none';
+          } else if (runningMode == 'structed') {
+            base="apiBased";
           }
           $.ajax({
             url: baseURL+'/api/datacrawling/task/new',
@@ -304,7 +610,9 @@ $(function(){
               taskName: taskName,
               workPath: workPath,
               runningMode:runningMode,
-              driver:driver
+              driver:driver,
+              base:base,
+              siteURL:siteURL,
             }
           })
           .done(function(data) {
@@ -348,103 +656,180 @@ $(function(){
             var $tr=$(this).parents("tr");
             var runningMode=$tr.find("th[name='running-mode']").text().trim();
             var driver=$tr.find("th[name='driver']").text().trim();
-            var $unstructedUndriver=$("#unstructed-undriver");
+            var base = $tr.find("th[name='base']").text().trim();
+            var $unstructedUrlbased=$("#unstructed-urlbased");
+            var $unstructedApibased=$("#unstructed-apibased");
             var $structedUndriver=$("#structed-undriver");
             var $structedDriver=$("#structed-driver");
             if(runningMode=="文本型"){
-              $unstructedUndriver.show();
+              if (base == "基于页面刷新") {
+                $unstructedUrlbased.show();
+                $unstructedApibased.hide();
+              } else {
+                $unstructedUrlbased.hide();
+                $unstructedApibased.show();
+              } 
               $structedDriver.hide();
               $structedUndriver.hide();
-            }else{
-              if(driver=="是"){
-                $unstructedUndriver.hide();
+            }else if (runningMode == "结构型") {
+              if (driver=="是") {
                 $structedDriver.show();
                 $structedUndriver.hide();
               }else{
-                $unstructedUndriver.hide();
                 $structedDriver.hide();
                 $structedUndriver.show();
               }
+              $unstructedApibased.hide();
+              $unstructedUrlbased.hide();
+
             }
-            var taskID=$tr.find("th.rule-id").text();
+            var taskID = $tr.find("th.rule-id").text();
             $(".rule-config-form .rule-id").val(taskID);
+
             var $urlParamConfigBtn=$("#url-param-config-btn");
             var $loginParamConfigBtn=$("#login-param-config-btn");
             var $downloadParamConfigBtn=$("#download-param-config-btn");
             $urlParamConfigBtn.off('click');
-            $urlParamConfigBtn.on('click',{taskID:taskID,runningMode:runningMode,driver:driver},function(event){
+            $urlParamConfigBtn.on('click',{taskID : taskID, runningMode : runningMode, driver : driver, base: base},function(event){
               var taskID=event.data.taskID;
               var form=null;
-              if(runningMode=='文本型'){
-                form=$("#unstructed-undriver");
-                $.ajax({
-                  url: baseURL+'/api/datacrawling/task/'+taskID,
-                  type: 'GET',
-                  dataType: 'json'
-                })
-                .done(function(data) {
-                  console.log("success");
-                  if(data['errno']!=0){
-                    alert("服务器错误");
-                  }else{
-                    form.find("input[name='site-link']").val(data['data']['siteURL']);
-                    form.find("input[name='search-link']").val(data['data']['searchURL']);
-                    form.find("input[name='keyword-name']").val(data['data']['keywordName']);
-                    form.find("input[name='page-name']").val(data['data']['pageParamName']);
-                    form.find("input[name='page-value']").val(data['data']['pageParamValue']);
-                    form.find("input[name='other-param-name']").val(data['data']['otherParamName']);
-                    form.find("input[name='other-param-value']").val(data['data']['otherParamValue']);
-                  }
-                })
-                .fail(function() {
-                  console.log("error");
-                })
-                .always(function() {
-                  console.log("complete");
-                });
-                var validator=$("#unstructed-undriver").validate({
-                  submitHandler:function(){
-                    var id=form.find("input.rule-id").val();
-                    var pageParamValue = form.find("input[name='page-value']").val().trim();
-                    if(pageParamValue.split(",").length != 2) {
-                      alert("开始页面号输入错误");
-                      return;
+              if (runningMode == '文本型') {
+                if (base == "基于页面刷新") {
+                  form=$("#unstructed-urlbased");
+                  $.ajax({
+                    url: baseURL+'/api/datacrawling/task/'+taskID,
+                    type: 'GET',
+                    dataType: 'json'
+                  })
+                  .done(function(data) {
+                    console.log("success");
+                    if(data['errno']!=0){
+                      alert("服务器错误");
+                    }else{
+                      form.find("p[name='site-link']").text(data['data']['siteURL']);
+                      form.find("input[name='search-link']").val(data['data']['searchURL']);
+                      form.find("input[name='keyword-name']").val(data['data']['keywordName']);
+                      form.find("input[name='page-name']").val(data['data']['pageParamName']);
+                      form.find("input[name='page-value']").val(data['data']['pageParamValue']);
+                      form.find("input[name='other-param-name']").val(data['data']['otherParamName']);
+                      form.find("input[name='other-param-value']").val(data['data']['otherParamValue']);
                     }
-                    $.ajax({
-                      url: baseURL+'/api/datacrawling/task/urlparam/'+id,
-                      type: 'POST',
-                      dataType: 'json',
-                      data: {
-                        siteURL:form.find("input[name='site-link']").val().trim(),
-                        searchURL:form.find("input[name='search-link']").val().trim(),
-                        keywordName:form.find("input[name='keyword-name']").val().trim(),
-                        pageParamName:form.find("input[name='page-name']").val().trim(),
-                        pageParamValue:form.find("input[name='page-value']").val().trim(),
-                        otherParamName:form.find("input[name='other-param-name']").val().trim(),
-                        otherParamValue:form.find("input[name='other-param-value']").val().trim()
+                  })
+                  .fail(function() {
+                    console.log("error");
+                  })
+                  .always(function() {
+                    console.log("complete");
+                  });
+                  var validator=form.validate({
+                    submitHandler:function(){
+                      var id=form.find("input.rule-id").val();
+                      var pageParamValue = form.find("input[name='page-value']").val().trim();
+                      if(pageParamValue.split(",").length != 2) {
+                        alert("开始页面号输入错误");
+                        return;
                       }
-                    })
-                    .done(function(data) {
-                      console.log("success");
-                      if(data['errno']!=0){
-                        alert(data['data']['msg']);
-                      }else{
-                        alert('修改成功');
-                        form.find("button[type='submit']").blur();
-                        $urlParamConfigBtn.click();
+                      $.ajax({
+                        url: baseURL+'/api/datacrawling/task/urlparam/'+id,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                          searchURL:form.find("input[name='search-link']").val().trim(),
+                          keywordName:form.find("input[name='keyword-name']").val().trim(),
+                          pageParamName:form.find("input[name='page-name']").val().trim(),
+                          pageParamValue:form.find("input[name='page-value']").val().trim(),
+                          otherParamName:form.find("input[name='other-param-name']").val().trim(),
+                          otherParamValue:form.find("input[name='other-param-value']").val().trim()
+                        }
+                      })
+                      .done(function(data) {
+                        console.log("success");
+                        if(data['errno']!=0){
+                          alert(data['data']['msg']);
+                        }else{
+                          alert('修改成功');
+                          form.find("button[type='submit']").blur();
+                          $urlParamConfigBtn.click();
+                        }
+                      })
+                      .fail(function() {
+                        console.log("error");
+                      })
+                      .always(function() {
+                        console.log("complete");
+                      });
+                    }
+                  });
+                  validator.resetForm();
+                } else {
+                  form = $("#unstructed-apibased");
+                  $.ajax({
+                    url: baseURL+'/api/datacrawling/task/'+taskID,
+                    type: 'GET',
+                    dataType: 'json'
+                  })
+                  .done(function(data) {
+                    console.log("success");
+                    if(data['errno']!=0){
+                      alert("服务器错误");
+                    }else{
+                      form.find("p[name='site-link']").text(data['data']['siteURL']);
+                      form.find("input[name='search-link']").val(data['data']['searchURL']);
+                      form.find("input[name='inputXpath']").val(data['data']['inputXpath']);
+                      form.find("input[name='submitXpath']").val(data['data']['inputSubmitXpath']);
+                      form.find("input[name='infoLinkXpath']").val(data['data']['infoLinkXpath']);
+                      form.find("input[name='payloadXpath']").val(data['data']['payloadXpath']);
+                    }
+                  })
+                  .fail(function() {
+                    console.log("error");
+                  })
+                  .always(function() {
+                    console.log("complete");
+                  });
+                  var validator=form.validate({
+                    submitHandler:function(){
+                      var id=form.find("input.rule-id").val();
+                      var payloadXpath = form.find("input[name='payloadXpath']").val().trim();
+                      if (payloadXpath.split(",").length != 2) {
+                        alert("数据Xpath输入格式错误");
+                        return;
                       }
-                    })
-                    .fail(function() {
-                      console.log("error");
-                    })
-                    .always(function() {
-                      console.log("complete");
-                    });
-                  }
-                });
-                validator.resetForm();
-              }else if(driver=='是'){
-                form=$("#structed-driver");
+                      $.ajax({
+                        url: baseURL+'/api/datacrawling/task/urlparam/'+id,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                          searchURL:form.find("input[name='search-link']").val().trim(),
+                          inputXpath:form.find("input[name='inputXpath']").val().trim(),
+                          inputSubmitXpath:form.find("input[name='submitXpath']").val().trim(),
+                          infoLinkXpath:form.find("input[name='infoLinkXpath']").val().trim(),
+                          payloadXpath: payloadXpath,
+                        }
+                      })
+                      .done(function(data) {
+                        console.log("success");
+                        if(data['errno']!=0){
+                          alert(data['data']['msg']);
+                        }else{
+                          alert('修改成功');
+                          form.find("button[type='submit']").blur();
+                          $urlParamConfigBtn.click();
+                        }
+                      })
+                      .fail(function() {
+                        console.log("error");
+                      })
+                      .always(function() {
+                        console.log("complete");
+                      });
+                    }
+                  });
+                  validator.resetForm();
+                }
+              }else {
+                if(driver=='是'){
+                  form=$("#structed-driver");
                 $.ajax({
                   url: baseURL+'/api/datacrawling/task/'+taskID,
                   type: 'GET',
@@ -455,7 +840,7 @@ $(function(){
                   if(data['errno']!=0){
                     alert("服务器错误");
                   }else{
-                    form.find("input[name='site-link']").val(data['data']['siteURL']);
+                    form.find("p[name='site-link']").text(data['data']['siteURL']);
                     form.find("input[name='nav-frame']").val(data['data']['iframeNav']);
                     form.find("input[name='nav-value']").val(data['data']['navValue']);
                     form.find("input[name='search-iframe']").val(data['data']['iframeCon']);
@@ -465,7 +850,6 @@ $(function(){
                     form.find("input[name='cur-pg-xpath']").val(data['data']['pageNumXPath']);
                     form.find("input[name='sub-pg-iframe']").val(data['data']['iframeSubParam']);
                     form.find("input[name='dropdown-list-class-name']").val(data['data']['arrow']);
-                    form.find("input[name='login-button']").val(data['data']['loginButton']);
                     form.find("input[name='other-param-name']").val(data['data']['otherParamName']);
                     form.find("input[name='other-param-value']").val(data['data']['otherParamValue']);
                   }
@@ -476,7 +860,7 @@ $(function(){
                 .always(function() {
                   console.log("complete");
                 });
-                var validator=$("#structed-driver").validate({
+                var validator=form.validate({
                   submitHandler:function(){
                     var id=form.find("input.rule-id").val();
                     $.ajax({
@@ -484,7 +868,6 @@ $(function(){
                       type: 'POST',
                       dataType: 'json',
                       data: {
-                        siteURL:form.find("input[name='site-link']").val().trim(),
                         iframeNav:form.find("input[name='nav-frame']").val().trim(),
                         navValue:form.find("input[name='nav-value']").val().trim(),
                         iframeCon:form.find("input[name='search-iframe']").val().trim(),
@@ -494,7 +877,6 @@ $(function(){
                         pageNumXPath:form.find("input[name='cur-pg-xpath']").val().trim(),
                         iframeSubParam:form.find("input[name='sub-pg-iframe']").val().trim(),
                         arrow:form.find("input[name='dropdown-list-class-name']").val().trim(),
-                          loginButton:form.find("input[name='login-button']").val().trim(),
                         otherParamName:form.find("input[name='other-param-name']").val().trim(),
                         otherParamValue:form.find("input[name='other-param-value']").val().trim()
                       }
@@ -518,7 +900,7 @@ $(function(){
                   }
                 });
                 validator.resetForm();
-              }else{
+                } else {
                 form=$("#structed-undriver");
                 $.ajax({
                   url: baseURL+'/api/datacrawling/task/'+taskID,
@@ -530,7 +912,7 @@ $(function(){
                   if(data['errno']!=0){
                     alert("服务器错误");
                   }else{
-                    form.find("input[name='site-link']").val(data['data']['siteURL']);
+                    form.find("p[name='site-link']").text(data['data']['siteURL']);
                     form.find("input[name='search-link']").val(data['data']['searchURL']);
                     form.find("input[name='keyword-name']").val(data['data']['keywordName']);
                     form.find("input[name='page-name']").val(data['data']['pageParamName']);
@@ -546,7 +928,7 @@ $(function(){
                 .always(function() {
                   console.log("complete");
                 });
-                var validator=$("#structed-undriver").validate({
+                var validator=form.validate({
                   submitHandler:function(){
                     var id=form.find("input.rule-id").val();
                     $.ajax({
@@ -554,7 +936,6 @@ $(function(){
                       type: 'POST',
                       dataType: 'json',
                       data: {
-                        siteURL:form.find("input[name='site-link']").val().trim(),
                         searchURL:form.find("input[name='search-link']").val().trim(),
                         keywordName:form.find("input[name='keyword-name']").val().trim(),
                         pageParamName:form.find("input[name='page-name']").val().trim(),
@@ -583,6 +964,7 @@ $(function(){
                   }
                 });
                 validator.resetForm();
+                }
               }
             });
             $loginParamConfigBtn.off('click');
@@ -763,10 +1145,11 @@ $(function(){
               });
               var $tr=$(this).parents("tr");
               var templateID=$tr.find("th[name='template-id']").text().trim();
+              var taskID = $tr.find("th[name='rule-id']").text().trim();
               var form=$("#change-template-form");
               form.find("input[name='template-id']").val(templateID);
               $.ajax({
-                url: baseURL+'/api/datacrawling/task/template/'+templateID,
+                url: baseURL+'/api/datacrawling/task/template/'+templateID + '?taskID=' + taskID,
                 type: 'GET',
                 dataType: 'json'
               })
@@ -778,6 +1161,22 @@ $(function(){
                   form.find("input[name='task-id']").val(data['data']['taskID']);
                   form.find("p[name='pattern-name']").text(data['data']['templateName']);
                   form.find("input[name='pattern-xpath']").val(data['data']['templateXpath']);
+                  if (data['data']['runningMode']=='structed') {
+                    form.find("input[name='pattern-type']").show();
+                    form.find("input[name='pattern-formula']").show();
+                    form.find("input[name='pattern-header-xpath']").show();
+                    form.find("input[name='pattern-type']").val(data['data']['templateType']);
+                    form.find("input[name='pattern-formula']").val(data['data']['templateFormula']);
+                    form.find("input[name='pattern-header-xpath']").val(data['data']['templateHeaderXpath']);
+                  } else {
+                    form.find("input[name='pattern-type']").val("");
+                    form.find("input[name='pattern-formula']").val("");
+                    form.find("input[name='pattern-header-xpath']").val("");
+                    form.find("input[name='pattern-type']").hide();
+                    form.find("input[name='pattern-formula']").hide();
+                    form.find("input[name='pattern-header-xpath']").hide();
+                
+                  }
                 }
               })
               .fail(function() {
@@ -797,7 +1196,10 @@ $(function(){
                     data: {
                       taskID:form.find("input[name='task-id']").val().trim(),
                       templateName:form.find("p[name='pattern-name']").text().trim(),
-                      templateXpath:form.find("input[name='pattern-xpath']").val().trim()
+                      templateXpath:form.find("input[name='pattern-xpath']").val().trim(),
+                      templateType:form.find("input[name='pattern-type']").val().trim(),
+                      templateFormula:form.find("input[name='pattern-formula']").val().trim(),
+                      templateHeaderXpath:form.find("input[name='pattern-header-xpath']").val().trim(),
                     }
                   })
                   .done(function(data) {
@@ -833,28 +1235,80 @@ $(function(){
       });
       $newTemplateBtn.off('click');
       $newTemplateBtn.on('click',function(){
-        var tmpl=$.templates("#task-id-list");
-        $.ajax({
+        $("input[name='pattern-mode'][value='unstructed']").off();
+        $("input[name='pattern-mode'][value='unstructed']").on('click', function() {
+          var form = $("#new-template-form");
+          var tmpl=$.templates("#task-id-list");
+          $.ajax({
           url: baseURL+'/api/datacrawling/task/all',
           type: 'GET',
           dataType: 'json',
-        })
-        .done(function(data) {
+          })
+          .done(function(data) {
           console.log("success");
           if(data['errno']!=0){
             alert("服务器错误");
           }else{
-            var content=data['data'];
-            var html=tmpl.render(content);
+            var content=data['data']['content'];
+            var newContent = [];
+            for (item in content) {
+              if (content[item]['runningMode']=='unstructed') {
+                newContent.push(content[item]);
+              }
+            }
+            var html=tmpl.render(newContent);
             $("#task-id-list-content").html(html);
           }
-        })
-        .fail(function() {
+          })
+          .fail(function() {
           console.log("error");
-        })
-        .always(function() {
+          })
+          .always(function() {
           console.log("complete");
+          });
+
+          form.find("input[name='pattern-type']").hide();
+          form.find("input[name='pattern-formula']").hide();
+          form.find("input[name='pattern-header-xpath']").hide();
         });
+        $("input[name='pattern-mode'][value='structed']").off();
+        $("input[name='pattern-mode'][value='structed']").on('click', function() {
+          var tmpl=$.templates("#task-id-list");
+          $.ajax({
+            url: baseURL+'/api/datacrawling/task/all',
+            type: 'GET',
+            dataType: 'json',
+          })
+          .done(function(data) {
+            console.log("success");
+            if(data['errno']!=0){
+              alert("服务器错误");
+            }else{
+              var content=data['data']['content'];
+              var newContent = [];
+              for (item in content) {
+                if (content[item]['runningMode'] == 'structed') {
+                  newContent.push(content[item]);
+                }
+              }
+
+              var html=tmpl.render(newContent);
+              $("#task-id-list-content").html(html);
+            }
+          })
+          .fail(function() {
+            console.log("error");
+          })
+          .always(function() {
+            console.log("complete");
+          });
+
+
+          form.find("input[name='pattern-type']").show();
+          form.find("input[name='pattern-formula']").show();
+          form.find("input[name='pattern-header-xpath']").show();
+        });
+        $("input[name='pattern-mode'][value='unstructed']").click();
         var form=$("#new-template-form");
         form.find("input[name='pattern-name']").val("");
         form.find("input[name='pattern-xpath']").val("");
@@ -867,7 +1321,10 @@ $(function(){
               data:{
                 taskID:form.find("select[name='task-id']").val().trim(),
                 templateName:form.find("input[name='pattern-name']").val().trim(),
-                templateXpath:form.find("input[name='pattern-xpath']").val().trim()
+                templateXpath:form.find("input[name='pattern-xpath']").val().trim(),
+                templateType:form.find("input[name='pattern-type']").val().trim(),
+                templateFormula:form.find("input[name='pattern-formula']").val().trim(),
+                templateHeaderXpath:form.find("input[name='pattern-header-xpath']").val().trim(),
               }
             })
             .done(function(data) {
