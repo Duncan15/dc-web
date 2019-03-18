@@ -55,7 +55,7 @@ public class DBUtil
 		if(dbUrl==null||dbUser==null||dbPass==null){
 			Properties prop=new Properties();
 			try {
-				prop.load(DBUtil.class.getResourceAsStream("/webapp/WEB-INF/application.properties"));
+				prop.load(DBUtil.class.getResourceAsStream("/application.properties"));
 			}catch (IOException e){
 				System.err.println(e);
 				return null;
