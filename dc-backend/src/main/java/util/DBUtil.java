@@ -671,39 +671,31 @@ public class DBUtil
 		return result;
 	}
 
-	/*
+/*
 	 * get the first record's webId from sql "select * from website"
 	 */
-	public static int getLasttaskID()
-	{
+	public static int getLasttaskID(String tableName, String id_col_name) {
 		int max = 0;
 		Connection conn = null;
 		PreparedStatement st = null;
 		ResultSet rs = null;
-		String sql = "select * from requesttable";
-		try
-		{
+		String sql = "select * from " + tableName;
+		try {
 			conn = getConn();
-			try
-			{
+			try {
 				st = (PreparedStatement) conn.prepareStatement(sql);
-			} catch (SQLException e)
-			{
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			try
-			{
+			try {
 				rs = st.executeQuery();
-			} catch (SQLException e)
-			{
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			try
-			{
+			try {
 				rs.last();
-				max =Integer.parseInt( rs.getString("requestID"));
-			} catch (Exception e)
-			{
+				max = Integer.parseInt(rs.getString(id_col_name));
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} finally {

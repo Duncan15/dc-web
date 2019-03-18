@@ -88,7 +88,7 @@ public class RequestServlet extends HttpServlet {
             String[] params = {"requestName", "requestDesc", "createdTime"};
             String[] con_values = {taskName, runningMode, createdTime};
             boolean isInserted = DBUtil.insert("requesttable", params, con_values);
-            int requestID = DBUtil.getLasttaskID();
+            int requestID = DBUtil.getLasttaskID("requesttable","requestID");
             Map<String, Object> data = new HashMap<>();
             data.put("requestID", requestID);
             response.setContentType("application/json");
