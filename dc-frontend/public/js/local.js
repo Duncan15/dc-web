@@ -294,6 +294,13 @@ $(function(){
           .always(function () {
             console.log("complete");
           });
+          if(handle==undefined){
+            console.log("undefined");
+          }else{
+            if(!$("#monitor").hasClass('active')){
+              clearInterval(handle);
+            }
+          }
       }, 3000);
 
 
