@@ -16,7 +16,11 @@ import java.util.*;
 
 @WebServlet(name = "EstimateServlet", urlPatterns = {"/api/datacrawling/estimate/*"})
 public class EstimateServlet extends HttpServlet {
-
+    public static String projectPath;
+    public static String setProjectPath(String pt){
+        projectPath=pt;
+        return projectPath;
+    }
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String[] pathParam = RequestParser.parsePath(request.getRequestURI(), 3);
@@ -25,7 +29,7 @@ public class EstimateServlet extends HttpServlet {
          *for estiamte/show/all
          * */
         if ("estimate".equals(pathParam[0]) && "show".equals(pathParam[1]) && "all".equals(pathParam[2])) {
-            String[] params1 = {"webId", "webName", "indexUrl", "createTime"};
+            String[] params1 = {"webId", "webName", "indexUrl"};
             String[][] websiteTable = DBUtil.select("website", params1);
 
             String[] params2 = {"status", "rateBar","result"};
@@ -34,21 +38,22 @@ public class EstimateServlet extends HttpServlet {
             int total = websiteTable.length+estiTable.length;
 
             List<Map<String, Object>> strings = new ArrayList<>();
-            for (int i=0;i<websiteTable.length;i++) {
-                Map<String, Object> estiData = new HashMap<>();
+            if (estiTable.length>0) {
+                for (int i = 0; i < websiteTable.length; i++) {
+                    Map<String, Object> estiData = new HashMap<>();
 
-                /*add each pair of one row*/
-                for (int j = 0; j < params1.length; j++) {
-                    estiData.put(params1[j], websiteTable[i][j]);
+                    /*add each pair of one row*/
+                    for (int j = 0; j < params1.length; j++) {
+                        estiData.put(params1[j], websiteTable[i][j]);
+                    }
+                    for (int j = 0; j < params2.length; j++) {
+                        estiData.put(params2[j], estiTable[i][j]);
+                    }
+                    /*add one row*/
+                    strings.add(estiData);
                 }
-                for (int j = 0; j < params2.length; j++) {
-                    estiData.put(params2[j], estiTable[i][j]);
-                }
-
-                /*add one row*/
-                strings.add(estiData);
             }
-
+//            response.getWriter().println(RespWrapper.build(strings,strings.size()));
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(RespWrapper.build(strings, total));

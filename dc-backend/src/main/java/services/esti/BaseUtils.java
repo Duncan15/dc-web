@@ -1,5 +1,6 @@
 package services.esti;
 
+import api.estimate.EstimateServlet;
 import org.ansj.domain.Result;
 import org.ansj.domain.Term;
 import org.ansj.recognition.impl.StopRecognition;
@@ -94,7 +95,7 @@ public class BaseUtils {
         text = text.replaceAll("[^(\\u4e00-\\u9fa5)]", "");
         StopRecognition fitler = new StopRecognition();
         List<String> filterWords = new ArrayList<>();
-        String filePath = "webapp\\WEB-INF\\stopwords.txt";
+        String filePath = EstimateServlet.projectPath + "WEB-INF\\stopwords.txt";
         File f = new File(filePath);
         FileInputStream fileInputStream = new FileInputStream(f);
         //读入停用词文件
