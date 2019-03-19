@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 8.0.13, for osx10.12 (x86_64)
+﻿-- MySQL dump 10.13  Distrib 8.0.13, for osx10.12 (x86_64)
 --
 -- Host: localhost    Database: webcrawler
 -- ------------------------------------------------------
@@ -102,6 +102,29 @@ LOCK TABLES `estimate` WRITE;
 /*!40000 ALTER TABLE `estimate` DISABLE KEYS */;
 /*!40000 ALTER TABLE `estimate` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+-- ----------------------------
+-- Table structure for formsbymd5
+-- ----------------------------
+DROP TABLE IF EXISTS `formsbymd5`;
+CREATE TABLE `formsbymd5`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `formMd5` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+
+-- ----------------------------
+-- Table structure for sense
+-- ----------------------------
+DROP TABLE IF EXISTS `sense`;
+CREATE TABLE `sense`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `homeUrl` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `targetUrl` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 --
 -- Table structure for table `extraConf`
