@@ -17,7 +17,7 @@ import java.util.*;
 @WebServlet(name = "MonitorServlet",urlPatterns = {"/api/datacrawling/task/monitor"})
 public class MonitorServlet extends HttpServlet {
 
-    private String start(RunningMode runningMode, Driver driver, int webID) throws IOException{
+    private String start(RunningMode runningMode, Base base, Driver driver, int webID) throws IOException{
         ProcessBuilder builder=null;
         String[][] ans = DBUtil.select("current", new String[]{"run"}, webID);
         if(ans.length != 0 &&!ans[0][0].equals("0")) {
@@ -39,7 +39,7 @@ public class MonitorServlet extends HttpServlet {
          //此处为爬取的jar包path
 //        String jarPath=new File(getServletContext().getRealPath("/"),"WEB-INF/lib/lp2.jar").getAbsolutePath();
 //        builder=new ProcessBuilder("java","-jar",jarPath,webid);
-        if(runningMode == RunningMode.unstructed && driver == Driver.none){
+        if(runningMode == RunningMode.unstructed && (base == Base.urlBased || base == Base.apiBased)){
 //            --web-id=116
 //            --jdbc-url=jdbc:mysql://localhost:3306/webcrawler?characterEncoding=UTF-8&useSSL=false&useAffectedRows=true&allowPublicKeyRetrieval=true
 //            --username=root
@@ -168,15 +168,17 @@ public class MonitorServlet extends HttpServlet {
                     RunningMode runningMode = RunningMode.ValueOf(websiteRow[2]);
                     Driver driver = Driver.valueOf(Integer.parseInt(websiteRow[3]));
                     Base base = Base.valueOf(Integer.parseInt(websiteRow[4]));
-                    String status = "未知";
-                    if(runningMode == RunningMode.unstructed && base == Base.urlBased) {
+                    String status = "已启动";
+                    if (runningMode == RunningMode.unstructed) {
+
                         for (int j = 2; j < 6; j++) {
                             if(current[i][j].equals("active")) {
-                                status = properties.getProperty(runningMode.name() + "." +driver.name() + "." +"status" + (j - 1));
+                                status = properties.getProperty(runningMode.name() + "." + base.name() + "." +"status" + (j - 1));
                                 break;
                             }
                         }
-                    } else {//structed模式下根据具体定制自定义
+
+                    } else if (runningMode == RunningMode.structed) {
                         for (int j = 2; j < 6; j++) {
                             if(current[i][j].equals("active")) {
                                 status = properties.getProperty(runningMode.name() + "." +driver.name() + "." +"status" + (j - 1));
@@ -184,6 +186,7 @@ public class MonitorServlet extends HttpServlet {
                             }
                         }
                     }
+
                     unit.put("status", status);
                 }
                 content.add(unit);
@@ -206,7 +209,7 @@ public class MonitorServlet extends HttpServlet {
                 response.getWriter().println(RespWrapper.build(data));
                 return;
             }
-            String param1[] = {"runningMode", "driver"};
+            String param1[] = {"runningMode", "driver", "base"};
             String[][] ans =DBUtil.select("website",param1 , webID);
             if(ans.length == 0) {
                 data.put("msg", "webID所对应的网站不存在");
@@ -215,9 +218,10 @@ public class MonitorServlet extends HttpServlet {
             }
             RunningMode runningMode = RunningMode.ValueOf(ans[0][0]);
             Driver driver = Driver.valueOf(Integer.parseInt(ans[0][1]));
+            Base base = Base.valueOf(Integer.parseInt(ans[0][2]));
             monitorOption = MonitorOption.valueOf(option);
             if (monitorOption == MonitorOption.start) {
-                String msg = start(runningMode, driver, webID);
+                String msg = start(runningMode, base, driver, webID);
                 data.put("msg", msg);
             } else if (monitorOption == MonitorOption.stop) {
                 String msg = stop(webID);

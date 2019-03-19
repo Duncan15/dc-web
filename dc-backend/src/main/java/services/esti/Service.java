@@ -1,4 +1,4 @@
-package esti;
+package services.esti;
 
 import org.ansj.splitWord.analysis.NlpAnalysis;
 

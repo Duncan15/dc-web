@@ -1,10 +1,8 @@
-package esti;
+package services.esti;
 
 import util.DBUtil;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 
 public class EstiThread extends Thread {
     private boolean isInterrupted = false;

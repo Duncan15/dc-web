@@ -1,4 +1,4 @@
-package esti;
+package services.esti;
 
 import org.ansj.domain.Result;
 import org.ansj.domain.Term;
