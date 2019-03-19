@@ -5,8 +5,8 @@ $(function(){
   var $monitorBtn=$("#monitor-btn");
   var $deliveryBtn=$("#delivery-btn");
   var $configBtn=$("#config-btn");
-  var $sensingBtn=$("#sensing-btn")
-  var $estimateBtn = $("#estimate-btn")
+  var $sensingBtn=$("#sensing-btn");
+  var $estimateBtn = $("#estimate-btn");
 
   //Bellow is code for estimate. 
 
