@@ -45,15 +45,14 @@ public class Initializer {
 	 * @param workfile
 	 * @param webId
 	 */
-	private static void createNewfile(String workfile,String webId){
+	private static void createNewfile(String workfile, String webId){
 
 		//create work dir
-		File workDir = new File(workfile);
+		File workDir = Paths.get(workfile, webId).toFile();
 		if(!workDir.exists()){
 			workDir.mkdirs();
 		}
 
-		
 	}
 
 
