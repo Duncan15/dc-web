@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
 
 @WebServlet(name = "RequestServlet", urlPatterns = {"/api/datacrawling/request/*"})
 public class RequestServlet extends HttpServlet {
-
     /*
      for api :/api/datacrawling/request/all
       */

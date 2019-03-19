@@ -5,8 +5,8 @@ $(function(){
   var $monitorBtn=$("#monitor-btn");
   var $deliveryBtn=$("#delivery-btn");
   var $configBtn=$("#config-btn");
-  var $sensingBtn=$("#sensing-btn")
-  var $estimateBtn = $("#estimate-btn")
+  var $sensingBtn=$("#sensing-btn");
+  var $estimateBtn = $("#estimate-btn");
 
   //Bellow is code for estimate. 
 
@@ -294,6 +294,13 @@ $(function(){
           .always(function () {
             console.log("complete");
           });
+          if(handle==undefined){
+            console.log("undefined");
+          }else{
+            if(!$("#monitor").hasClass('active')){
+              clearInterval(handle);
+            }
+          }
       }, 3000);
 
 

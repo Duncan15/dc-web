@@ -81,12 +81,20 @@
             <artifactId>lucene-queryparser</artifactId>
             <version>7.7.1</version>
         </dependency>
-
-
-
-
     </dependencies>
+
+
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>*.xml</include>
+                    <include>*.properties</include>
+                    <include>*.txt</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
