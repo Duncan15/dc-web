@@ -1,4 +1,4 @@
-package api.task;
+package api.deliver;
 
 import format.RespWrapper;
 import util.DBUtil;
@@ -49,7 +49,10 @@ public class DataServlet extends HttpServlet {
             List<Map<String,Object>> dataList=new ArrayList<Map<String,Object>>();
             String[][] result =null;
                 try{
-                    result = DBUtil.selectAllTable_data(tbName);
+					/**
+					 * 缺乏实现
+					 */
+//                    result = DBUtil(tbName);
                 }catch(Exception e){
                     response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,"暂无数据"));
                     return;
@@ -92,7 +95,7 @@ public class DataServlet extends HttpServlet {
 	
 	public static String[][] sortPage(String[][] result, int pageSize, int curPageNum) {
 
-		int beginId = ((curPageNum- 1) * pageSize) + 1;
+		int beginId = ((curPageNum- 1) *  pageSize) + 1;
 		int totalItemNum = result.length - 1;
 		int totalPage = totalItemNum / pageSize + 1;
 		int columns = result[0].length;
