@@ -74,12 +74,12 @@ public class DataServlet extends HttpServlet {
             data.put("tableName",tableName);
             dataList.add(data);
             Map<String,Object> data1=new HashMap<>();
-            data1.put("tableName",tableName+="_1");
+            data1.put("tableName",tableName+"_1");
             dataList.add(data1);
             String patternName[][]=DBUtil.select("pattern",pattern,param, paramValue);
             for(int i=0;patternName.length>0&&i<patternName[0].length;i++){
                 Map<String,Object> data2=new HashMap<>();
-                data2.put("tableName",patternName[i]);
+                data2.put("tableName",patternName[i]+id);
                 dataList.add(data2);
             }
             response.getWriter().println(RespWrapper.build(dataList,dataList.size()));
