@@ -49,10 +49,7 @@ public class DataServlet extends HttpServlet {
             List<Map<String,Object>> dataList=new ArrayList<Map<String,Object>>();
             String[][] result =null;
                 try{
-					/**
-					 * 缺乏实现
-					 */
-//                    result = DBUtil(tbName);
+                	result = DBUtil.selectAllTable_data(tbName);
                 }catch(Exception e){
                     response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,"暂无数据"));
                     return;
