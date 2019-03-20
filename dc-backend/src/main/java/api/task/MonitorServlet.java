@@ -98,7 +98,7 @@ public class MonitorServlet extends HttpServlet {
         Runtime rt = Runtime.getRuntime();
         if (System.getProperty("os.name").toLowerCase().indexOf("windows") > -1) {
             try {
-                rt.exec("taskkill /F /IM /pid " + pid);
+                rt.exec("taskkill /pid " + pid);
             } catch (IOException ex) {
                 //ignored
             }

@@ -991,6 +991,94 @@ public class DBUtil
 		}
 		return rs;
 	}
+    public static String[][] selectAllTable_data(String table) throws Exception  {
+
+        Connection conn = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        String[][] result = null;
+
+        String sql = "select * from " + table;
+        System.out.println(sql);
+        try {
+            try {
+                conn = getConn();
+            } catch (Exception e) {
+                release(conn, st, rs);
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+
+            e.printStackTrace();
+
+        }
+
+
+        st = (PreparedStatement) conn.prepareStatement(sql);
+
+        rs = st.executeQuery();
+
+        ResultSetMetaData mm = null;
+        try {
+            mm = rs.getMetaData();
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
+        int columns = 0;
+        try {
+            columns = mm.getColumnCount();
+
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
+        int rowCount = 0;
+        try {
+            rs.last();
+            rowCount = rs.getRow();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            rs.beforeFirst();
+
+        }
+        catch (SQLException e1) {
+            e1.printStackTrace();
+        }
+        int k = 0;
+        try {
+            result = new String[rowCount+1][columns];
+
+            for (int i = 1; i <= columns; i++) {
+                try {
+                    result[k][i - 1] = rs.getMetaData().getColumnName(i);
+                }
+                catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            while (rs.next()) {
+                for (int i = 1; i <= columns; i++) {
+                    try {
+                        result[k+1][i - 1] = rs.getString(i);
+                    }
+                    catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+                k++;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        release(conn, st, rs);
+        return result;
+    }
 
 	public static void main(String[] args){
 		String[] params_value = {"aaaa","prefix"};
