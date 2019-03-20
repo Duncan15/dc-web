@@ -186,7 +186,6 @@ public class MonitorServlet extends HttpServlet {
                             }
                         }
                     }
-
                     unit.put("status", status);
                 }
                 content.add(unit);
