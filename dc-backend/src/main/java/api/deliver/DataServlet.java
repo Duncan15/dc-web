@@ -34,10 +34,6 @@ public class DataServlet extends HttpServlet {
      */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
-		response.setHeader("content-type", "text/html;charset=UTF-8");
-		response.setCharacterEncoding("UTF-8");
-		request.setCharacterEncoding("UTF-8");
         String[] pathParam= RequestParser.parsePath(request.getRequestURI(),1);
         if(pathParam[0].equals("all")){
             String tbName = request.getParameter("tbName");
@@ -76,10 +72,10 @@ public class DataServlet extends HttpServlet {
             Map<String,Object> data1=new HashMap<>();
             data1.put("tableName",tableName+"_1");
             dataList.add(data1);
-            String patternName[][]=DBUtil.select("pattern",pattern,param, paramValue);
+            String patternName[][]=DBUtil.select("pattern_structed",pattern,param, paramValue);
             for(int i=0;patternName.length>0&&i<patternName[0].length;i++){
                 Map<String,Object> data2=new HashMap<>();
-                data2.put("tableName",patternName[i]+id);
+                data2.put("tableName",patternName[i][0]+id);
                 dataList.add(data2);
             }
             response.getWriter().println(RespWrapper.build(dataList,dataList.size()));
@@ -92,7 +88,7 @@ public class DataServlet extends HttpServlet {
 	
 	public static String[][] sortPage(String[][] result, int pageSize, int curPageNum) {
 
-		int beginId = ((curPageNum- 1) *  pageSize) + 1;
+		int beginId = ((curPageNum- 1) * pageSize) + 1;
 		int totalItemNum = result.length - 1;
 		int totalPage = totalItemNum / pageSize + 1;
 		int columns = result[0].length;
