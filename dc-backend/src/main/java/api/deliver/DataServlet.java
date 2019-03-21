@@ -1,4 +1,4 @@
-package api.task;
+package api.deliver;
 
 import format.RespWrapper;
 import util.DBUtil;
@@ -34,10 +34,6 @@ public class DataServlet extends HttpServlet {
      */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
-		response.setHeader("content-type", "text/html;charset=UTF-8");
-		response.setCharacterEncoding("UTF-8");
-		request.setCharacterEncoding("UTF-8");
         String[] pathParam= RequestParser.parsePath(request.getRequestURI(),1);
         if(pathParam[0].equals("all")){
             String tbName = request.getParameter("tbName");
@@ -49,7 +45,7 @@ public class DataServlet extends HttpServlet {
             List<Map<String,Object>> dataList=new ArrayList<Map<String,Object>>();
             String[][] result =null;
                 try{
-                    result = DBUtil.selectAllTable_data(tbName);
+                	result = DBUtil.selectAllTable_data(tbName);
                 }catch(Exception e){
                     response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,"暂无数据"));
                     return;
@@ -74,12 +70,12 @@ public class DataServlet extends HttpServlet {
             data.put("tableName",tableName);
             dataList.add(data);
             Map<String,Object> data1=new HashMap<>();
-            data1.put("tableName",tableName+="_1");
+            data1.put("tableName",tableName+"_1");
             dataList.add(data1);
-            String patternName[][]=DBUtil.select("pattern",pattern,param, paramValue);
+            String patternName[][]=DBUtil.select("pattern_structed",pattern,param, paramValue);
             for(int i=0;patternName.length>0&&i<patternName[0].length;i++){
                 Map<String,Object> data2=new HashMap<>();
-                data2.put("tableName",patternName[i]);
+                data2.put("tableName",patternName[i][0]+id);
                 dataList.add(data2);
             }
             response.getWriter().println(RespWrapper.build(dataList,dataList.size()));
