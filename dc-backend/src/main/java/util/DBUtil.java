@@ -999,7 +999,7 @@ public class DBUtil
         String[][] result = null;
 
         String sql = "select * from " + table;
-        System.out.println(sql);
+        //System.out.println(sql);
         try {
             try {
                 conn = getConn();
