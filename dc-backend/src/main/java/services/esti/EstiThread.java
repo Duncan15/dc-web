@@ -96,6 +96,10 @@ public class EstiThread extends Thread {
         this.setStatus("stop");
 
 
+
+
+
+
     }
 
 
