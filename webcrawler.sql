@@ -31,7 +31,7 @@ CREATE TABLE `apiBaseConf` (
   `infoLinkXpath` varchar(256) DEFAULT '' COMMENT '用于指定返回查询页面上数据链接的位置，用于帮助链接收集器收集链接\n当此值为空时，运行收集器的默认行为',
   `payloadXpath` varchar(256) NOT NULL DEFAULT '' COMMENT 'format:\nxpath,name',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,6 +40,7 @@ CREATE TABLE `apiBaseConf` (
 
 LOCK TABLES `apiBaseConf` WRITE;
 /*!40000 ALTER TABLE `apiBaseConf` DISABLE KEYS */;
+INSERT INTO `apiBaseConf` VALUES (2,124,'http://10.24.13.223:8080/hbky/privateFileManager/grwpgl','//*[@id=\"searchtext\"]','//div[@class=\"searchIcon\"]','//div[@id=\"allwenjian\"]//a[@href]','//div[@id=\"allwenjian\"]//div[@class=\"filename\"],title');
 /*!40000 ALTER TABLE `apiBaseConf` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -69,7 +70,6 @@ CREATE TABLE `current` (
 
 LOCK TABLES `current` WRITE;
 /*!40000 ALTER TABLE `current` DISABLE KEYS */;
-INSERT INTO `current` VALUES (122,'20','done','done','done','active',3426,0);
 /*!40000 ALTER TABLE `current` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -124,7 +124,7 @@ CREATE TABLE `extraConf` (
   `charset` varchar(256) NOT NULL DEFAULT '',
   `databaseSize` bigint(20) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -133,8 +133,41 @@ CREATE TABLE `extraConf` (
 
 LOCK TABLES `extraConf` WRITE;
 /*!40000 ALTER TABLE `extraConf` DISABLE KEYS */;
-INSERT INTO `extraConf` VALUES (8,122,'','','','','','',5,3000,'UTF-8',0);
+INSERT INTO `extraConf` VALUES (8,122,'','','','','','',5,3000,'UTF-8',0),(9,123,'txtUserName','txtPassword','431200000000','aaaaaa','http://ai.inspur.com/login','btnLogin',5,3000,'UTF-8',13),(10,124,'//*[@id=\"j_username\"]','//*[@id=\"j_password\"]','zongyb','abing201!2','http://10.24.13.223:8080/hbky/index.jsp#','//*[@id=\"submit_btn\"]',5,3000,'UTF-8',0),(11,125,'//*[@id=\"j_username\"]','//*[@id=\"j_password\"]','zongyb','abing201!2','http://10.24.13.223:8080/hbky/index.jsp#','//*[@id=\"submit_btn\"]',20,30000,'UTF-8',0);
 /*!40000 ALTER TABLE `extraConf` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `jsonBaseConf`
+--
+
+DROP TABLE IF EXISTS `jsonBaseConf`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `jsonBaseConf` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `webId` bigint(20) NOT NULL DEFAULT '0',
+  `prefix` varchar(1024) NOT NULL DEFAULT '',
+  `paramQuery` varchar(256) NOT NULL DEFAULT '',
+  `paramPage` varchar(256) NOT NULL DEFAULT '',
+  `pageStrategy` varchar(256) NOT NULL DEFAULT '',
+  `constString` varchar(1024) NOT NULL DEFAULT '',
+  `totalAddress` varchar(256) DEFAULT '' COMMENT '总页数在json response中的位置',
+  `contentAddress` varchar(256) NOT NULL DEFAULT '' COMMENT 'if value is an empty string, the root is cotent address',
+  `linkRule` varchar(1024) DEFAULT '',
+  `payloadRule` varchar(1024) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `jsonBaseConf`
+--
+
+LOCK TABLES `jsonBaseConf` WRITE;
+/*!40000 ALTER TABLE `jsonBaseConf` DISABLE KEYS */;
+INSERT INTO `jsonBaseConf` VALUES (1,125,'http://10.24.13.223:8080/hbky/search/getResult?','keyword','pageIndex','1,1','type=0&searchtime=0','/0/sum','','[http://10.24.13.223:8080/hbky/lucene/wjdownload?path=]+/path+[&filename=]+/filename+[&fileid=]+/fileid+[&category=]+/category','/content');
+/*!40000 ALTER TABLE `jsonBaseConf` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -179,7 +212,7 @@ CREATE TABLE `pattern_structed` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`),
   KEY `webId` (`webId`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -188,6 +221,7 @@ CREATE TABLE `pattern_structed` (
 
 LOCK TABLES `pattern_structed` WRITE;
 /*!40000 ALTER TABLE `pattern_structed` DISABLE KEYS */;
+INSERT INTO `pattern_structed` VALUES (123,'a','/html/body/div[3]/div/div[1]/div[1]/div[1]/div/table','(a+b)*(c+d)','formula','/',2),(123,'b','/html/body/div[3]/div/div[1]/div[2]/div[1]/div/table','(a+b)*(c+d)','formula','/',3),(123,'c','/html/body/div[3]/div/div[1]/div[1]/div[2]/div/table','(a+b)*(c+d)','formula','/',4),(123,'d','/html/body/div[3]/div/div[1]/div[2]/div[2]/table','(a+b)*(c+d)','formula','/',5),(123,'subpage_data','pcObj','pcObj','json','/subpage',6);
 /*!40000 ALTER TABLE `pattern_structed` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -259,7 +293,7 @@ CREATE TABLE `status` (
   `sLinkNum` int(11) unsigned NOT NULL DEFAULT '0',
   KEY `round` (`round`),
   KEY `statusId` (`statusId`)
-) ENGINE=InnoDB AUTO_INCREMENT=6772 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7130 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -268,7 +302,6 @@ CREATE TABLE `status` (
 
 LOCK TABLES `status` WRITE;
 /*!40000 ALTER TABLE `status` DISABLE KEYS */;
-INSERT INTO `status` VALUES (122,6732,'1','info',23,82),(122,6733,'1','query',0,8),(122,6734,'2','info',3,8),(122,6735,'2','query',0,1),(122,6736,'3','info',28,417),(122,6737,'3','query',0,34),(122,6738,'4','info',126,1318),(122,6739,'4','query',0,115),(122,6740,'5','info',6,210),(122,6741,'5','query',0,16),(122,6742,'6','info',34,117),(122,6743,'6','query',0,14),(122,6744,'7','info',0,0),(122,6745,'7','query',0,0),(122,6746,'8','info',0,0),(122,6747,'8','query',0,0),(122,6748,'9','info',9,47),(122,6749,'9','query',0,5),(122,6750,'10','info',25,56),(122,6751,'10','query',0,8),(122,6752,'11','info',0,0),(122,6753,'11','query',0,0),(122,6754,'12','info',0,1),(122,6755,'12','query',14,1),(122,6756,'13','info',0,0),(122,6757,'13','query',0,0),(122,6758,'14','info',10,51),(122,6759,'14','query',0,8),(122,6760,'15','info',8,3),(122,6761,'15','query',1,2),(122,6762,'16','info',13,3),(122,6763,'16','query',0,3),(122,6764,'17','info',5,12),(122,6765,'17','query',0,2),(122,6766,'18','info',0,163),(122,6767,'18','query',0,13),(122,6768,'19','info',15,332),(122,6769,'19','query',0,27),(122,6770,'20','info',23,606),(122,6771,'20','query',8,424);
 /*!40000 ALTER TABLE `status` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -294,7 +327,7 @@ CREATE TABLE `structedparam` (
   `paramList` varchar(255) NOT NULL DEFAULT '',
   `paramValueList` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -303,6 +336,7 @@ CREATE TABLE `structedparam` (
 
 LOCK TABLES `structedparam` WRITE;
 /*!40000 ALTER TABLE `structedparam` DISABLE KEYS */;
+INSERT INTO `structedparam` VALUES (2,123,'ifmNav','贫困县','ifmCon','btnSearch','Aaa003','/html/body/div[3]/div/div[2]/table/tbody/tr/td[8]/a','/html/body/div[3]/div/div[2]/table/tbody/tr/td[5]/input','Aaa003','combo-arrow','/','_easyui_combobox_i8_0,_easyui_combobox_i8_1,_easyui_combobox_i8_2,_easyui_combobox_i8_3,_easyui_combobox_i8_4,_easyui_combobox_i8_5');
 /*!40000 ALTER TABLE `structedparam` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -355,7 +389,7 @@ CREATE TABLE `website` (
   `creator` varchar(256) NOT NULL DEFAULT '' COMMENT 'task creator',
   `base` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0:url based\n1:api based',
   PRIMARY KEY (`webId`)
-) ENGINE=InnoDB AUTO_INCREMENT=123 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=126 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -364,7 +398,7 @@ CREATE TABLE `website` (
 
 LOCK TABLES `website` WRITE;
 /*!40000 ALTER TABLE `website` DISABLE KEYS */;
-INSERT INTO `website` VALUES (122,'诏安县政府官网','http://www.zhaoan.gov.cn/cms/html/zaxrmzf/index.html','/Users/cwc/Desktop/tencent/data-crawling/zhaoan','unstructed',0,1,'2019-03-16 19:25:56','',0);
+INSERT INTO `website` VALUES (122,'诏安县政府官网','http://www.zhaoan.gov.cn/cms/html/zaxrmzf/index.html','/Users/cwc/Desktop/tencent/data-crawling/zhaoan','unstructed',0,1,'2019-03-16 19:25:56','',0),(123,'扶贫','http://ai.inspur.com/Main/Archive','/Users/cwc/Desktop/tencent/data-crawling/provty','structed',1,1,'2019-03-19 14:15:51','',1),(124,'网盘爬取','http://10.24.13.223:8080/hbky/index.jsp#','/Users/cwc/Desktop/tencent/data-crawling/pan','unstructed',0,1,'2019-03-24 14:48:30','',1),(125,'网盘全文检索','http://10.24.13.223:8080/hbky/index.jsp#','/Users/cwc/Desktop/tencent/data-crawling/pan','unstructed',0,1,'','',2);
 /*!40000 ALTER TABLE `website` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -377,4 +411,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-03-19 12:19:29
+-- Dump completed on 2019-04-06 14:43:26
