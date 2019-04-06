@@ -43,6 +43,42 @@ LOCK TABLES `apiBaseConf` WRITE;
 /*!40000 ALTER TABLE `apiBaseConf` ENABLE KEYS */;
 UNLOCK TABLES;
 
+
+-- ----------------------------
+-- Table structure for formsbymd5
+-- ----------------------------
+DROP TABLE IF EXISTS `formsbymd5`;
+CREATE TABLE `formsbymd5`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `formMd5` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 53 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+
+-- ----------------------------
+-- Table structure for sensestate
+-- ----------------------------
+DROP TABLE IF EXISTS `sensestate`;
+CREATE TABLE `sensestate`  (
+  `id` int(20) NOT NULL,
+  `allLinks` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  `trueLinks` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for sense
+-- ----------------------------
+DROP TABLE IF EXISTS `sense`;
+CREATE TABLE `sense`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `homeUrl` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `targetUrl` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 158 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+
 --
 -- Table structure for table `current`
 --
