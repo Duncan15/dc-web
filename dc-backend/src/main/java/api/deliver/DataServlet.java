@@ -45,11 +45,7 @@ public class DataServlet extends HttpServlet {
             List<Map<String,Object>> dataList=new ArrayList<Map<String,Object>>();
             String[][] result =null;
                 try{
-<<<<<<< HEAD:dc-backend/src/main/java/api/task/DataServlet.java
-//                    result = DBUtil.selectAllTable_data(tbName);
-=======
-                	result = DBUtil.selectAllTable_data(tbName);
->>>>>>> e780d1d4875412d9a253933b7fce59dc5c25e7a3:dc-backend/src/main/java/api/deliver/DataServlet.java
+					     result = DBUtil.selectAllTable_data(tbName);
                 }catch(Exception e){
                     response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,"暂无数据"));
                     return;
