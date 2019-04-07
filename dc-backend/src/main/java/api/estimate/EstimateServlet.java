@@ -16,10 +16,12 @@ import java.util.*;
 @WebServlet(name = "EstimateServlet", urlPatterns = {"/api/datacrawling/estimate/*"})
 public class EstimateServlet extends HttpServlet {
     public static String projectPath;
-    public static String setProjectPath(String pt){
-        projectPath=pt;
+
+    public static String setProjectPath(String pt) {
+        projectPath = pt;
         return projectPath;
     }
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String[] pathParam = RequestParser.parsePath(request.getRequestURI(), 3);
@@ -31,18 +33,22 @@ public class EstimateServlet extends HttpServlet {
         if ("estimate".equals(pathParam[0]) && "show".equals(pathParam[1]) && "all".equals(pathParam[2])) {
             String[] params1 = {"webId", "webName", "indexUrl"};
             String[][] websiteTable = DBUtil.select("website", params1);
-            String[] params2 = {"status", "rateBar","result"};
+            String[] params2 = {"status", "rateBar", "result"};
 
-            HashSet<String>estiIdSet=new HashSet<>();
-            String[][]estiIdArray= DBUtil.select("estimate", new String[]{"estiId"});
-            for (int j = 0; j < estiIdArray.length; j++) {
-                estiIdSet.add(estiIdArray[j][0]);
+            HashSet<String> estiIdSet = new HashSet<>();
+            String[][] estiIdArray = DBUtil.select("estimate", new String[]{"estiId"});
+            if (estiIdArray.length != 0) {
+                for (int j = 0; j < estiIdArray.length; j++) {
+                    estiIdSet.add(estiIdArray[j][0]);
+                }
             }
 
             int total = websiteTable.length;
 
             List<Map<String, Object>> strings = new ArrayList<>();
-            if (websiteTable.length>0) {
+            if (websiteTable.length > 0) {
+                //下面处理每一行的数据。
+
                 for (int i = 0; i < websiteTable.length; i++) {
                     Map<String, Object> estiData = new HashMap<>();
                     /*add each pair of one row*/
@@ -50,27 +56,27 @@ public class EstimateServlet extends HttpServlet {
                         estiData.put(params1[j], websiteTable[i][j]);
                     }
                     /*check if this line of estiTable contains data
-                    * line num is i*/
+                     * line num is i*/
 
                     //websiteTable[i][0] is webId
-                    if (estiIdSet.contains(websiteTable[i][0])){
-                        String[][]estiLine= DBUtil.select("estimate", params2,new String[]{"estiId"},new String[]{websiteTable[i][0]});
-                        for (int j = 0; j < params2.length; j++) {
+                    if (!estiIdSet.contains(websiteTable[i][0])) {
+                        DBUtil.insert("estimate", new String[]{"estiId"}, new String[]{websiteTable[i][0]});
+                    }
+                    String[][] estiLine = DBUtil.select("estimate", params2, new String[]{"estiId"}, new String[]{websiteTable[i][0]});
+                    for (int j = 0; j < params2.length; j++) {
 
-                            if(estiLine[0][j].equals("")||estiLine[0][j].isEmpty()){
-                                estiData.put(params2[j], "暂无");
-                            }else{
-                                estiData.put(params2[j], estiLine[0][j]);
-                            }
+                        if (estiLine[0][j].equals("") || estiLine[0][j].isEmpty()) {
+                            estiData.put(params2[j], "暂无");
+                        } else {
+                            estiData.put(params2[j], estiLine[0][j]);
                         }
                     }
-                    if(estiData.get("status").equals("start")){
-                        estiData.replace("status",estiData.get("status"),"已开始");
+                    if (estiData.get("status").equals("start")) {
+                        estiData.replace("status", estiData.get("status"), "已开始");
                     }
-                    if(estiData.get("status").equals("stop")){
-                        estiData.replace("status",estiData.get("status"),"已停止");
+                    if (estiData.get("status").equals("stop")) {
+                        estiData.replace("status", estiData.get("status"), "已停止");
                     }
-
                     /*add one row*/
                     strings.add(estiData);
                 }
@@ -90,23 +96,23 @@ public class EstimateServlet extends HttpServlet {
              * */
             String estiId = pathParam[2];
             /*
-            * check whether ID is in the estimate table;
-            * if not,we create one.Then update.
-            * if in,we directly get.
-            * */
+             * check whether ID is in the estimate table;
+             * if not,we create one.Then update.
+             * if in,we directly get.
+             * */
             String[][] IDArray = DBUtil.select("estimate", new String[]{"estiId"});
-            HashSet<String>IDset=new HashSet<>();
-            for(String[] aID:IDArray){
+            HashSet<String> IDset = new HashSet<>();
+            for (String[] aID : IDArray) {
                 IDset.add(aID[0]);
             }
 
-            if (!IDset.contains(estiId)){
+            if (!IDset.contains(estiId)) {
                 DBUtil.insert("estimate", new String[]{"estiId"}, new String[]{estiId});
             }
 
             Map<String, Object> data = new HashMap<>();
             String[] params = new String[]{
-                    "linksXpath","contentXpath", "startWord","walkTimes","contentLocation","querySend"
+                    "linksXpath", "contentXpath", "startWord", "walkTimes", "contentLocation", "querySend"
             };
             String[] conParams = {"estiId"};
             String[] conPalues = {estiId};
@@ -121,23 +127,23 @@ public class EstimateServlet extends HttpServlet {
             }
 
             String[][] IDArray1 = DBUtil.select("urlbaseconf", new String[]{"webId"});
-            HashSet<String>IDset1=new HashSet<>();
-            for(String[] aID:IDArray1){
+            HashSet<String> IDset1 = new HashSet<>();
+            for (String[] aID : IDArray1) {
                 IDset1.add(aID[0]);
             }
-            String[] params1=new String[]{
-                "prefix","paramQuery","paramPage","startPageNum","paramList","paramValueList"
+            String[] params1 = new String[]{
+                    "prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList"
             };
             String[] conParams1 = {"webId"};
             String[] conPalues1 = {estiId};
 
             String[][] urlBaseConfData;
             if (IDset1.contains(estiId)) {
-                urlBaseConfData= DBUtil.select("urlbaseconf", params1, conParams1, conPalues1);
-            }else {
-                urlBaseConfData= new String[1][params1.length];
-                for (int i=0;i<params1.length;i++){
-                  urlBaseConfData[0][i]="";
+                urlBaseConfData = DBUtil.select("urlbaseconf", params1, conParams1, conPalues1);
+            } else {
+                urlBaseConfData = new String[1][params1.length];
+                for (int i = 0; i < params1.length; i++) {
+                    urlBaseConfData[0][i] = "";
                 }
             }
 
@@ -150,17 +156,14 @@ public class EstimateServlet extends HttpServlet {
             }
 
 
-
-
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(RespWrapper.build(data));
-        }
-            else
-        {
+        } else {
             response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, null));
         }
     }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         String[] pathParam = RequestParser.parsePath(request.getRequestURI(), 3);
@@ -176,17 +179,17 @@ public class EstimateServlet extends HttpServlet {
             String contentXpath = request.getParameter("contentXpath");
             String walkTimes = request.getParameter("walkTimes");
             String startWord = request.getParameter("startWord");
-            String contentLocation=request.getParameter("contentLocation");
-            String querySend=request.getParameter("querySend");
+            String contentLocation = request.getParameter("contentLocation");
+            String querySend = request.getParameter("querySend");
 
             String[] params = new String[]{
-                    "linksXpath","contentXpath", "walkTimes","startWord","contentLocation","querySend"
+                    "linksXpath", "contentXpath", "walkTimes", "startWord", "contentLocation", "querySend"
             };
-            String []values={linksXpath,contentXpath,walkTimes,startWord,contentLocation,querySend};
+            String[] values = {linksXpath, contentXpath, walkTimes, startWord, contentLocation, querySend};
             String[] conParams = {"estiId"};
             String[] conValues = {estiId};
-            boolean aBool= DBUtil.update("estimate",params,values,conParams,conValues);
-            if (aBool){
+            boolean aBool = DBUtil.update("estimate", params, values, conParams, conValues);
+            if (aBool) {
                 System.out.println("The conf is updated.");
             }
 
