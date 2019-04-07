@@ -1,7 +1,7 @@
 package enums;
 
 public enum  Base {
-    urlBased(0), apiBased(1);
+    urlBased(0), apiBased(1), jsonBase(2);
     private int v;
     private Base(int v) {
         this.v = v;
