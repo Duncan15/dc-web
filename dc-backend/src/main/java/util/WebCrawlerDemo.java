@@ -11,15 +11,49 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
- 
+
 public class WebCrawlerDemo {
- 
-    public static void main(String[] args) {
-        WebCrawlerDemo webCrawlerDemo = new WebCrawlerDemo();
-        webCrawlerDemo.myPrint("http://www.zkztmy.com/index.aspx");
+    private String baseLink1="";
+    private int numOfLink=1;
+    private boolean stopFlag = true;
+    public void setBaseLink1(String url){
+        baseLink1=url;
+    }
+
+    public void crawlerStop(){
+        stopFlag = false;
+
     }
  
     public void myPrint(String baseUrl) {
+
+        if(CusWebClient.judgeurl(baseUrl)){
+            //	CusWebClient.method1("C:\\Users\\27148\\Desktop\\pp8.txt",newLink);
+            System.out.println("+++++++++++");
+            System.out.println("发现正确url"+baseUrl);
+            System.out.println("+++++++++++");
+
+            String webId1 = DBUtil.select("website",new String[]{"webId"},new String[]{"indexUrl"},new String[]{baseLink1})[0][0];
+            int num=Integer.valueOf(DBUtil.select("sensestate",new String[]{"trueLinks"},new String[]{"id"},new String[]{webId1})[0][0]);
+            String numAdd=String.valueOf(num+1);
+            DBUtil.update("sensestate",new String[]{"trueLinks"},new String[]{numAdd},new String[]{"id"},new String[]{webId1});
+            try{
+                String [] p1={"homeUrl","targetUrl"};
+                String [] p2={baseUrl,baseUrl};
+                DBUtil.insert("sense",p1,p2);}
+            catch (Exception e){
+
+                System.out.println("写入数据库error");
+
+                System.out.println("[[[[[[[[[[[[[[[[[[[[");
+                System.out.println(e);
+                System.out.println("[[[[[[[[[[[[[[[[[[[");
+            }
+        }
+
+
+
+
         Map<String, Boolean> oldMap = new LinkedHashMap<String, Boolean>(); // 存储链接-是否被遍历
                                                                             // 键值对
         String oldLinkHost = "";  //host
@@ -57,8 +91,11 @@ public class WebCrawlerDemo {
         for (Map.Entry<String, Boolean> mapping : oldMap.entrySet()) {
             System.out.println("link:" + mapping.getKey() + "--------check:"
                     + mapping.getValue());
-          
+//stopTest1
+            if(stopFlag){
+//stopTest1
             // 如果没有被遍历过
+
             if (!mapping.getValue()) {
                 oldLink = mapping.getKey();
                 // 发起GET请求
@@ -69,7 +106,7 @@ public class WebCrawlerDemo {
                     connection.setRequestMethod("GET");
                     connection.setConnectTimeout(2000);
                     connection.setReadTimeout(2000);
- 
+
                     if (connection.getResponseCode() == 200) {
                         InputStream inputStream = connection.getInputStream();
                         BufferedReader reader = new BufferedReader(
@@ -78,7 +115,7 @@ public class WebCrawlerDemo {
                         Pattern pattern = Pattern
                                 .compile("<a.*?href=[\"']?((https?://)?/?[^\"']+)[\"']?.*?>(.+)</a>");
                         Matcher matcher = null;
-                        while ((line = reader.readLine()) != null) {
+                        while (((line = reader.readLine()) != null)&&stopFlag) {
                             matcher = pattern.matcher(line);
                             if (matcher.find()) {
                                 String newLink = matcher.group(1).trim(); // 链接
@@ -91,7 +128,7 @@ public class WebCrawlerDemo {
                                         newLink = oldLinkHost + "/" + newLink;
                                 }
                                 //去除链接末尾的 /
-                                if(newLink.endsWith("/"))
+                                if (newLink.endsWith("/"))
                                     newLink = newLink.substring(0, newLink.length() - 1);
                                 //去重，并且丢弃其他网站的链接
                                 if (!oldMap.containsKey(newLink)
@@ -99,19 +136,44 @@ public class WebCrawlerDemo {
                                         && newLink.startsWith(oldLinkHost)) {
                                     // System.out.println("temp2: " + newLink);
                                     newMap.put(newLink, false);
-                                    System.out.println("新的"+newLink);
-//                                    if(mywebclient2.judgeurl(newLink)){
-//                                     	mywebclient2.method1("C:\\Users\\27148\\Desktop\\pp8.txt",newLink);
-//                                     
-//                                     }
-                                  if(CusWebClient.judgeurl(newLink)){
-                                 	//mywebclient3.method1("C:\\Users\\27148\\Desktop\\pp8.txt",newLink);
-                                      String [] p1={"homeUrl","targetUrl"};
-                                      String [] p2={oldLinkHost,newLink};
-                                    DBUtil.insert("sense",p1,p2);
-                                 }
-                                    
-                                    
+                                    System.out.println("新的" + newLink);
+                                    if (stopFlag) {
+                                        numOfLink += 1;
+                                        String webId2 = DBUtil.select("website", new String[]{"webId"}, new String[]{"indexUrl"}, new String[]{baseLink1})[0][0];
+                                        int num2 = Integer.valueOf(DBUtil.select("sensestate", new String[]{"allLinks"}, new String[]{"id"}, new String[]{webId2})[0][0]);
+                                        String numAdd2 = String.valueOf(numOfLink);
+                                        DBUtil.update("sensestate", new String[]{"allLinks"}, new String[]{numAdd2}, new String[]{"id"}, new String[]{webId2});
+                                    }
+
+
+                                    if (CusWebClient.judgeurl(newLink)) {
+                                        //	CusWebClient.method1("C:\\Users\\27148\\Desktop\\pp8.txt",newLink);
+                                        System.out.println("+++++++++++");
+                                        System.out.println("发现正确url" + newLink);
+                                        System.out.println("+++++++++++");
+
+                                        if (stopFlag) {
+                                            String webId1 = DBUtil.select("website", new String[]{"webId"}, new String[]{"indexUrl"}, new String[]{baseLink1})[0][0];
+                                            int num = Integer.valueOf(DBUtil.select("sensestate", new String[]{"trueLinks"}, new String[]{"id"}, new String[]{webId1})[0][0]);
+                                            String numAdd = String.valueOf(num + 1);
+                                            DBUtil.update("sensestate", new String[]{"trueLinks"}, new String[]{numAdd}, new String[]{"id"}, new String[]{webId1});
+                                        }
+                                        try {
+                                            String[] p1 = {"homeUrl", "targetUrl"};
+                                            String[] p2 = {baseLink1, newLink};
+                                            DBUtil.insert("sense", p1, p2);
+                                        } catch (Exception e) {
+
+                                            System.out.println("写入数据库error");
+
+                                            System.out.println("[[[[[[[[[[[[[[[[[[[[");
+                                            System.out.println(e);
+                                            System.out.println("[[[[[[[[[[[[[[[[[[[");
+                                        }
+                                    }
+
+
+
                                 }
                             }
                         }
@@ -121,7 +183,7 @@ public class WebCrawlerDemo {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
- 
+
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -129,13 +191,28 @@ public class WebCrawlerDemo {
                 }
                 oldMap.replace(oldLink, false, true);
             }
+//stopTest1
         }
-        //有新链接，继续遍历
-        if (!newMap.isEmpty()) {
-            oldMap.putAll(newMap);
-            oldMap.putAll(crawlLinks(oldLinkHost, oldMap));  //由于Map的特性，不会导致出现重复的键值对
+//stopTest1
+
+
+        }
+
+        if(stopFlag) {
+            //有新链接，继续遍历
+            if (!newMap.isEmpty()) {
+                oldMap.putAll(newMap);
+                oldMap.putAll(crawlLinks(oldLinkHost, oldMap));  //由于Map的特性，不会导致出现重复的键值对
+            }
         }
         return oldMap;
     }
- 
+
+
+    public static void main(String[] args) {
+        WebCrawlerDemo webCrawlerDemo = new WebCrawlerDemo();
+        webCrawlerDemo.setBaseLink1("http://www.caai.cn/");
+        webCrawlerDemo.myPrint("http://www.caai.cn/");
+    }
+
 }
