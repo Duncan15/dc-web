@@ -159,6 +159,42 @@ public class TaskServlet extends HttpServlet {
                             data.put("msg","url参数修改失败");
                             response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
                         }
+                    }else if(Base.jsonBased == base){
+                        //TODO
+                        String prefix = request.getParameter("prefix");
+                        String paramQuery = request.getParameter("paramQuery");
+                        String paramPage = request.getParameter("paramPage");
+                        String pageStrategy = request.getParameter("pageStrategy");
+                        String constString = request.getParameter("constString");
+                        String totalAddress = request.getParameter("totalAddress");
+                        String contentAddress = request.getParameter("contentAddress");
+                        String linkRule = request.getParameter("linkRule");
+                        String payloadRule = request.getParameter("payloadRule");
+
+                        //check whether jsonBaseConf exists or not
+                        if (!Verifier.verifyExist(webId, "jsonBaseConf")) {
+                            DBUtil.insert("jsonBaseConf", new String[]{"webId"}, new String[]{"" + webId});
+                        }
+
+                        String[] params = {"prefix", "paramQuery", "paramPage", "pageStrategy", "constString", "totalAddress", "contentAddress", "linkRule", "payloadRule"};
+                        String[] values = {prefix, paramQuery, paramPage, pageStrategy, constString, totalAddress, contentAddress, linkRule, payloadRule};
+                        if (DBUtil.update("jsonBaseConf", params, values, webId)) {
+                            DBUtil.update("website", new String[]{"usable"}, new String[]{"" + usable.getValue()}, webId);
+                            data.put("prefix",prefix);
+                            data.put("paramQuery", paramQuery);
+                            data.put("paramPage", paramPage);
+                            data.put("pageStrategy", pageStrategy);
+                            data.put("constString", constString);
+                            data.put("totalAddress",totalAddress);
+                            data.put("contentAddress", contentAddress);
+                            data.put("linkRule", linkRule);
+                            data.put("payloadRule", payloadRule);
+                            response.getWriter().println(RespWrapper.build(data));
+                        } else {
+                            data.put("msg","url参数修改失败");
+                            response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
+                        }
+
                     }
                 } else if (RunningMode.structed == runningMode) {
                     if (Driver.have == driver) {
