@@ -118,6 +118,7 @@ DROP TABLE IF EXISTS `estimate`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `estimate` (
+ `contentLocation` varchar(255) DEFAULT '',
   `startWord` varchar(255) NOT NULL DEFAULT '',
   `estiId` int(20) unsigned NOT NULL AUTO_INCREMENT,
   `linksXpath` varchar(255) NOT NULL DEFAULT '',
@@ -127,6 +128,8 @@ CREATE TABLE `estimate` (
   `status` varchar(255) NOT NULL DEFAULT '',
   `rateBar` varchar(255) NOT NULL DEFAULT '',
   `walkTimes` varchar(255) NOT NULL DEFAULT '',
+  `querySend` varchar(255) NOT NULL DEFAULT '',
+  `pid` varchar(255) DEFAULT '',
   PRIMARY KEY (`estiId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
