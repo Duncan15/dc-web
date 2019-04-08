@@ -254,14 +254,14 @@ public class TaskServlet extends HttpServlet {
                         String[] paramsValue = {paramQueryValueList};
 
                         //check whether urlBaseConf exists or not
-                        if (!Verifier.verifyExist(webId, "urlBaseConf")) {
-                            DBUtil.insert("urlBaseConf", new String[]{"webId"}, new String[]{"" + webId});
+                        if (!Verifier.verifyExist(webId, "urlbaseconf")) {
+                            DBUtil.insert("urlbaseconf", new String[]{"webId"}, new String[]{"" + webId});
                         }
                         if (!Verifier.verifyExist(webId, "queryparam")) {
                             DBUtil.insert("queryparam", new String[]{"webId"}, new String[]{"" + webId});
                         }
 
-                        if(DBUtil.update("urlBaseConf", param, paramValue, webId)&&DBUtil.update("queryparam", params, paramsValue, webId)) {
+                        if(DBUtil.update("urlbaseconf", param, paramValue, webId)&&DBUtil.update("queryparam", params, paramsValue, webId)) {
                             DBUtil.update("website", new String[]{"usable"}, new String[]{"" + usable.getValue()}, webId);
                             data.put("searchURL",searchURL);
                             data.put("keywordName",keywordName);
@@ -270,6 +270,48 @@ public class TaskServlet extends HttpServlet {
                             data.put("pageParamValue",pageParamValue);
                             data.put("otherParamValue",otherParamValue);
                             data.put("paramQueryValueList",paramQueryValueList);
+                            response.getWriter().println(RespWrapper.build(data));
+                        } else {
+                            data.put("msg","url参数修改失败");
+                            response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
+                        }
+                    }else if (Driver.json == driver) {
+                        String searchURL = request.getParameter("searchURL");
+                        String keywordName = request.getParameter("keywordName");
+                        String pageParamName = request.getParameter("pageParamName");
+                        String pageParamValue = request.getParameter("pageParamValue");
+                        String otherParamName = request.getParameter("otherParamName");
+                        String otherParamValue = request.getParameter("otherParamValue");
+						
+						String pageSize = request.getParameter("pageSize");
+                        String totalAddress = request.getParameter("totalAddress");
+                        String contentAddress = request.getParameter("contentAddress");
+                      
+                        String[]  param = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList"};
+                        String[] paramValue = {searchURL,keywordName,pageParamName,pageParamValue,otherParamName,otherParamValue};
+                      
+ 					    String[] params = {"pageSize","totalAddress","contentAddress"};
+                        String[] paramsValue = {pageSize,totalAddress,contentAddress};
+
+                        //check whether urlBaseConf exists or not
+                        if (!Verifier.verifyExist(webId, "urlBaseConf")) {
+                            DBUtil.insert("urlBaseConf", new String[]{"webId"}, new String[]{"" + webId});
+                        }
+                        if (!Verifier.verifyExist(webId, "jsonbase")) {
+                            DBUtil.insert("jsonbase", new String[]{"webId"}, new String[]{"" + webId});
+                        }
+
+                        if(DBUtil.update("urlBaseConf", param, paramValue, webId)&&DBUtil.update("jsonbase", params, paramsValue, webId)) {
+                            DBUtil.update("website", new String[]{"usable"}, new String[]{"" + usable.getValue()}, webId);
+                            data.put("searchURL",searchURL);
+                            data.put("keywordName",keywordName);
+                            data.put("pageParamName",pageParamName);
+                            data.put("otherParamName",otherParamName);
+                            data.put("pageParamValue",pageParamValue);
+                            data.put("otherParamValue",otherParamValue);
+                           data.put("pageSize",pageSize);
+						   data.put("totalAddress",totalAddress);
+						   data.put("contentAddress",contentAddress);
                             response.getWriter().println(RespWrapper.build(data));
                         } else {
                             data.put("msg","url参数修改失败");
