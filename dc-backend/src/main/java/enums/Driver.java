@@ -1,7 +1,7 @@
 package enums;
 
 public enum Driver {
-    have(1),none(0);
+    have(1),none(0),json(2);
     private int value;
     private Driver(int v) {
         this.value = v;

@@ -1,28 +1,25 @@
--- MySQL dump 10.13  Distrib 8.0.13, for osx10.12 (x86_64)
---
--- Host: localhost    Database: webcrawler
--- ------------------------------------------------------
--- Server version	8.0.13
+/*
+Navicat MySQL Data Transfer
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
- SET NAMES utf8mb4 ;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+Source Server         : data
+Source Server Version : 80015
+Source Host           : localhost:3306
+Source Database       : webcrawler2
 
---
--- Table structure for table `apiBaseConf`
---
+Target Server Type    : MYSQL
+Target Server Version : 80015
+File Encoding         : 65001
 
-DROP TABLE IF EXISTS `apiBaseConf`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
-CREATE TABLE `apiBaseConf` (
+Date: 2019-04-08 13:14:16
+*/
+
+SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for apibaseconf
+-- ----------------------------
+DROP TABLE IF EXISTS `apibaseconf`;
+CREATE TABLE `apibaseconf` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `webId` bigint(20) NOT NULL DEFAULT '0',
   `prefix` varchar(1024) NOT NULL DEFAULT '',
@@ -32,62 +29,16 @@ CREATE TABLE `apiBaseConf` (
   `payloadXpath` varchar(256) NOT NULL DEFAULT '' COMMENT 'format:\nxpath,name',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `apiBaseConf`
---
-
-LOCK TABLES `apiBaseConf` WRITE;
-/*!40000 ALTER TABLE `apiBaseConf` DISABLE KEYS */;
-INSERT INTO `apiBaseConf` VALUES (2,124,'http://10.24.13.223:8080/hbky/privateFileManager/grwpgl','//*[@id=\"searchtext\"]','//div[@class=\"searchIcon\"]','//div[@id=\"allwenjian\"]//a[@href]','//div[@id=\"allwenjian\"]//div[@class=\"filename\"],title');
-/*!40000 ALTER TABLE `apiBaseConf` ENABLE KEYS */;
-UNLOCK TABLES;
-
 
 -- ----------------------------
--- Table structure for formsbymd5
+-- Records of apibaseconf
 -- ----------------------------
-DROP TABLE IF EXISTS `formsbymd5`;
-CREATE TABLE `formsbymd5`  (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `formMd5` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 53 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-
+INSERT INTO `apibaseconf` VALUES ('2', '124', 'http://10.24.13.223:8080/hbky/privateFileManager/grwpgl', '//*[@id=\"searchtext\"]', '//div[@class=\"searchIcon\"]', '//div[@id=\"allwenjian\"]//a[@href]', '//div[@id=\"allwenjian\"]//div[@class=\"filename\"],title');
 
 -- ----------------------------
--- Table structure for sensestate
+-- Table structure for current
 -- ----------------------------
-DROP TABLE IF EXISTS `sensestate`;
-CREATE TABLE `sensestate`  (
-  `id` int(20) NOT NULL,
-  `allLinks` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `trueLinks` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for sense
--- ----------------------------
-DROP TABLE IF EXISTS `sense`;
-CREATE TABLE `sense`  (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `homeUrl` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `targetUrl` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 158 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-
-
-
---
--- Table structure for table `current`
---
-
 DROP TABLE IF EXISTS `current`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `current` (
   `webId` int(20) unsigned NOT NULL,
   `round` varchar(256) NOT NULL DEFAULT '0',
@@ -99,25 +50,18 @@ CREATE TABLE `current` (
   `run` bigint(20) NOT NULL DEFAULT '0',
   KEY `round` (`round`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `current`
---
+-- ----------------------------
+-- Records of current
+-- ----------------------------
+INSERT INTO `current` VALUES ('126', '1', 'stop', 'done', 'done', 'done', '245945', '0');
 
-LOCK TABLES `current` WRITE;
-/*!40000 ALTER TABLE `current` DISABLE KEYS */;
-/*!40000 ALTER TABLE `current` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `estimate`
---
-
+-- ----------------------------
+-- Table structure for estimate
+-- ----------------------------
 DROP TABLE IF EXISTS `estimate`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `estimate` (
+ `contentLocation` varchar(255) DEFAULT '',
   `startWord` varchar(255) NOT NULL DEFAULT '',
   `estiId` int(20) unsigned NOT NULL AUTO_INCREMENT,
   `linksXpath` varchar(255) NOT NULL DEFAULT '',
@@ -127,27 +71,20 @@ CREATE TABLE `estimate` (
   `status` varchar(255) NOT NULL DEFAULT '',
   `rateBar` varchar(255) NOT NULL DEFAULT '',
   `walkTimes` varchar(255) NOT NULL DEFAULT '',
+  `querySend` varchar(255) NOT NULL DEFAULT '',
+  `pid` varchar(255) DEFAULT '',
   PRIMARY KEY (`estiId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `estimate`
---
+-- ----------------------------
+-- Records of estimate
+-- ----------------------------
 
-LOCK TABLES `estimate` WRITE;
-/*!40000 ALTER TABLE `estimate` DISABLE KEYS */;
-/*!40000 ALTER TABLE `estimate` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `extraConf`
---
-
-DROP TABLE IF EXISTS `extraConf`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
-CREATE TABLE `extraConf` (
+-- ----------------------------
+-- Table structure for extraconf
+-- ----------------------------
+DROP TABLE IF EXISTS `extraconf`;
+CREATE TABLE `extraconf` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `webId` bigint(20) NOT NULL DEFAULT '0',
   `userNameXpath` varchar(1024) NOT NULL DEFAULT '',
@@ -161,27 +98,54 @@ CREATE TABLE `extraConf` (
   `charset` varchar(256) NOT NULL DEFAULT '',
   `databaseSize` bigint(20) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Dumping data for table `extraConf`
---
+-- ----------------------------
+-- Records of extraconf
+-- ----------------------------
+INSERT INTO `extraconf` VALUES ('8', '122', '', '', '', '', '', '', '5', '3000', 'UTF-8', '0');
+INSERT INTO `extraconf` VALUES ('9', '123', 'txtUserName', 'txtPassword', '431200000000', 'aaaaaa', 'http://ai.inspur.com/login', 'btnLogin', '5', '3000', 'UTF-8', '13');
+INSERT INTO `extraconf` VALUES ('10', '124', '//*[@id=\"j_username\"]', '//*[@id=\"j_password\"]', 'zongyb', 'abing201!2', 'http://10.24.13.223:8080/hbky/index.jsp#', '//*[@id=\"submit_btn\"]', '5', '3000', 'UTF-8', '0');
+INSERT INTO `extraconf` VALUES ('11', '125', '//*[@id=\"j_username\"]', '//*[@id=\"j_password\"]', 'zongyb', 'abing201!2', 'http://10.24.13.223:8080/hbky/index.jsp#', '//*[@id=\"submit_btn\"]', '20', '30000', 'UTF-8', '0');
+INSERT INTO `extraconf` VALUES ('12', '126', 'txtUserName', 'txtPassword', '431200000000', 'aaaaaa', 'http://ai.inspur.com/login', 'btnLogin', '20', '8000', 'UTF-8', '249951');
 
-LOCK TABLES `extraConf` WRITE;
-/*!40000 ALTER TABLE `extraConf` DISABLE KEYS */;
-INSERT INTO `extraConf` VALUES (8,122,'','','','','','',5,3000,'UTF-8',0),(9,123,'txtUserName','txtPassword','431200000000','aaaaaa','http://ai.inspur.com/login','btnLogin',5,3000,'UTF-8',13),(10,124,'//*[@id=\"j_username\"]','//*[@id=\"j_password\"]','zongyb','abing201!2','http://10.24.13.223:8080/hbky/index.jsp#','//*[@id=\"submit_btn\"]',5,3000,'UTF-8',0),(11,125,'//*[@id=\"j_username\"]','//*[@id=\"j_password\"]','zongyb','abing201!2','http://10.24.13.223:8080/hbky/index.jsp#','//*[@id=\"submit_btn\"]',20,30000,'UTF-8',0);
-/*!40000 ALTER TABLE `extraConf` ENABLE KEYS */;
-UNLOCK TABLES;
+-- ----------------------------
+-- Table structure for formsbymd5
+-- ----------------------------
+DROP TABLE IF EXISTS `formsbymd5`;
+CREATE TABLE `formsbymd5` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `formMd5` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
---
--- Table structure for table `jsonBaseConf`
---
+-- ----------------------------
+-- Records of formsbymd5
+-- ----------------------------
 
-DROP TABLE IF EXISTS `jsonBaseConf`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
-CREATE TABLE `jsonBaseConf` (
+-- ----------------------------
+-- Table structure for jsonbase
+-- ----------------------------
+DROP TABLE IF EXISTS `jsonbase`;
+CREATE TABLE `jsonbase` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `webId` bigint(20) NOT NULL DEFAULT '0',
+  `pageSize` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `totalAddress` varchar(256) DEFAULT '' COMMENT '总页数在json response中的位置',
+  `contentAddress` varchar(256) NOT NULL DEFAULT '' COMMENT 'if value is an empty string, the root is cotent address',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- ----------------------------
+-- Records of jsonbase
+-- ----------------------------
+INSERT INTO `jsonbase` VALUES ('2', '126', '1000', '/d/total', '/d/rows');
+
+-- ----------------------------
+-- Table structure for jsonbaseconf
+-- ----------------------------
+DROP TABLE IF EXISTS `jsonbaseconf`;
+CREATE TABLE `jsonbaseconf` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `webId` bigint(20) NOT NULL DEFAULT '0',
   `prefix` varchar(1024) NOT NULL DEFAULT '',
@@ -195,25 +159,16 @@ CREATE TABLE `jsonBaseConf` (
   `payloadRule` varchar(1024) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `jsonBaseConf`
---
+-- ----------------------------
+-- Records of jsonbaseconf
+-- ----------------------------
+INSERT INTO `jsonbaseconf` VALUES ('1', '125', 'http://10.24.13.223:8080/hbky/search/getResult?', 'keyword', 'pageIndex', '1,1', 'type=0&searchtime=0', '/0/sum', '', '[http://10.24.13.223:8080/hbky/lucene/wjdownload?path=]+/path+[&filename=]+/filename+[&fileid=]+/fileid+[&category=]+/category', '/content');
 
-LOCK TABLES `jsonBaseConf` WRITE;
-/*!40000 ALTER TABLE `jsonBaseConf` DISABLE KEYS */;
-INSERT INTO `jsonBaseConf` VALUES (1,125,'http://10.24.13.223:8080/hbky/search/getResult?','keyword','pageIndex','1,1','type=0&searchtime=0','/0/sum','','[http://10.24.13.223:8080/hbky/lucene/wjdownload?path=]+/path+[&filename=]+/filename+[&fileid=]+/fileid+[&category=]+/category','/content');
-/*!40000 ALTER TABLE `jsonBaseConf` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `pattern`
---
-
+-- ----------------------------
+-- Table structure for pattern
+-- ----------------------------
 DROP TABLE IF EXISTS `pattern`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `pattern` (
   `webId` int(20) unsigned NOT NULL DEFAULT '0',
   `patternName` varchar(255) NOT NULL DEFAULT 'fulltext',
@@ -221,24 +176,15 @@ CREATE TABLE `pattern` (
   `id` int(20) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `pattern`
---
+-- ----------------------------
+-- Records of pattern
+-- ----------------------------
 
-LOCK TABLES `pattern` WRITE;
-/*!40000 ALTER TABLE `pattern` DISABLE KEYS */;
-/*!40000 ALTER TABLE `pattern` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `pattern_structed`
---
-
+-- ----------------------------
+-- Table structure for pattern_structed
+-- ----------------------------
 DROP TABLE IF EXISTS `pattern_structed`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `pattern_structed` (
   `webId` int(11) unsigned NOT NULL,
   `patternName` varchar(255) NOT NULL DEFAULT '' COMMENT '主键，模板名称，每个网站都有两个默认模板fulltext和table',
@@ -250,25 +196,20 @@ CREATE TABLE `pattern_structed` (
   PRIMARY KEY (`id`),
   KEY `webId` (`webId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `pattern_structed`
---
+-- ----------------------------
+-- Records of pattern_structed
+-- ----------------------------
+INSERT INTO `pattern_structed` VALUES ('123', 'a', '/html/body/div[3]/div/div[1]/div[1]/div[1]/div/table', '(a+b)*(c+d)', 'formula', '/', '2');
+INSERT INTO `pattern_structed` VALUES ('123', 'b', '/html/body/div[3]/div/div[1]/div[2]/div[1]/div/table', '(a+b)*(c+d)', 'formula', '/', '3');
+INSERT INTO `pattern_structed` VALUES ('123', 'c', '/html/body/div[3]/div/div[1]/div[1]/div[2]/div/table', '(a+b)*(c+d)', 'formula', '/', '4');
+INSERT INTO `pattern_structed` VALUES ('123', 'd', '/html/body/div[3]/div/div[1]/div[2]/div[2]/table', '(a+b)*(c+d)', 'formula', '/', '5');
+INSERT INTO `pattern_structed` VALUES ('123', 'subpage_data', 'pcObj', 'pcObj', 'json', '/subpage', '6');
 
-LOCK TABLES `pattern_structed` WRITE;
-/*!40000 ALTER TABLE `pattern_structed` DISABLE KEYS */;
-INSERT INTO `pattern_structed` VALUES (123,'a','/html/body/div[3]/div/div[1]/div[1]/div[1]/div/table','(a+b)*(c+d)','formula','/',2),(123,'b','/html/body/div[3]/div/div[1]/div[2]/div[1]/div/table','(a+b)*(c+d)','formula','/',3),(123,'c','/html/body/div[3]/div/div[1]/div[1]/div[2]/div/table','(a+b)*(c+d)','formula','/',4),(123,'d','/html/body/div[3]/div/div[1]/div[2]/div[2]/table','(a+b)*(c+d)','formula','/',5),(123,'subpage_data','pcObj','pcObj','json','/subpage',6);
-/*!40000 ALTER TABLE `pattern_structed` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `queryparam`
---
-
+-- ----------------------------
+-- Table structure for queryparam
+-- ----------------------------
 DROP TABLE IF EXISTS `queryparam`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `queryparam` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `webId` int(11) unsigned NOT NULL DEFAULT '0',
@@ -278,24 +219,16 @@ CREATE TABLE `queryparam` (
   PRIMARY KEY (`id`),
   KEY `webId` (`webId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `queryparam`
---
+-- ----------------------------
+-- Records of queryparam
+-- ----------------------------
+INSERT INTO `queryparam` VALUES ('1', '126', '一般贫困户,低保户,五保户,低保贫困户;因病,因残,因学,因灾,缺土地,缺水', '24', '6');
 
-LOCK TABLES `queryparam` WRITE;
-/*!40000 ALTER TABLE `queryparam` DISABLE KEYS */;
-/*!40000 ALTER TABLE `queryparam` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `requesttable`
---
-
+-- ----------------------------
+-- Table structure for requesttable
+-- ----------------------------
 DROP TABLE IF EXISTS `requesttable`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `requesttable` (
   `requestID` bigint(20) NOT NULL AUTO_INCREMENT,
   `requestName` varchar(1024) NOT NULL DEFAULT '',
@@ -303,24 +236,46 @@ CREATE TABLE `requesttable` (
   `createdTime` varchar(256) NOT NULL DEFAULT '',
   PRIMARY KEY (`requestID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `requesttable`
---
+-- ----------------------------
+-- Records of requesttable
+-- ----------------------------
 
-LOCK TABLES `requesttable` WRITE;
-/*!40000 ALTER TABLE `requesttable` DISABLE KEYS */;
-/*!40000 ALTER TABLE `requesttable` ENABLE KEYS */;
-UNLOCK TABLES;
+-- ----------------------------
+-- Table structure for sense
+-- ----------------------------
+DROP TABLE IF EXISTS `sense`;
+CREATE TABLE `sense` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `homeUrl` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `targetUrl` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=158 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
---
--- Table structure for table `status`
---
+-- ----------------------------
+-- Records of sense
+-- ----------------------------
 
+-- ----------------------------
+-- Table structure for sensestate
+-- ----------------------------
+DROP TABLE IF EXISTS `sensestate`;
+CREATE TABLE `sensestate` (
+  `id` int(20) NOT NULL,
+  `allLinks` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `trueLinks` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of sensestate
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for status
+-- ----------------------------
 DROP TABLE IF EXISTS `status`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `status` (
   `webId` int(20) unsigned NOT NULL,
   `statusId` int(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -330,25 +285,20 @@ CREATE TABLE `status` (
   `sLinkNum` int(11) unsigned NOT NULL DEFAULT '0',
   KEY `round` (`round`),
   KEY `statusId` (`statusId`)
-) ENGINE=InnoDB AUTO_INCREMENT=7130 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB AUTO_INCREMENT=7134 DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `status`
---
+-- ----------------------------
+-- Records of status
+-- ----------------------------
+INSERT INTO `status` VALUES ('126', '7130', '0', 'info', '0', '245945');
+INSERT INTO `status` VALUES ('126', '7131', '0', 'query', '0', '250');
+INSERT INTO `status` VALUES ('126', '7132', '1', 'info', '0', '0');
+INSERT INTO `status` VALUES ('126', '7133', '1', 'query', '0', '0');
 
-LOCK TABLES `status` WRITE;
-/*!40000 ALTER TABLE `status` DISABLE KEYS */;
-/*!40000 ALTER TABLE `status` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `structedparam`
---
-
+-- ----------------------------
+-- Table structure for structedparam
+-- ----------------------------
 DROP TABLE IF EXISTS `structedparam`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `structedparam` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `webId` int(11) unsigned NOT NULL DEFAULT '0',
@@ -365,26 +315,17 @@ CREATE TABLE `structedparam` (
   `paramValueList` text,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `structedparam`
---
+-- ----------------------------
+-- Records of structedparam
+-- ----------------------------
+INSERT INTO `structedparam` VALUES ('2', '123', 'ifmNav', '贫困县', 'ifmCon', 'btnSearch', 'Aaa003', '/html/body/div[3]/div/div[2]/table/tbody/tr/td[8]/a', '/html/body/div[3]/div/div[2]/table/tbody/tr/td[5]/input', 'Aaa003', 'combo-arrow', '/', '_easyui_combobox_i8_0,_easyui_combobox_i8_1,_easyui_combobox_i8_2,_easyui_combobox_i8_3,_easyui_combobox_i8_4,_easyui_combobox_i8_5');
 
-LOCK TABLES `structedparam` WRITE;
-/*!40000 ALTER TABLE `structedparam` DISABLE KEYS */;
-INSERT INTO `structedparam` VALUES (2,123,'ifmNav','贫困县','ifmCon','btnSearch','Aaa003','/html/body/div[3]/div/div[2]/table/tbody/tr/td[8]/a','/html/body/div[3]/div/div[2]/table/tbody/tr/td[5]/input','Aaa003','combo-arrow','/','_easyui_combobox_i8_0,_easyui_combobox_i8_1,_easyui_combobox_i8_2,_easyui_combobox_i8_3,_easyui_combobox_i8_4,_easyui_combobox_i8_5');
-/*!40000 ALTER TABLE `structedparam` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `urlBaseConf`
---
-
-DROP TABLE IF EXISTS `urlBaseConf`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
-CREATE TABLE `urlBaseConf` (
+-- ----------------------------
+-- Table structure for urlbaseconf
+-- ----------------------------
+DROP TABLE IF EXISTS `urlbaseconf`;
+CREATE TABLE `urlbaseconf` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `webId` bigint(20) NOT NULL DEFAULT '0',
   `prefix` varchar(1024) NOT NULL DEFAULT '',
@@ -394,26 +335,18 @@ CREATE TABLE `urlBaseConf` (
   `paramList` varchar(1024) NOT NULL DEFAULT '',
   `paramValueList` varchar(256) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Dumping data for table `urlBaseConf`
---
+-- ----------------------------
+-- Records of urlbaseconf
+-- ----------------------------
+INSERT INTO `urlbaseconf` VALUES ('4', '122', 'http://www.zhaoan.gov.cn/cms/siteresource/search.shtml?', 'key', 'page', '1,1', 'searchSiteId,siteId,pageName', '60427348114130001,60427348114130001,quickSiteSearch');
+INSERT INTO `urlbaseconf` VALUES ('5', '126', 'http://ai.inspur.com/Archive/PoorFamilyList-GetPoorFamilyData', 'poorproperty,poorcause,planOutPoor,realname,name6,basicArea,txtYear,Aad105,isHelp,isHelpPeople,isImmigrant,isPlan,AreaType,Aah006,Aad003,condition,membercondition,orders,sorts,poorFamilyType', 'pagenumber', '1,1', 'isNull,pagesize', '0,1000');
 
-LOCK TABLES `urlBaseConf` WRITE;
-/*!40000 ALTER TABLE `urlBaseConf` DISABLE KEYS */;
-INSERT INTO `urlBaseConf` VALUES (4,122,'http://www.zhaoan.gov.cn/cms/siteresource/search.shtml?','key','page','1,1','searchSiteId,siteId,pageName','60427348114130001,60427348114130001,quickSiteSearch');
-/*!40000 ALTER TABLE `urlBaseConf` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `website`
---
-
+-- ----------------------------
+-- Table structure for website
+-- ----------------------------
 DROP TABLE IF EXISTS `website`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `website` (
   `webId` int(20) unsigned NOT NULL AUTO_INCREMENT,
   `webName` varchar(256) NOT NULL DEFAULT '',
@@ -426,26 +359,13 @@ CREATE TABLE `website` (
   `creator` varchar(256) NOT NULL DEFAULT '' COMMENT 'task creator',
   `base` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0:url based\n1:api based',
   PRIMARY KEY (`webId`)
-) ENGINE=InnoDB AUTO_INCREMENT=126 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `website`
---
-
-LOCK TABLES `website` WRITE;
-/*!40000 ALTER TABLE `website` DISABLE KEYS */;
-INSERT INTO `website` VALUES (122,'诏安县政府官网','http://www.zhaoan.gov.cn/cms/html/zaxrmzf/index.html','/Users/cwc/Desktop/tencent/data-crawling/zhaoan','unstructed',0,1,'2019-03-16 19:25:56','',0),(123,'扶贫','http://ai.inspur.com/Main/Archive','/Users/cwc/Desktop/tencent/data-crawling/provty','structed',1,1,'2019-03-19 14:15:51','',1),(124,'网盘爬取','http://10.24.13.223:8080/hbky/index.jsp#','/Users/cwc/Desktop/tencent/data-crawling/pan','unstructed',0,1,'2019-03-24 14:48:30','',1),(125,'网盘全文检索','http://10.24.13.223:8080/hbky/index.jsp#','/Users/cwc/Desktop/tencent/data-crawling/pan','unstructed',0,1,'','',2);
-/*!40000 ALTER TABLE `website` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2019-04-06 14:43:26
+-- ----------------------------
+-- Records of website
+-- ----------------------------
+INSERT INTO `website` VALUES ('122', '诏安县政府官网', 'http://www.zhaoan.gov.cn/cms/html/zaxrmzf/index.html', '/Users/cwc/Desktop/tencent/data-crawling/zhaoan', 'unstructed', '0', '1', '2019-03-16 19:25:56', '', '0');
+INSERT INTO `website` VALUES ('123', '扶贫', 'http://ai.inspur.com/Main/Archive', '/Users/cwc/Desktop/tencent/data-crawling/provty', 'structed', '1', '1', '2019-03-19 14:15:51', '', '1');
+INSERT INTO `website` VALUES ('124', '网盘爬取', 'http://10.24.13.223:8080/hbky/index.jsp#', '/Users/cwc/Desktop/tencent/data-crawling/pan', 'unstructed', '0', '1', '2019-03-24 14:48:30', '', '1');
+INSERT INTO `website` VALUES ('125', '网盘全文检索', 'http://10.24.13.223:8080/hbky/index.jsp#', '/Users/cwc/Desktop/tencent/data-crawling/pan', 'unstructed', '0', '1', '', '', '2');
+INSERT INTO `website` VALUES ('126', '扶贫测试', 'http://ai.inspur.com/Main/Archive', 'D:/table/provty', 'structed', '2', '1', '2019-03-19 14:15:51', '', '1');
