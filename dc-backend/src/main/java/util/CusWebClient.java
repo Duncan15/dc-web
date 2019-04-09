@@ -231,7 +231,7 @@ public class CusWebClient {
 				try {
 					FileOutputStream fileOutputStream2 = null;
 					//String filePath = CusWebClient.class.getResource("")+ "WEB-INF\\trainfile\\train2.txt".substring(1);
-					String filePath =CusWebClient.class.getResource("/train2.txt").getFile().substring(1);
+					String filePath =CusWebClient.class.getResource("/api/sense/trainfile/train2.txt").getFile().substring(1);
 					System.out.println("写入文件路径11111为"+filePath);
 					File newfile2 = new File(filePath);
 					fileOutputStream2 = new FileOutputStream(newfile2);
@@ -341,7 +341,7 @@ public class CusWebClient {
 
 
 					FileOutputStream fileOutputStream = null;
-					String filePath =CusWebClient.class.getResource("/train2.txt").getFile().substring(1);
+					String filePath =CusWebClient.class.getResource("/api/sense/trainfile/train2.txt").getFile().substring(1);
 					System.out.println("写入文件路径22222为"+filePath);
 
 					//String filePath = EstimateServlet.projectPath + "WEB-INF\\trainfile\\train2.txt";
@@ -469,10 +469,10 @@ public class CusWebClient {
 //			String modelPath= EstimateServlet.projectPath + "WEB-INF\\trainfile\\model_r.txt";
 //			String train2Path= EstimateServlet.projectPath + "WEB-INF\\trainfile\\train2.txt";
 //			String outPath= EstimateServlet.projectPath + "WEB-INF\\trainfile\\out_r.txt";
-			String train1Path= CusWebClient.class.getResource("/train1.txt").getFile().substring(1);
-			String modelPath= CusWebClient.class.getResource("/model_r.txt").getFile().substring(1);
-			String train2Path= CusWebClient.class.getResource("/train2.txt").getFile().substring(1);
-			String outPath= CusWebClient.class.getResource("/out_r.txt").getFile().substring(1);
+			String train1Path= CusWebClient.class.getResource("/api/sense/trainfile/train1.txt").getFile().substring(1);
+			String modelPath= CusWebClient.class.getResource("/api/sense/trainfile/model_r.txt").getFile().substring(1);
+			String train2Path= CusWebClient.class.getResource("/api/sense/trainfile/train2.txt").getFile().substring(1);
+			String outPath= CusWebClient.class.getResource("/api/sense/trainfile/out_r.txt").getFile().substring(1);
 
 
 			//String filePath =CusWebClient.class.getResource("/train1.txt").getFile().substring(1);
@@ -498,7 +498,7 @@ public class CusWebClient {
 
 		try {
 
-			String filePath= CusWebClient.class.getResource("/out_r.txt").getFile().substring(1);
+			String filePath= CusWebClient.class.getResource("/api/sense/trainfile/out_r.txt").getFile().substring(1);
 			System.out.println("读入文件路径3为"+filePath);
 			//String filePath = EstimateServlet.projectPath + "WEB-INF\\trainfile\\out_r.txt";
 			File f=new File(filePath);
