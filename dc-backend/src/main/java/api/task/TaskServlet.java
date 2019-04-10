@@ -517,6 +517,25 @@ public class TaskServlet extends HttpServlet {
                              data.put(ansKeys[i], "");
                          data.put("paramQueryValueList", "");
                      }
+                 }else if (Driver.json == v) {
+                     String[] params = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList"};
+                     String[] ansKeys = {"searchURL", "keywordName", "pageParamName", "pageParamValue", "otherParamName", "otherParamValue"};
+                     if (Verifier.verifyExist(webId, "jsonbase") && Verifier.verifyExist(webId, "urlBaseConf")) {
+                         String[] urlBasedData = DBUtil.select("urlBaseConf", params, webId)[0];
+                         for (int i = 0; i < params.length; i++) {
+                             data.put(ansKeys[i], urlBasedData[i]);
+                         }
+                          String[] param = {"pageSize","totalAddress","contentAddress"};
+                        String[] jsonbase=DBUtil.select("jsonbase", param, webId)[0];
+                          for (int i = 0; i < param.length; i++) {
+                             data.put(param[i], jsonbase[i]);
+                         }
+                     } else {
+                         for (int i = 0; i < params.length; i++)
+                             data.put(ansKeys[i], "");
+                          for (int i = 0; i < param.length; i++) 
+							  data.put(param[i], "");
+                     }
                  }
                  response.getWriter().println(RespWrapper.build(data));
              } else {
