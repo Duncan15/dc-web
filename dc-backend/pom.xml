@@ -86,6 +86,12 @@
             <artifactId>lucene-queryparser</artifactId>
             <version>7.7.1</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/tw.edu.ntu.csie/libsvm -->
+        <dependency>
+            <groupId>tw.edu.ntu.csie</groupId>
+            <artifactId>libsvm</artifactId>
+            <version>3.23</version>
+        </dependency>
     </dependencies>
 
 
@@ -95,9 +101,9 @@
             <resource>
                 <directory>src/main/java</directory>
                 <includes>
-                    <include>*.xml</include>
-                    <include>*.properties</include>
-                    <include>*.txt</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.properties</include>
+                    <include>**/*.txt</include>
                 </includes>
             </resource>
         </resources>
