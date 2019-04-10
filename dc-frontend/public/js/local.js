@@ -493,7 +493,7 @@ $(function() {
                 .done(function(data) {
                   console.log("success");
                   if (data['errno'] != 0) {
-                    alert("∑˛ŒÒ∆˜¥ÌŒÛ");
+                    alert("服务器错误");
                   } else {
                     var html = tmpl.render(data['data']);
                     $("#url-sensing-list-content").html(html);
@@ -528,7 +528,7 @@ $(function() {
         })
           .done(function(data) {
             if (data['errno'] != 0) {
-              alert("∑˛ŒÒ∆˜¥ÌŒÛ");
+              alert("服务器错误");
             } else {
               var html = tmpl.render(data['data']);
               $("#url-sensingAll-list-content").html(html);
@@ -576,7 +576,7 @@ $(function() {
                   .done(function(data) {
                     console.log("success");
                     if (data['errno'] != 0) {
-                      alert("∑˛ŒÒ∆˜¥ÌŒÛ");
+                      alert("服务器错误");
                     } else {
                       var html = tmpl.render(data['data']);
                       $("#url-sensing-list-content").html(html);
