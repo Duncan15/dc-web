@@ -159,7 +159,7 @@ public class TaskServlet extends HttpServlet {
                             data.put("msg","url参数修改失败");
                             response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
                         }
-                    }else if(Base.jsonBased == base){
+                    }else if(Base.jsonBase== base){
                         //TODO
                         String prefix = request.getParameter("prefix");
                         String paramQuery = request.getParameter("paramQuery");
@@ -516,6 +516,26 @@ public class TaskServlet extends HttpServlet {
                          for (int i = 0; i < params.length; i++)
                              data.put(ansKeys[i], "");
                          data.put("paramQueryValueList", "");
+                     }
+                 }else if (Driver.json == v) {
+                     String[] params = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList"};
+                     String[] ansKeys = {"searchURL", "keywordName", "pageParamName", "pageParamValue", "otherParamName", "otherParamValue"};
+                     String[] param = {"pageSize","totalAddress","contentAddress"};
+                     if (Verifier.verifyExist(webId, "jsonbase") && Verifier.verifyExist(webId, "urlBaseConf")) {
+                         String[] urlBasedData = DBUtil.select("urlBaseConf", params, webId)[0];
+                         for (int i = 0; i < params.length; i++) {
+                             data.put(ansKeys[i], urlBasedData[i]);
+                         }
+
+                        String[] jsonbase=DBUtil.select("jsonbase", param, webId)[0];
+                          for (int i = 0; i < param.length; i++) {
+                             data.put(param[i], jsonbase[i]);
+                         }
+                     } else {
+                         for (int i = 0; i < params.length; i++)
+                             data.put(ansKeys[i], "");
+                          for (int i = 0; i < param.length; i++) 
+							  data.put(param[i], "");
                      }
                  }
                  response.getWriter().println(RespWrapper.build(data));
