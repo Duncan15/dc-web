@@ -55,7 +55,11 @@ public class MonitorServlet extends HttpServlet {
         } else if(runningMode == RunningMode.structed && driver == Driver.have){
             String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed_js.jar").getAbsolutePath();
             builder = new ProcessBuilder("java","-jar", jarPath,  webID+"",  mysqlURL,  mysqlUserName,  msyqlPassword);
+        }else if(runningMode == RunningMode.structed && driver == Driver.json){
+            String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed_json.jar").getAbsolutePath();
+            builder = new ProcessBuilder("java","-jar", jarPath,  webID+"",  mysqlURL,  mysqlUserName,  msyqlPassword);
         }
+
 
 
         File logFile = Paths.get(websiteInfo[1], webID + "", ConfigService.LOG_FILE).toFile();

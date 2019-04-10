@@ -75,7 +75,12 @@
             <artifactId>lucene-core</artifactId>
             <version>7.7.1</version>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/tw.edu.ntu.csie/libsvm -->
+        <dependency>
+            <groupId>tw.edu.ntu.csie</groupId>
+            <artifactId>libsvm</artifactId>
+            <version>3.23</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-queryparser</artifactId>
@@ -88,6 +93,7 @@
             <version>3.23</version>
         </dependency>
     </dependencies>
+
 
 
     <build>
