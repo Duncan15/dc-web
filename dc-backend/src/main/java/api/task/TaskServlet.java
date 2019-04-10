@@ -159,7 +159,7 @@ public class TaskServlet extends HttpServlet {
                             data.put("msg","url参数修改失败");
                             response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
                         }
-                    }else if(Base.jsonBase== base){
+                    }else if(Base.jsonBased== base){
                         //TODO
                         String prefix = request.getParameter("prefix");
                         String paramQuery = request.getParameter("paramQuery");
@@ -292,7 +292,11 @@ public class TaskServlet extends HttpServlet {
                       
  					    String[] params = {"pageSize","totalAddress","contentAddress"};
                         String[] paramsValue = {pageSize,totalAddress,contentAddress};
+                        String paramQueryValueList = request.getParameter("paramQueryValueList");
 
+                        if (!Verifier.verifyExist(webId, "queryparam")) {
+                            DBUtil.insert("queryparam", new String[]{"webId"}, new String[]{"" + webId});
+                        }
                         //check whether urlBaseConf exists or not
                         if (!Verifier.verifyExist(webId, "urlBaseConf")) {
                             DBUtil.insert("urlBaseConf", new String[]{"webId"}, new String[]{"" + webId});
@@ -301,7 +305,7 @@ public class TaskServlet extends HttpServlet {
                             DBUtil.insert("jsonbase", new String[]{"webId"}, new String[]{"" + webId});
                         }
 
-                        if(DBUtil.update("urlBaseConf", param, paramValue, webId)&&DBUtil.update("jsonbase", params, paramsValue, webId)) {
+                        if(DBUtil.update("urlBaseConf", param, paramValue, webId)&&DBUtil.update("jsonbase", params, paramsValue, webId)&&DBUtil.update("queryparam",new String[] {"dataParamList"} ,new String[] {paramQueryValueList}, webId)) {
                             DBUtil.update("website", new String[]{"usable"}, new String[]{"" + usable.getValue()}, webId);
                             data.put("searchURL",searchURL);
                             data.put("keywordName",keywordName);
@@ -312,6 +316,7 @@ public class TaskServlet extends HttpServlet {
                            data.put("pageSize",pageSize);
 						   data.put("totalAddress",totalAddress);
 						   data.put("contentAddress",contentAddress);
+                            data.put("paramQueryValueList",paramQueryValueList);
                             response.getWriter().println(RespWrapper.build(data));
                         } else {
                             data.put("msg","url参数修改失败");
@@ -510,8 +515,8 @@ public class TaskServlet extends HttpServlet {
                          for (int i = 0; i < params.length; i++) {
                              data.put(ansKeys[i], urlBasedData[i]);
                          }
-                         String[] param = {"dataParamList"};
-                         data.put("paramQueryValueList", DBUtil.select("queryparam", param, webId)[0][0]);
+
+                         data.put("paramQueryValueList", DBUtil.select("queryparam", new String[] {"dataParamList"}, webId)[0][0]);
                      } else {
                          for (int i = 0; i < params.length; i++)
                              data.put(ansKeys[i], "");
@@ -526,8 +531,9 @@ public class TaskServlet extends HttpServlet {
                          for (int i = 0; i < params.length; i++) {
                              data.put(ansKeys[i], urlBasedData[i]);
                          }
+                         data.put("paramQueryValueList", DBUtil.select("queryparam", new String[] {"dataParamList"}, webId)[0][0]);
 
-                        String[] jsonbase=DBUtil.select("jsonbase", param, webId)[0];
+                         String[] jsonbase=DBUtil.select("jsonbase", param, webId)[0];
                           for (int i = 0; i < param.length; i++) {
                              data.put(param[i], jsonbase[i]);
                          }
@@ -536,6 +542,7 @@ public class TaskServlet extends HttpServlet {
                              data.put(ansKeys[i], "");
                           for (int i = 0; i < param.length; i++) 
 							  data.put(param[i], "");
+                         data.put("paramQueryValueList", "");
                      }
                  }
                  response.getWriter().println(RespWrapper.build(data));
