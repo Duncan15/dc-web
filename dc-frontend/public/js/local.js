@@ -435,7 +435,6 @@ $(function() {
     var $resultsensingBtn = $("#result-sensing-btn");
     $urlsensingBtn.off('click');
     $urlsensingBtn.on('click', function() {
-      // $("#url-sensing-btn").hide();
       var tmpl = $.templates("#sensingAll-list");
       $.ajax({
         url: baseURL + '/api/datacrawling/sense/all',
@@ -445,7 +444,7 @@ $(function() {
       })
         .done(function(data) {
           if (data['errno'] != 0) {
-            alert("∑˛ŒÒ∆˜¥ÌŒÛ");
+            alert("服务器错误");
           } else {
             var html = tmpl.render(data['data']);
             $("#url-sensingAll-list-content").html(html);
