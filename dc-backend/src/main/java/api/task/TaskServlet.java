@@ -159,6 +159,42 @@ public class TaskServlet extends HttpServlet {
                             data.put("msg","url参数修改失败");
                             response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
                         }
+                    }else if(Base.jsonBased== base){
+                        //TODO
+                        String prefix = request.getParameter("prefix");
+                        String paramQuery = request.getParameter("paramQuery");
+                        String paramPage = request.getParameter("paramPage");
+                        String pageStrategy = request.getParameter("pageStrategy");
+                        String constString = request.getParameter("constString");
+                        String totalAddress = request.getParameter("totalAddress");
+                        String contentAddress = request.getParameter("contentAddress");
+                        String linkRule = request.getParameter("linkRule");
+                        String payloadRule = request.getParameter("payloadRule");
+
+                        //check whether jsonBaseConf exists or not
+                        if (!Verifier.verifyExist(webId, "jsonBaseConf")) {
+                            DBUtil.insert("jsonBaseConf", new String[]{"webId"}, new String[]{"" + webId});
+                        }
+
+                        String[] params = {"prefix", "paramQuery", "paramPage", "pageStrategy", "constString", "totalAddress", "contentAddress", "linkRule", "payloadRule"};
+                        String[] values = {prefix, paramQuery, paramPage, pageStrategy, constString, totalAddress, contentAddress, linkRule, payloadRule};
+                        if (DBUtil.update("jsonBaseConf", params, values, webId)) {
+                            DBUtil.update("website", new String[]{"usable"}, new String[]{"" + usable.getValue()}, webId);
+                            data.put("prefix",prefix);
+                            data.put("paramQuery", paramQuery);
+                            data.put("paramPage", paramPage);
+                            data.put("pageStrategy", pageStrategy);
+                            data.put("constString", constString);
+                            data.put("totalAddress",totalAddress);
+                            data.put("contentAddress", contentAddress);
+                            data.put("linkRule", linkRule);
+                            data.put("payloadRule", payloadRule);
+                            response.getWriter().println(RespWrapper.build(data));
+                        } else {
+                            data.put("msg","url参数修改失败");
+                            response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
+                        }
+
                     }
                 } else if (RunningMode.structed == runningMode) {
                     if (Driver.have == driver) {
@@ -218,14 +254,14 @@ public class TaskServlet extends HttpServlet {
                         String[] paramsValue = {paramQueryValueList};
 
                         //check whether urlBaseConf exists or not
-                        if (!Verifier.verifyExist(webId, "urlBaseConf")) {
-                            DBUtil.insert("urlBaseConf", new String[]{"webId"}, new String[]{"" + webId});
+                        if (!Verifier.verifyExist(webId, "urlbaseconf")) {
+                            DBUtil.insert("urlbaseconf", new String[]{"webId"}, new String[]{"" + webId});
                         }
                         if (!Verifier.verifyExist(webId, "queryparam")) {
                             DBUtil.insert("queryparam", new String[]{"webId"}, new String[]{"" + webId});
                         }
 
-                        if(DBUtil.update("urlBaseConf", param, paramValue, webId)&&DBUtil.update("queryparam", params, paramsValue, webId)) {
+                        if(DBUtil.update("urlbaseconf", param, paramValue, webId)&&DBUtil.update("queryparam", params, paramsValue, webId)) {
                             DBUtil.update("website", new String[]{"usable"}, new String[]{"" + usable.getValue()}, webId);
                             data.put("searchURL",searchURL);
                             data.put("keywordName",keywordName);
@@ -233,6 +269,53 @@ public class TaskServlet extends HttpServlet {
                             data.put("otherParamName",otherParamName);
                             data.put("pageParamValue",pageParamValue);
                             data.put("otherParamValue",otherParamValue);
+                            data.put("paramQueryValueList",paramQueryValueList);
+                            response.getWriter().println(RespWrapper.build(data));
+                        } else {
+                            data.put("msg","url参数修改失败");
+                            response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,data));
+                        }
+                    }else if (Driver.json == driver) {
+                        String searchURL = request.getParameter("searchURL");
+                        String keywordName = request.getParameter("keywordName");
+                        String pageParamName = request.getParameter("pageParamName");
+                        String pageParamValue = request.getParameter("pageParamValue");
+                        String otherParamName = request.getParameter("otherParamName");
+                        String otherParamValue = request.getParameter("otherParamValue");
+						
+						String pageSize = request.getParameter("pageSize");
+                        String totalAddress = request.getParameter("totalAddress");
+                        String contentAddress = request.getParameter("contentAddress");
+                      
+                        String[]  param = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList"};
+                        String[] paramValue = {searchURL,keywordName,pageParamName,pageParamValue,otherParamName,otherParamValue};
+                      
+ 					    String[] params = {"pageSize","totalAddress","contentAddress"};
+                        String[] paramsValue = {pageSize,totalAddress,contentAddress};
+                        String paramQueryValueList = request.getParameter("paramQueryValueList");
+
+                        if (!Verifier.verifyExist(webId, "queryparam")) {
+                            DBUtil.insert("queryparam", new String[]{"webId"}, new String[]{"" + webId});
+                        }
+                        //check whether urlBaseConf exists or not
+                        if (!Verifier.verifyExist(webId, "urlBaseConf")) {
+                            DBUtil.insert("urlBaseConf", new String[]{"webId"}, new String[]{"" + webId});
+                        }
+                        if (!Verifier.verifyExist(webId, "jsonbase")) {
+                            DBUtil.insert("jsonbase", new String[]{"webId"}, new String[]{"" + webId});
+                        }
+
+                        if(DBUtil.update("urlBaseConf", param, paramValue, webId)&&DBUtil.update("jsonbase", params, paramsValue, webId)&&DBUtil.update("queryparam",new String[] {"dataParamList"} ,new String[] {paramQueryValueList}, webId)) {
+                            DBUtil.update("website", new String[]{"usable"}, new String[]{"" + usable.getValue()}, webId);
+                            data.put("searchURL",searchURL);
+                            data.put("keywordName",keywordName);
+                            data.put("pageParamName",pageParamName);
+                            data.put("otherParamName",otherParamName);
+                            data.put("pageParamValue",pageParamValue);
+                            data.put("otherParamValue",otherParamValue);
+                           data.put("pageSize",pageSize);
+						   data.put("totalAddress",totalAddress);
+						   data.put("contentAddress",contentAddress);
                             data.put("paramQueryValueList",paramQueryValueList);
                             response.getWriter().println(RespWrapper.build(data));
                         } else {
@@ -432,11 +515,33 @@ public class TaskServlet extends HttpServlet {
                          for (int i = 0; i < params.length; i++) {
                              data.put(ansKeys[i], urlBasedData[i]);
                          }
-                         String[] param = {"dataParamList"};
-                         data.put("paramQueryValueList", DBUtil.select("queryparam", param, webId)[0][0]);
+
+                         data.put("paramQueryValueList", DBUtil.select("queryparam", new String[] {"dataParamList"}, webId)[0][0]);
                      } else {
                          for (int i = 0; i < params.length; i++)
                              data.put(ansKeys[i], "");
+                         data.put("paramQueryValueList", "");
+                     }
+                 }else if (Driver.json == v) {
+                     String[] params = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList"};
+                     String[] ansKeys = {"searchURL", "keywordName", "pageParamName", "pageParamValue", "otherParamName", "otherParamValue"};
+                     String[] param = {"pageSize","totalAddress","contentAddress"};
+                     if (Verifier.verifyExist(webId, "jsonbase") && Verifier.verifyExist(webId, "urlBaseConf")) {
+                         String[] urlBasedData = DBUtil.select("urlBaseConf", params, webId)[0];
+                         for (int i = 0; i < params.length; i++) {
+                             data.put(ansKeys[i], urlBasedData[i]);
+                         }
+                         data.put("paramQueryValueList", DBUtil.select("queryparam", new String[] {"dataParamList"}, webId)[0][0]);
+
+                         String[] jsonbase=DBUtil.select("jsonbase", param, webId)[0];
+                          for (int i = 0; i < param.length; i++) {
+                             data.put(param[i], jsonbase[i]);
+                         }
+                     } else {
+                         for (int i = 0; i < params.length; i++)
+                             data.put(ansKeys[i], "");
+                          for (int i = 0; i < param.length; i++) 
+							  data.put(param[i], "");
                          data.put("paramQueryValueList", "");
                      }
                  }
