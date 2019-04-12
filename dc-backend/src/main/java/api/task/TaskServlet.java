@@ -489,6 +489,27 @@ public class TaskServlet extends HttpServlet {
                          }
                      }
                  }
+                 else if (Base.jsonBased == b){
+                     String[] params = {"prefix","paramQuery","paramPage","pageStrategy","constString","totalAddress","contentAddress","linkRule","payloadRule"};
+                     String[] ansKeys = {"prefix","paramQuery","paramPage","pageStrategy","constString","totalAddress","contentAddress","linkRule","payloadRule"};
+                     if (Verifier.verifyExist(webId, "jsonBaseConf")) {
+                         String[] apiBasedData = DBUtil.select("jsonBaseConf", params, webId)[0];
+                         for (int i = 0; i < params.length; i++) {
+                             data.put(ansKeys[i], apiBasedData[i]);
+                         }
+                     } else {
+                         for (int i = 0; i <params.length; i++) {
+                             data.put(ansKeys[i], "");
+                         }
+                     }
+
+
+
+
+
+
+
+                 }
                  response.getWriter().println(RespWrapper.build(data));
              } else if (RunningMode.structed == r) {
                  if (Driver.have == v) {
