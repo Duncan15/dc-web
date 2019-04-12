@@ -157,9 +157,11 @@
 									</th>
 									<th>
 										{{if driver=='have'}}
-											是
+											基于浏览器驱动
 										{{else driver=='none'}}
-											否
+											基于链接
+										{{else driver=='json'}}
+											基于接口
 										{{else}}
 											未知
 										{{/if}}
@@ -1007,11 +1009,13 @@
 								</th>
 								<th>
 								{{if driver=='have'}}
-									是
+									基于浏览器驱动
 								{{else driver=='none'}}
-									否
+									基于链接
+								{{else driver=='json'}}
+									基于接口
 								{{else}}
-									未知
+								 	未知
 								{{/if}}
 								</th>
 								<th>
@@ -1112,9 +1116,11 @@
 							</th>
 							<th>
 							{{if driver=='have'}}
-								是
+								基于浏览器驱动
 							{{else driver=='none'}}
-								否
+								基于链接
+							{{else driver=='json'}}
+								基于接口
 							{{else}}
 								未知
 							{{/if}}
