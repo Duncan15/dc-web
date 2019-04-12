@@ -102,7 +102,11 @@ public class MonitorServlet extends HttpServlet {
         Runtime rt = Runtime.getRuntime();
         if (System.getProperty("os.name").toLowerCase().indexOf("windows") > -1) {
             try {
-                rt.exec("taskkill /pid " + pid);
+                // /f force to kill the specified process
+                // /t kill the specified process and it's sub process
+                //this method would let the specified process to execute the shutdown hook, so this is not a good method
+                rt.exec("taskkill /f /t /pid " + pid);
+                DBUtil.update("current", new String[]{"run"}, new String[]{"0"}, webID);
             } catch (IOException ex) {
                 //ignored
             }
@@ -191,6 +195,7 @@ public class MonitorServlet extends HttpServlet {
                         }
                     }
                     unit.put("status", status);
+                    System.out.println(status);
                 }
                 content.add(unit);
             }
