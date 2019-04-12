@@ -1,5 +1,5 @@
-﻿
-//var baseURL="http://localhost:8082"
+
+﻿//var baseURL="http://localhost:8082"
 //var baseURL = "http://192.168.1.101:8082" // 联调用
 var baseURL = "http://10.13.56.36:8082"
 $(function() {
