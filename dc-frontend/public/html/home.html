@@ -135,7 +135,7 @@
 									<th>编号</th>
 									<th>URL</th>
 									<th>类型</th>
-									<th>驱动</th>
+									<th>采集模式</th>
 									<th>数据刷新方式</th>
 									<th>创建时间</th>
 								</tr>
@@ -157,9 +157,11 @@
 									</th>
 									<th>
 										{{if driver=='have'}}
-											是
+											基于浏览器驱动
 										{{else driver=='none'}}
-											否
+											基于链接
+										{{else driver=='json'}}
+											基于接口
 										{{else}}
 											未知
 										{{/if}}
@@ -169,6 +171,8 @@
 												基于页面刷新
 											{{else base=="apiBased"}}
 												基于接口刷新
+											{{else base=="jsonBased"}}
+											  基于json刷新
 											{{else}}
 												未知
 											{{/if}}
@@ -226,13 +230,16 @@
 								</div>
 							</div>
 							<div class="form-group" id="driver-select-group">
-								<label class="col-xs-2 control-label">驱动</label>
+								<label class="col-xs-2 control-label">采集模式</label>
 								<div class="col-xs-6">
 									<label class="radio-inline">
-										<input type="radio" name="driver-select" value="have">使用浏览器驱动</input>
+										<input type="radio" name="driver-select" value="have">基于浏览器驱动</input>
 									</label>
 									<label class="radio-inline">
-										<input type="radio" name="driver-select" value="none">不使用浏览器驱动</input>
+										<input type="radio" name="driver-select" value="none">基于链接</input>
+									</label>
+									<label class="radio-inline">
+										<input type="radio" name="driver-select" value="json">基于接口</input>
 									</label>
 								</div>
 							</div>
@@ -244,6 +251,9 @@
 									</label>
 									<label for="" class="radio-inline">
 										<input type="radio" name="base-select" value="apiBased">基于接口刷新</input>
+									</label>
+									<label for="" class="radio-inline">
+										<input type="radio" name="base-select" value="jsonBased">基于json刷新</input>
 									</label>
 								</div>
 							</div>
@@ -275,7 +285,7 @@
 									<th>任务名称</th>
 									<th>URL</th>
 									<th>类型</th>
-									<th>驱动</th>
+									<th>采集模式</th>
 									<th>数据刷新方式</th>
 									<th>可用性</th>
 									<th>操作</th>
@@ -298,11 +308,13 @@
 										</th>
 										<th name="driver">
 											{{if driver=='have'}}
-												是
+												基于浏览器驱动
 											{{else driver=='none'}}
-												否
+												基于链接
+											{{else driver=='json'}}
+												基于接口
 											{{else}}
-												未知
+											  未知
 											{{/if}}
 										</th>
 										<th name="base">
@@ -310,6 +322,8 @@
 												基于页面刷新
 											{{else base=="apiBased"}}
 												基于接口刷新
+											{{else base=="jsonBased"}}
+											  基于json刷新
 											{{else}}
 												未知
 											{{/if}}
@@ -344,6 +358,73 @@
 						</ul>
 						<div class="tab-content" style="margin-top:50px;">
 							<div id="url-param-config" class="tab-pane">
+
+								<form id="unstructed-jsonbased" class="form-horizontal rule-config-form" style="display:none;">
+									<input type="text" class="hidden rule-id">
+									<div class="form-group">
+										<label for="site-link" class="control-label col-xs-2">网站链接</label>
+										<div class="col-xs-6">
+												<p class="form-control-static" name="site-link"></p>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="form-title">搜索链接配置</div>
+										<label for="search-link" class="control-label col-xs-2">搜索接口前缀</label>
+										<div class="col-xs-6 has-valid">
+											<input required name="prefix" type="text" class="form-control" placeholder="？之前的部分">
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="keyword-name" class="control-label col-xs-2">搜索关键字名称</label>
+										<div class="col-xs-6 has-valid">
+											<input required type="text" name="paramQuery" class="form-control">
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="page-name" class="control-label col-xs-2">分页关键字名称</label>
+										<div class="col-xs-6 has-valid">
+											<input required type="text" name="paramPage" class="form-control">
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="page-value" class="control-label col-xs-2">分页策略</label>
+										<div class="col-xs-6 has-valid">
+											<input required type="text" name="pageStrategy" placeholder="类似于之前的startPageNum" class="form-control">
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="other-param-name" class="control-label col-xs-2">搜索链接中不变的部分</label>
+										<div class="col-xs-6">
+											<input type="text" name="constString" placeholder="格式：a=b&c=10086" class="form-control">
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="other-param-value" class="control-label col-xs-2">数据总量的表达式</label>
+										<div class="col-xs-6">
+											<input type="text" name="totalAddress" placeholder="搜索链接返回的json数据中数据总量的JsonPointer表达式" class="form-control">
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="other-param-value" class="control-label col-xs-2">内容数组表达式</label>
+										<div class="col-xs-6">
+											<input type="text" name="contentAddress" placeholder="若搜索链接直接返回一个数组，则此值可谓空字符串" class="form-control">
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="other-param-value" class="control-label col-xs-2">数据连接的组成规则</label>
+										<div class="col-xs-6">
+											<input type="text" name="linkRule" placeholder="规则的各部分使用+串联，[]内的内容为不变项，非[]内的内容为JsonPointer表达式" class="form-control">
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="col-xs-offset-2 col-xs-6">
+											<button type="submit" class="btn btn-primary">提交</button>
+											<button class="btn btn-default return-btn">返回</button>
+										</div>
+									</div>
+								</form>
+
+
 								<form id="unstructed-urlbased" class="form-horizontal rule-config-form" style="display:none;">
 									<input type="text" class="hidden rule-id">
 									<div class="form-group">
@@ -443,6 +524,84 @@
 												</div>
 										</div>
 								</form>
+
+<form id="structed-api" class="form-horizontal rule-config-form" style="display:none;">
+	<input type="text" class="hidden rule-id">
+	<div class="form-group">
+			<label for="site-link" class="control-label col-xs-2">网站链接</label>
+			<div class="col-xs-6">
+					<p class="form-control-static" name="site-link"></p>
+			</div>
+	</div>
+	<div class="form-group">
+		<div class="form-title">搜索链接配置</div>
+		<label for="search-link" class="control-label col-xs-2">搜索栏链接</label>
+		<div class="col-xs-6 has-valid">
+			<input required name="searchURL" type="text" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="keyword-name" class="control-label col-xs-2">关键词参数名称</label>
+		<div class="col-xs-6 has-valid">
+			<input required type="text" name="keywordName" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="page-name" class="control-label col-xs-2">分页参数名称</label>
+		<div class="col-xs-6 has-valid">
+			<input required type="text" name="pageParamName" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="page-value" class="control-label col-xs-2">开始页面号</label>
+		<div class="col-xs-6 has-valid">
+			<input required type="text" name="pageParamValue" placeholder="开始查询页面的页号" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="other-param-name" class="control-label col-xs-2">其他参数名称列表</label>
+		<div class="col-xs-6 has-valid">
+			<input type="text" name="otherParamName" placeholder="其他参数的名称, 用','分开" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="other-param-value" class="control-label col-xs-2">其他参数值列表</label>
+		<div class="col-xs-6 has-valid">
+			<input type="text" name="otherParamValue" placeholder="其他参数的值, 用','分开" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="other-param-value" class="control-label col-xs-2">页面数据大小</label>
+		<div class="col-xs-6 has-valid">
+			<input type="text" name="pageSize" placeholder="" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="other-param-value" class="control-label col-xs-2">数据总量地址</label>
+		<div class="col-xs-6 has-valid">
+			<input type="text" name="totalAddress" placeholder="" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="other-param-value" class="control-label col-xs-2">json数据地址</label>
+		<div class="col-xs-6 has-valid">
+			<input type="text" name="contentAddress" placeholder="" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="attr-value" class="control-label col-xs-2">属性值</label>
+		<div class="col-xs-6 has-valid">
+			<input type="text" name="paramQueryValueList" placeholder="查询的属性值" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-xs-offset-2 col-xs-6">
+			<button type="submit" class="btn btn-primary">提交</button>
+			<button class="btn btn-default return-btn">返回</button>
+		</div>
+	</div>
+</form>
+
 								<form id="structed-undriver" class="form-horizontal rule-config-form" style="display:none;">
 									<input type="text" class="hidden rule-id">
 									<div class="form-group">
@@ -500,7 +659,6 @@
 											<button class="btn btn-default return-btn">返回</button>
 										</div>
 									</div>
-
 								</form>
 								<form id="structed-driver" class="form-horizontal rule-config-form" style="display:none;">
 									<input type="text" class="hidden rule-id">
@@ -584,7 +742,6 @@
 											<button class="btn btn-default return-btn">返回</button>
 										</div>
 									</div>
-
 								</form>
 							</div>
 							<div id="login-param-config" class="tab-pane">
@@ -830,7 +987,7 @@
 									<th>任务名称</th>
 									<th>URL</th>
 									<th>运行模式</th>
-									<th>驱动</th>
+									<th>采集模式</th>
 									<th>操作</th>
 								</tr>
 							</thead>
@@ -852,11 +1009,13 @@
 								</th>
 								<th>
 								{{if driver=='have'}}
-									是
+									基于浏览器驱动
 								{{else driver=='none'}}
-									否
+									基于链接
+								{{else driver=='json'}}
+									基于接口
 								{{else}}
-									未知
+								 	未知
 								{{/if}}
 								</th>
 								<th>
@@ -928,7 +1087,7 @@
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-xs-3"></div>
-				<div class="col-xs-9">
+				<div class="col-xs-12">
 					<table class="table table-striped table-hover">
 						<caption>交付列表</caption>
 						<thead>
@@ -936,7 +1095,7 @@
 								<th>编号</th>
 								<th>交付任务</th>
 								<th>运行模式</th>
-								<th>驱动</th>
+								<th>采集模式</th>
 								<th>查看</th>
 							</tr>
 						</thead>
@@ -957,9 +1116,11 @@
 							</th>
 							<th>
 							{{if driver=='have'}}
-								是
+								基于浏览器驱动
 							{{else driver=='none'}}
-								否
+								基于链接
+							{{else driver=='json'}}
+								基于接口
 							{{else}}
 								未知
 							{{/if}}
@@ -1097,9 +1258,11 @@
 									</th>
 
 									<th>
+									{{if status=='stop'}}
 										<a class="sense-control-btn" name="start">启动</a>
-										/
+									{{else}}
 										<a class="sense-control-btn" name="stop">停止</a>
+									{{/if}}
 									</th>
 								</tr>
 								{{/for}}

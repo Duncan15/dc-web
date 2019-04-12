@@ -28,7 +28,7 @@ CREATE TABLE `apibaseconf` (
   `infoLinkXpath` varchar(256) DEFAULT '' COMMENT '用于指定返回查询页面上数据链接的位置，用于帮助链接收集器收集链接\n当此值为空时，运行收集器的默认行为',
   `payloadXpath` varchar(256) NOT NULL DEFAULT '' COMMENT 'format:\nxpath,name',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
 
 -- ----------------------------
 -- Records of apibaseconf
@@ -74,7 +74,7 @@ CREATE TABLE `estimate` (
   `querySend` varchar(255) NOT NULL DEFAULT '',
   `pid` varchar(255) DEFAULT '',
   PRIMARY KEY (`estiId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
 
 -- ----------------------------
 -- Records of estimate
@@ -98,7 +98,7 @@ CREATE TABLE `extraconf` (
   `charset` varchar(256) NOT NULL DEFAULT '',
   `databaseSize` bigint(20) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
 
 -- ----------------------------
 -- Records of extraconf
@@ -115,9 +115,9 @@ INSERT INTO `extraconf` VALUES ('12', '126', 'txtUserName', 'txtPassword', '4312
 DROP TABLE IF EXISTS `formsbymd5`;
 CREATE TABLE `formsbymd5` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `formMd5` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `formMd5` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of formsbymd5
@@ -130,11 +130,11 @@ DROP TABLE IF EXISTS `jsonbase`;
 CREATE TABLE `jsonbase` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `webId` bigint(20) NOT NULL DEFAULT '0',
-  `pageSize` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `pageSize` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci  NOT NULL DEFAULT '',
   `totalAddress` varchar(256) DEFAULT '' COMMENT '总页数在json response中的位置',
   `contentAddress` varchar(256) NOT NULL DEFAULT '' COMMENT 'if value is an empty string, the root is cotent address',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
 
 -- ----------------------------
 -- Records of jsonbase
@@ -158,7 +158,7 @@ CREATE TABLE `jsonbaseconf` (
   `linkRule` varchar(1024) DEFAULT '',
   `payloadRule` varchar(1024) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
 
 -- ----------------------------
 -- Records of jsonbaseconf
@@ -195,7 +195,7 @@ CREATE TABLE `pattern_structed` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`),
   KEY `webId` (`webId`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
 
 -- ----------------------------
 -- Records of pattern_structed
@@ -218,7 +218,7 @@ CREATE TABLE `queryparam` (
   `C` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `webId` (`webId`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
 
 -- ----------------------------
 -- Records of queryparam
@@ -235,7 +235,7 @@ CREATE TABLE `requesttable` (
   `requestDesc` varchar(2048) NOT NULL DEFAULT '',
   `createdTime` varchar(256) NOT NULL DEFAULT '',
   PRIMARY KEY (`requestID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
 
 -- ----------------------------
 -- Records of requesttable
@@ -247,10 +247,10 @@ CREATE TABLE `requesttable` (
 DROP TABLE IF EXISTS `sense`;
 CREATE TABLE `sense` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `homeUrl` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `targetUrl` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `homeUrl` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `targetUrl` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=158 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=158 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of sense
@@ -262,11 +262,11 @@ CREATE TABLE `sense` (
 DROP TABLE IF EXISTS `sensestate`;
 CREATE TABLE `sensestate` (
   `id` int(20) NOT NULL,
-  `allLinks` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `trueLinks` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `allLinks` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `trueLinks` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of sensestate
@@ -314,7 +314,7 @@ CREATE TABLE `structedparam` (
   `paramList` varchar(255) NOT NULL DEFAULT '',
   `paramValueList` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
 
 -- ----------------------------
 -- Records of structedparam
@@ -335,7 +335,7 @@ CREATE TABLE `urlbaseconf` (
   `paramList` varchar(1024) NOT NULL DEFAULT '',
   `paramValueList` varchar(256) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
 
 -- ----------------------------
 -- Records of urlbaseconf
