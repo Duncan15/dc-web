@@ -417,6 +417,12 @@
 										</div>
 									</div>
 									<div class="form-group">
+										<label for="other-param-value" class="control-label col-xs-2">索引数据的组成规则</label>
+										<div class="col-xs-6">
+											<input type="text" name="payloadRule" placeholder="用于指定将以何种规则组成打入索引的数据，规则内容与linkRule相同" class="form-control">
+										</div>
+									</div>
+									<div class="form-group">
 										<div class="col-xs-offset-2 col-xs-6">
 											<button type="submit" class="btn btn-primary">提交</button>
 											<button class="btn btn-default return-btn">返回</button>
@@ -1007,7 +1013,10 @@
 									未知
 								{{/if}}
 								</th>
+
 								<th>
+								{{if runningMode=='structed'}}
+
 								{{if driver=='have'}}
 									基于浏览器驱动
 								{{else driver=='none'}}
@@ -1015,9 +1024,27 @@
 								{{else driver=='json'}}
 									基于接口
 								{{else}}
-								 	未知
+									未知
+								{{/if}}
+
+								{{else runningMode=='unstructed'}}
+
+								{{if base=='urlBased'}}
+									基于页面刷新
+								{{else driver=='apiBased'}}
+									基于接口刷新
+								{{else driver=='jsonBased'}}
+									基于json刷新
+								{{else}}
+									未知
+								{{/if}}
+
+								{{else}}
+								未知
+
 								{{/if}}
 								</th>
+
 								<th>
 									<a class="crawler-control-btn" name="start">启动</a>
 									/
