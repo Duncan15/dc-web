@@ -154,7 +154,7 @@ public class MonitorServlet extends HttpServlet {
                 sizeMap.put(ans[i][0], Long.parseLong(ans[i][1]));
             }
 
-            String[][] current=DBUtil.select("current",new String[]{"webId","round","M1status","M2status","M3status","M4status","SampleData_sum", "run"});
+            String[][] current = DBUtil.select("current",new String[]{"webId","round","M1status","M2status","M3status","M4status","SampleData_sum", "run"});
             for(int i = 0; i < current.length; i++){
                 Map<String,String> unit = new HashMap<>();
                 unit.put("taskID", current[i][0]);
@@ -197,7 +197,6 @@ public class MonitorServlet extends HttpServlet {
                         }
                     }
                     unit.put("status", status);
-                    System.out.println(status);
                 }
                 content.add(unit);
             }
