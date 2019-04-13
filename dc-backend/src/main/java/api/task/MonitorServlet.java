@@ -39,7 +39,7 @@ public class MonitorServlet extends HttpServlet {
          //此处为爬取的jar包path
 //        String jarPath=new File(getServletContext().getRealPath("/"),"WEB-INF/lib/lp2.jar").getAbsolutePath();
 //        builder=new ProcessBuilder("java","-jar",jarPath,webid);
-        if(runningMode == RunningMode.unstructed && (base == Base.urlBased || base == Base.apiBased)){
+        if(runningMode == RunningMode.unstructed && (base == Base.urlBased || base == Base.apiBased || base == Base.jsonBased)){
 //            --web-id=116
 //            --jdbc-url=jdbc:mysql://localhost:3306/webcrawler?characterEncoding=UTF-8&useSSL=false&useAffectedRows=true&allowPublicKeyRetrieval=true
 //            --username=root
@@ -59,7 +59,9 @@ public class MonitorServlet extends HttpServlet {
             String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed_json.jar").getAbsolutePath();
             builder = new ProcessBuilder("java","-jar", jarPath,  webID+"",  mysqlURL,  mysqlUserName,  msyqlPassword);
         }
-
+        if (builder == null) {
+            return "爬虫启动失败，该爬虫属于未知类型，请检查配置";
+        }
 
 
         File logFile = Paths.get(websiteInfo[1], webID + "", ConfigService.LOG_FILE).toFile();
