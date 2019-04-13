@@ -45,7 +45,7 @@ public class MonitorServlet extends HttpServlet {
 //            --username=root
 //            --password=12345678
             String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_unstructed.jar").getAbsolutePath();
-            builder = new ProcessBuilder("java","-Xmx20G","-Xms20G","-jar",jarPath, "--web-id=" + webID, "--jdbc-url=" + mysqlURL, "--username=" + mysqlUserName, "--password=" + msyqlPassword);
+            builder = new ProcessBuilder("java", "-jar", jarPath, "--web-id=" + webID, "--jdbc-url=" + mysqlURL, "--username=" + mysqlUserName, "--password=" + msyqlPassword);
 
             //设置工作目录，主要作用是支持ansj的配置载入
             builder.directory(new File(getServletContext().getRealPath("/"), "WEB-INF"));
