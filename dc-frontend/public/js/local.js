@@ -1099,6 +1099,7 @@ $(function() {
                           form.find("input[name='totalAddress']").val(data['data']['totalAddress']);
                           form.find("input[name='contentAddress']").val(data['data']['contentAddress']);
                           form.find("input[name='linkRule']").val(data['data']['linkRule']);
+                          form.find("input[name='payloadRule']").val(data['data']['payloadRule'])
                         }
                       })
                       .fail(function() {
@@ -1123,6 +1124,7 @@ $(function() {
                             totalAddress: form.find("input[name='totalAddress']").val().trim(),
                             contentAddress: form.find("input[name='contentAddress']").val().trim(),
                             linkRule: form.find("input[name='linkRule']").val().trim(),
+                            payloadRule: form.find("input[name='payloadRule']").val().trim(),
                           }
                         })
                           .done(function(data) {

@@ -39,13 +39,13 @@ public class MonitorServlet extends HttpServlet {
          //此处为爬取的jar包path
 //        String jarPath=new File(getServletContext().getRealPath("/"),"WEB-INF/lib/lp2.jar").getAbsolutePath();
 //        builder=new ProcessBuilder("java","-jar",jarPath,webid);
-        if(runningMode == RunningMode.unstructed && (base == Base.urlBased || base == Base.apiBased)){
+        if(runningMode == RunningMode.unstructed && (base == Base.urlBased || base == Base.apiBased || base == Base.jsonBased)){
 //            --web-id=116
 //            --jdbc-url=jdbc:mysql://localhost:3306/webcrawler?characterEncoding=UTF-8&useSSL=false&useAffectedRows=true&allowPublicKeyRetrieval=true
 //            --username=root
 //            --password=12345678
             String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_unstructed.jar").getAbsolutePath();
-            builder = new ProcessBuilder("java","-Xmx20G","-Xms20G","-jar",jarPath, "--web-id=" + webID, "--jdbc-url=" + mysqlURL, "--username=" + mysqlUserName, "--password=" + msyqlPassword);
+            builder = new ProcessBuilder("java", "-jar", jarPath, "--web-id=" + webID, "--jdbc-url=" + mysqlURL, "--username=" + mysqlUserName, "--password=" + msyqlPassword);
 
             //设置工作目录，主要作用是支持ansj的配置载入
             builder.directory(new File(getServletContext().getRealPath("/"), "WEB-INF"));
@@ -59,7 +59,9 @@ public class MonitorServlet extends HttpServlet {
             String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed_json.jar").getAbsolutePath();
             builder = new ProcessBuilder("java","-jar", jarPath,  webID+"",  mysqlURL,  mysqlUserName,  msyqlPassword);
         }
-
+        if (builder == null) {
+            return "爬虫启动失败，该爬虫属于未知类型，请检查配置";
+        }
 
 
         File logFile = Paths.get(websiteInfo[1], webID + "", ConfigService.LOG_FILE).toFile();
@@ -152,7 +154,7 @@ public class MonitorServlet extends HttpServlet {
                 sizeMap.put(ans[i][0], Long.parseLong(ans[i][1]));
             }
 
-            String[][] current=DBUtil.select("current",new String[]{"webId","round","M1status","M2status","M3status","M4status","SampleData_sum", "run"});
+            String[][] current = DBUtil.select("current",new String[]{"webId","round","M1status","M2status","M3status","M4status","SampleData_sum", "run"});
             for(int i = 0; i < current.length; i++){
                 Map<String,String> unit = new HashMap<>();
                 unit.put("taskID", current[i][0]);
@@ -195,7 +197,6 @@ public class MonitorServlet extends HttpServlet {
                         }
                     }
                     unit.put("status", status);
-                    System.out.println(status);
                 }
                 content.add(unit);
             }
