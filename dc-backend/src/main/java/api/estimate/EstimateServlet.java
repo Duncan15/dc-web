@@ -202,7 +202,6 @@ public class EstimateServlet extends HttpServlet {
             response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, null));
         }
 
-
     }
 
 }
