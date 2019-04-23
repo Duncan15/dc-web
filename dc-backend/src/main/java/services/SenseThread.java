@@ -32,7 +32,7 @@ public class SenseThread extends Thread{
 
             webCrawlerDemo.setBaseLink1(link);
             webCrawlerDemo.myPrint(link);
-
+            this.setStatus("stop");
         }catch (Exception e){
             System.out.println("侦测任务 " + getName() + " 正在停止...");
             this.setStatus("stop");
