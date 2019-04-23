@@ -1,7 +1,6 @@
-
-﻿//var baseURL="http://localhost:8082"
+var baseURL="http://localhost:8082"
 //var baseURL = "http://192.168.1.101:8082" // 联调用
-var baseURL = "http://10.13.56.36:8082"
+//var baseURL = "http://10.13.56.36:8082"
 $(function() {
   var $requestBtn = $("#request-btn");
   var $crawlingBtn = $("#crawling-btn");
@@ -889,8 +888,7 @@ $(function() {
             $(".change-rule").on('click', function(event) {
               var $tr = $(this).parents("tr");
               var runningMode = $tr.find("th[name='running-mode']").text().trim();
-              var driver = $tr.find("th[name='driver']").text().trim();
-              var base = $tr.find("th[name='base']").text().trim();
+              var subMode = $tr.find("th[name='sub-mode']").text().trim();
               var $unstructedUrlbased = $("#unstructed-urlbased");
               var $unstructedApibased = $("#unstructed-apibased");
               var $unstructedJsonBased = $("#unstructed-jsonbased");
@@ -900,11 +898,11 @@ $(function() {
               var $structedApi = $("#structed-api")
 
               if (runningMode == "文本型") {
-                if (base == "基于页面刷新") {
+                if (subMode == "基于页面刷新") {
                   $unstructedJsonBased.hide();
                   $unstructedUrlbased.show();
                   $unstructedApibased.hide();
-                } else if (base == '基于接口刷新') {
+                } else if (subMode == '基于接口刷新') {
                   $unstructedUrlbased.hide();
                   $unstructedApibased.show();
                   $unstructedJsonBased.hide();
@@ -917,11 +915,11 @@ $(function() {
                 $structedUndriver.hide();
                 $structedApi.hide();
               } else if (runningMode == "结构型") {
-                if (driver == "基于浏览器驱动") {
+                if (subMode == "基于浏览器驱动") {
                   $structedDriver.show();
                   $structedApi.hide();
                   $structedUndriver.hide();
-                } else if (driver == "基于链接") {
+                } else if (subMode == "基于链接") {
                   $structedDriver.hide();
                   $structedApi.hide();
                   $structedUndriver.show();
@@ -941,11 +939,11 @@ $(function() {
               var $loginParamConfigBtn = $("#login-param-config-btn");
               var $downloadParamConfigBtn = $("#download-param-config-btn");
               $urlParamConfigBtn.off('click');
-              $urlParamConfigBtn.on('click', { taskID: taskID, runningMode: runningMode, driver: driver, base: base }, function(event) {
+              $urlParamConfigBtn.on('click', { taskID: taskID, runningMode: runningMode, subMode: subMode}, function(event) {
                 var taskID = event.data.taskID;
                 var form = null;
                 if (runningMode == '文本型') {
-                  if (base == "基于页面刷新") {
+                  if (subMode == "基于页面刷新") {
                     form = $("#unstructed-urlbased");
                     $.ajax({
                       url: baseURL + '/api/datacrawling/task/' + taskID,
@@ -1012,7 +1010,7 @@ $(function() {
                       }
                     });
                     validator.resetForm();
-                  } else if (base == "基于接口刷新") {
+                  } else if (subMode == "基于接口刷新") {
                     form = $("#unstructed-apibased");
                     $.ajax({
                       url: baseURL + '/api/datacrawling/task/' + taskID,
@@ -1099,6 +1097,7 @@ $(function() {
                           form.find("input[name='totalAddress']").val(data['data']['totalAddress']);
                           form.find("input[name='contentAddress']").val(data['data']['contentAddress']);
                           form.find("input[name='linkRule']").val(data['data']['linkRule']);
+                          form.find("input[name='payloadRule']").val(data['data']['payloadRule'])
                         }
                       })
                       .fail(function() {
@@ -1123,6 +1122,7 @@ $(function() {
                             totalAddress: form.find("input[name='totalAddress']").val().trim(),
                             contentAddress: form.find("input[name='contentAddress']").val().trim(),
                             linkRule: form.find("input[name='linkRule']").val().trim(),
+                            payloadRule: form.find("input[name='payloadRule']").val().trim(),
                           }
                         })
                           .done(function(data) {
@@ -1146,7 +1146,7 @@ $(function() {
                     validator.resetForm();
                   }
                 } else {
-                  if (driver == '基于浏览器驱动') {
+                  if (subMode == '基于浏览器驱动') {
                     form = $("#structed-driver");
                     $.ajax({
                       url: baseURL + '/api/datacrawling/task/' + taskID,
@@ -1218,7 +1218,7 @@ $(function() {
                       }
                     });
                     validator.resetForm();
-                  } else if (driver == "基于链接") {
+                  } else if (subMode == "基于链接") {
                     form = $("#structed-undriver");
                     $.ajax({
                       url: baseURL + '/api/datacrawling/task/' + taskID,
