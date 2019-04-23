@@ -49,16 +49,10 @@ public class MonitorServlet extends HttpServlet {
 
             //设置工作目录，主要作用是支持ansj的配置载入
             builder.directory(new File(getServletContext().getRealPath("/"), "WEB-INF"));
-        } else if(runningMode == RunningMode.structed && driver == Driver.none){//以下启动模式根据自定义进行修改
+        } else if(runningMode == RunningMode.structed && (driver == Driver.json||driver == Driver.have)){//以下启动模式根据自定义进行修改
             String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed.jar").getAbsolutePath();
             builder = new ProcessBuilder("java","-jar",jarPath, webID+"",  mysqlURL,  mysqlUserName, msyqlPassword);
-        } else if(runningMode == RunningMode.structed && driver == Driver.have){
-            String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed_js.jar").getAbsolutePath();
-            builder = new ProcessBuilder("java","-jar", jarPath,  webID+"",  mysqlURL,  mysqlUserName,  msyqlPassword);
-        }else if(runningMode == RunningMode.structed && driver == Driver.json){
-            String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed_json.jar").getAbsolutePath();
-            builder = new ProcessBuilder("java","-jar", jarPath,  webID+"",  mysqlURL,  mysqlUserName,  msyqlPassword);
-        }
+        } 
         if (builder == null) {
             return "爬虫启动失败，该爬虫属于未知类型，请检查配置";
         }
