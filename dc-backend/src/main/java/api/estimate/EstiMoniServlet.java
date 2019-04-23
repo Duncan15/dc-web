@@ -77,6 +77,7 @@ public class EstiMoniServlet extends HttpServlet {
             return "估测任务状态不明，无法进行停止操作";
         }
 
+        DBUtil.update("estimate", new String[]{"status"}, new String[]{"stop"}, new String[]{"estiId"}, new String[]{estiId});
         String pidStr= DBUtil.select("estimate", new String[]{"pid"},new String[]{"estiId"}, new String[]{estiId})[0][0];
         System.out.println("pidStr is "+pidStr);
         long pid = Long.parseLong(pidStr);
@@ -104,7 +105,7 @@ public class EstiMoniServlet extends HttpServlet {
             //ignored
         }
 
-        DBUtil.update("estimate", new String[]{"status"}, new String[]{"stop"}, new String[]{"estiId"}, new String[]{estiId});
+
 
         ans = DBUtil.select("estimate", new String[]{"status"},new String[]{"estiId"}, new String[]{estiId} );
         if (ans[0][0].equals("stop")) {

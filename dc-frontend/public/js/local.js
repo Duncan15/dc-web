@@ -1,6 +1,6 @@
-var baseURL="http://localhost:8082"
+//var baseURL="http://localhost:8082"
 //var baseURL = "http://192.168.1.101:8082" // 联调用
-//var baseURL = "http://10.13.56.36:8082"
+var baseURL = "http://10.13.56.36:8082"
 $(function() {
   var $requestBtn = $("#request-btn");
   var $crawlingBtn = $("#crawling-btn");
@@ -1875,8 +1875,32 @@ $(function() {
           var taskID = $tr.find("th.task-id").text();
           var runningMode = $tr.find("th.running-mode").text();
           if (runningMode.trim() == "文本型") {
-            alert("文本型数据交付请直接到工作路径下查看");
-            return;
+               window.location.href=baseURL + '/api/datacrawling/download?id='+taskID;
+            // alert("文本型数据交付请直接到工作路径下查看");
+            // return;
+            //   $.ajax({
+            //       url: baseURL + '/api/datacrawling/download?id='+taskID,
+            //       type: 'GET',
+            //       // dataType: 'json'
+            //
+            //   })
+            //       .done(function (data) {
+            //         // $.download(baseURL+ '/api/datacrawling/download?id='+taskID, 'get', data.value)
+            //           console.log(data)
+            //       })
+            //       // .done(function(data) {
+            //       //     // console.log(data['data']);
+            //       //     $.LoadingOverlay("hide", true);
+            //       //     alert(data['data']['msg']);
+            //       // })
+            //       .fail(function() {
+            //           console.log("error");
+            //       })
+            //       .always(function() {
+            //           console.log("complete");
+            //       });
+
+
           }
           $("#delivery-modal").off('shown.bs.modal');
           $('#delivery-modal').on('shown.bs.modal', function() {
@@ -1950,6 +1974,8 @@ $(function() {
             });
           });
         })
+
+
       }
     })
   })
