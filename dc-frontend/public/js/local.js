@@ -1875,7 +1875,7 @@ $(function() {
           var taskID = $tr.find("th.task-id").text();
           var runningMode = $tr.find("th.running-mode").text();
           if (runningMode.trim() == "文本型") {
-               window.location.href=baseURL + '/api/datacrawling/download?id='+taskID;
+               // window.location.href=baseURL + '/api/datacrawling/download?id='+taskID;
             // alert("文本型数据交付请直接到工作路径下查看");
             // return;
             //   $.ajax({
@@ -1899,8 +1899,73 @@ $(function() {
             //       .always(function() {
             //           console.log("complete");
             //       });
-
-
+            var url = baseURL + '/api/datacrawling/download?id='+ taskID;;
+            let xhr = new XMLHttpRequest()
+            let fileName = `${taskID}.zip` // 文件名称
+            xhr.open('GET', url, true)
+            xhr.responseType = 'arraybuffer'
+            xhr.onload = function() {
+              if (this.status === 200) {
+                let type = xhr.getResponseHeader('Content-Type')
+                console.log(type);
+                if (type.includes('json')) { // 当返回结果类型为application/json时，打印json信息
+                  const tempBlob = new Blob( [this.response], {type: type} )
+                  // 通过 FileReader 读取这个 blob
+                  const reader = new FileReader()
+                  reader.onload = e => {
+                    const res = e.currentTarget.result
+                    const message = JSON.parse(res)
+                    console.dir(message);
+                    alert(message.data)
+                    // 此处对fileReader读出的结果进行JSON解析
+                    // 可能会出现错误，需要进行捕获
+                    try {
+                      const json = JSON.parse(res)
+                      if (json) {
+                        // 解析成功说明后端导出出错，进行导出失败的操作，并直接返回
+                        return
+                      }
+                    } catch (err) {
+                      // 该异常为无法将字符串转为json
+                      // 说明返回的数据是一个流文件
+                      // 不需要处理该异常，只需要捕获即刻
+                    }
+                    // 如果代码能够执行到这里，说明后端给的是一个流文件，再执行上面导出的代码
+                    // do export code
+                  }
+                  // 将blob对象以文本的方式读出，读出完成后将会执行 onload 方法
+                  reader.readAsText(tempBlob)
+                } else {
+                  let blob = new Blob([this.response], {type: type})
+                  alert('下载开始，稍后即可选择路径保存')
+                  if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                    window.navigator.msSaveBlob(blob, fileName)
+                  } else {
+                    let URL = window.URL || window.webkitURL
+                    let objectUrl = URL.createObjectURL(blob)
+                    console.log(objectUrl);
+                    if (fileName) {
+                      var a = document.createElement('a')
+                      if (typeof a.download === 'undefined') {
+                        window.location = objectUrl
+                      } else {
+                        a.href = objectUrl
+                        a.download = fileName
+                        document.body.appendChild(a)
+                        a.click()
+                        a.remove()
+                      }
+                    } else {
+                      window.location = objectUrl
+                    }
+                  }
+                }
+              } else {
+                alert(`请求错误：${this.status}`)
+              }
+            }
+            xhr.send();
+            // 发送ajax请求
           }
           $("#delivery-modal").off('shown.bs.modal');
           $('#delivery-modal').on('shown.bs.modal', function() {
