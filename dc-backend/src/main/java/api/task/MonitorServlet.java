@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
@@ -51,9 +52,12 @@ public class MonitorServlet extends HttpServlet {
             builder.directory(new File(getServletContext().getRealPath("/"), "WEB-INF"));
         } else if(runningMode == RunningMode.structed && (driver == Driver.json||driver == Driver.have)){//以下启动模式根据自定义进行修改
             String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed.jar").getAbsolutePath();
-			String screen="-screen 0 1280x1600x24 -noreset" ;
-            builder = new ProcessBuilder( "xvfb-run", "-a", "-s"+screen,"java","-jar",jarPath, webID+"",  mysqlURL,  mysqlUserName, msyqlPassword);
-        } 
+//            String shPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/start.sh").getAbsolutePath();
+//
+//            builder = new ProcessBuilder("sh",shPath,jarPath, webID+"",  mysqlURL,  mysqlUserName, msyqlPassword);
+            //builder = new ProcessBuilder( "xvfb-run", "-a", "--server-args=\"-screen 0 1024x768x24\"" ,"java","-jar",jarPath, webID+"",  mysqlURL,  mysqlUserName, msyqlPassword);
+            builder = new ProcessBuilder("java","-jar",jarPath, webID+"",  mysqlURL,  mysqlUserName, msyqlPassword);
+        }
         if (builder == null) {
             return "爬虫启动失败，该爬虫属于未知类型，请检查配置";
         }
@@ -75,14 +79,15 @@ public class MonitorServlet extends HttpServlet {
 
         Process p = builder.start();
         try{
-            Thread.sleep(5000l);
+            Thread.sleep(5000);
         }catch (InterruptedException e){
             //ignored
         }
         if(p.isAlive()) {
             return "爬虫成功启动";
         }else {
-            return "爬虫启动失败，请重新检查参数配置是正确，或查看输出日志进行问题定位";
+
+            return "爬虫启动失败,程序退出码为" + p.exitValue() + "，请重新检查参数配置是否正确，或查看输出日志进行问题定位";
         }
 
     }
