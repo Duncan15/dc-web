@@ -62,8 +62,8 @@ $(function() {
                     $("#prefix").val(data['data']['prefix']);
                     $("#paramPage").val(data['data']['paramPage']);
                     $("#paramList").val(data['data']['paramList']);
-                    $("#conf-contentLocation").val(data['data']['contentLocation']);
-                    $("#conf-querySend").val(data['data']['querySend']);
+                    $("#conf-contentLocation").val(data['data']['contentLocation'] || 'text');
+                    $("#conf-querySend").val(data['data']['querySend'] || 'get');
                   }
 
                   $("#edit-estiamte .return-btn").off('click');
@@ -960,6 +960,7 @@ $(function() {
                           form.find("input[name='keyword-name']").val(data['data']['keywordName']);
                           form.find("input[name='page-name']").val(data['data']['pageParamName']);
                           form.find("input[name='page-value']").val(data['data']['pageParamValue']);
+                          form.find("input[name='infoLinkXpath']").val(data['data']['infoLinkXpath']);
                           form.find("input[name='other-param-name']").val(data['data']['otherParamName']);
                           form.find("input[name='other-param-value']").val(data['data']['otherParamValue']);
                         }
@@ -986,6 +987,7 @@ $(function() {
                             searchURL: form.find("input[name='search-link']").val().trim(),
                             keywordName: form.find("input[name='keyword-name']").val().trim(),
                             pageParamName: form.find("input[name='page-name']").val().trim(),
+                            infoLinkXpath: form.find("input[name='infoLinkXpath']").val().trim(),
                             pageParamValue: form.find("input[name='page-value']").val().trim(),
                             otherParamName: form.find("input[name='other-param-name']").val().trim(),
                             otherParamValue: form.find("input[name='other-param-value']").val().trim()
