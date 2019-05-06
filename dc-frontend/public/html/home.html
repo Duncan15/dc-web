@@ -481,6 +481,12 @@
 										</div>
 									</div>
 									<div class="form-group">
+										<label for="infoLinkXpath" class="control-label col-xs-2">数据链接Xpath</label>
+										<div class="col-xs-6">
+											<input type="text" name="infoLinkXpath" placeholder="搜索结果页面中有效数据链接的Xpath路径" class="form-control">
+										</div>
+									</div>
+									<div class="form-group">
 										<label for="other-param-name" class="control-label col-xs-2">其他参数名称列表</label>
 										<div class="col-xs-6">
 											<input type="text" name="other-param-name" placeholder="其他参数的名称, 用','分开" class="form-control">
@@ -1458,7 +1464,7 @@
 								<div class="col-xs-8">
 									<select class="form-control" id="conf-contentLocation">
 										<option value="title">标题</option>
-										<option value="text">正文</option>
+										<option value="text" selected>正文</option>
 									</select>
 								</div>
 							</div>
@@ -1466,9 +1472,9 @@
 							<div class="form-group">
 								<label for="conf-querySend" class="col-xs-2 control-label">请求方式</label>
 								<div class="col-xs-8">
-									<select class="form-control" id="conf-querySend">
+									<select class="form-control" id="conf-querySend" value="get">
 										<option value="post">POST</option>
-										<option value="get">GET</option>
+										<option value="get" selected>GET</option>
 									</select>
 								</div>
 							</div>
