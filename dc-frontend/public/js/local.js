@@ -9,9 +9,21 @@ $(function() {
   var $configBtn = $("#config-btn");
   var $sensingBtn = $("#sensing-btn");
   var $estimateBtn = $("#estimate-btn");
-
+  var $showTime = $("#showTime");
   //Bellow is code for estimate.
+  $showTime.on('click',function (event) {
 
+      $.ajax({
+          url:baseURL+"/api/ClickBtn",
+          data:{},
+          type:"get",
+          dataType:"text"
+
+      }).done(function (data) {
+          alert(data)
+      })
+
+  })
   $estimateBtn.on('click', function(event) {
 
     var $estiOperateBtn = $("#esti-operate-btn");
@@ -2175,3 +2187,5 @@ $(function() {
   $requestBtn.click();
 
 });
+
+

@@ -36,7 +36,7 @@ public class EstiMoniServlet extends HttpServlet {
         String mysqlUserName = properties.getProperty("mysqlUserName");
         String mysqlPassword = properties.getProperty("mysqlPassword");
 
-        String jarPath = new File(getServletContext().getRealPath("/"), "WEB-INF/lib/Controller_estimate.jar").getAbsolutePath();
+        String jarPath = new File(getServletContext().getRealPath("/"), "WEB-INF/lib/Controller_estimate_b.jar").getAbsolutePath();
         builder = new ProcessBuilder("java", "-Xmx1024m", "-Xms256m", "-jar", jarPath, mysqlURL, mysqlUserName, mysqlPassword, estiId);
 
         File logFile = Paths.get("logFile+"+estiId+".txt").toFile();

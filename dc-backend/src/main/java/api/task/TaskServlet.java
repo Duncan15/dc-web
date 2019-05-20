@@ -109,9 +109,10 @@ public class TaskServlet extends HttpServlet {
                         String pageParamValue = request.getParameter("pageParamValue");
                         String otherParamName = request.getParameter("otherParamName");
                         String otherParamValue = request.getParameter("otherParamValue");
+                        String infoLinkXpath = request.getParameter("infoLinkXpath");
 
-                        String[]  param = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList"};
-                        String[] paramValue = {searchURL,keywordName,pageParamName,pageParamValue,otherParamName,otherParamValue};
+                        String[]  param = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList", "infoLinkXpath"};
+                        String[] paramValue = {searchURL,keywordName,pageParamName,pageParamValue,otherParamName,otherParamValue, infoLinkXpath};
 
                         //check whether urlBaseConf exists or not
                         if (!Verifier.verifyExist(webId, "urlBaseConf")) {
@@ -126,6 +127,7 @@ public class TaskServlet extends HttpServlet {
                             data.put("otherParamName",otherParamName);
                             data.put("pageParamValue",pageParamValue);
                             data.put("otherParamValue",otherParamValue);
+                            data.put("infoLinkXpath", infoLinkXpath);
                             response.getWriter().println(RespWrapper.build(data));
                         } else {
                             data.put("msg","url参数修改失败");
@@ -462,8 +464,8 @@ public class TaskServlet extends HttpServlet {
 
              if (RunningMode.unstructed == r) {
                  if (Base.urlBased == b) {
-                     String[] params = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList"};
-                     String[] ansKeys = {"searchURL", "keywordName", "pageParamName", "pageParamValue", "otherParamName", "otherParamValue"};
+                     String[] params = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList", "infoLinkXpath"};
+                     String[] ansKeys = {"searchURL", "keywordName", "pageParamName", "pageParamValue", "otherParamName", "otherParamValue", "infoLinkXpath"};
                      if (Verifier.verifyExist(webId, "urlBaseConf")) {
                          String[] urlBasedData = DBUtil.select("urlBaseConf", params, webId)[0];
                          for (int i = 0; i < params.length; i++) {
