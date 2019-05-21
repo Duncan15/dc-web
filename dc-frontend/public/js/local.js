@@ -1782,7 +1782,7 @@ $(function() {
                 })
                   .done(function(data) {
                     $.LoadingOverlay("hide", true);
-                    alert(data['data']['msg']);
+                    alert(data['data']);
                   })
                   .fail(function() {
                     $.LoadingOverlay("hide", true);
@@ -1805,25 +1805,8 @@ $(function() {
                   .always(function() {
                     console.log("complete");
                   });
-              });
               }
-              $.LoadingOverlay("show");
-              $.ajax({
-                url: baseURL + '/api/datacrawling/task/monitor?action=option&option=' + action + '&taskID=' + taskID,
-                type: 'GET',
-                dataType: 'json'
-              })
-                .done(function(data) {
-                  console.log("success");
-                  $.LoadingOverlay("hide", true);
-                  alert(data['data']['msg']);
-                })
-                .fail(function() {
-                  console.log("error");
-                })
-                .always(function() {
-                  console.log("complete");
-                });
+
 
             });
           }
