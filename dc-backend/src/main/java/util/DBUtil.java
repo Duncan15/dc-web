@@ -49,8 +49,7 @@ public class DBUtil
 		}
 		return true;
 	}
-	public static Connection getConn()
-	{
+	public static Connection getConn() {
 		Connection conn;
 		if(dbUrl==null||dbUser==null||dbPass==null){
 			Properties prop=new Properties();
@@ -74,8 +73,7 @@ public class DBUtil
 	}
 
 
-	public static void release(Connection conn, Statement st, ResultSet rs)
-	{
+	public static void release(Connection conn, Statement st, ResultSet rs) {
 		if (rs != null)
 		{
 			try {
@@ -106,8 +104,7 @@ public class DBUtil
 	 * @param tableName,the target parameters,the parameter values
 	 * @return flag(true->success)
 	 */
-	public static boolean insert(String table, String[] params, String[] params_value)
-	{
+	public static boolean insert(String table, String[] params, String[] params_value) {
 		boolean flag = true;
 		Connection conn = null;
 		PreparedStatement st = null;
@@ -152,8 +149,7 @@ public class DBUtil
 	/*
 	 * @param tableName,the target parameters,the parameter values,webId
 	 */
-	public static boolean update(String table, String[] params, String[] params_value, int webId)
-	{
+	public static boolean update(String table, String[] params, String[] params_value, int webId) {
 		boolean flag = true;
 		Connection conn = null;
 		PreparedStatement st = null;
@@ -232,8 +228,7 @@ public class DBUtil
 	/*
 	 * select {params} from {table} where {cond_params}={cond_par_val}
 	 */
-	public static String[][] select(String table, String[] params, String[] cond_params,String[] cond_par_val)
-	{
+	public static String[][] select(String table, String[] params, String[] cond_params,String[] cond_par_val) {
 		Connection conn = null;
 		PreparedStatement st = null;
 		ResultSet rs = null;
@@ -329,8 +324,7 @@ public class DBUtil
 	/*
 	 * select {params} from table
 	 */
-	public static String[][] select(String table, String[] params)
-	{
+	public static String[][] select(String table, String[] params) {
 		Connection conn = null;
 		PreparedStatement st = null;
 		ResultSet rs = null;
@@ -420,8 +414,7 @@ public class DBUtil
 
 	}
 
-	public static String[][] selectByWebId(String table,int webId)
-	{
+	public static String[][] selectByWebId(String table,int webId) {
 		Connection conn = null;
 		PreparedStatement st = null;
 		ResultSet rs = null;
@@ -582,8 +575,7 @@ public class DBUtil
 	/*
 	 * select {params} from {table} where webId={webId}
 	 */
-	public static String[][] select(String table,String[] params,int webId)
-	{
+	public static String[][] select(String table,String[] params,int webId) {
 		Connection conn = null;
 		PreparedStatement st = null;
 		ResultSet rs = null;
@@ -708,8 +700,7 @@ public class DBUtil
 	/*
 	 * get the first record's webId from sql "select * from website"
 	 */
-	public static int getLastWebId()
-	{
+	public static int getLastWebId() {
 		int max = 0;
 		Connection conn = null;
 		PreparedStatement st = null;
@@ -749,8 +740,7 @@ public class DBUtil
 	/*
 	 * get the first record's webId from sql "select * from website"
 	 */
-	public static int getLastRequestID()
-	{
+	public static int getLastRequestID() {
 		int max = 0;
 		Connection conn = null;
 		PreparedStatement st = null;
@@ -790,8 +780,7 @@ public class DBUtil
 	 * @param webId
 	 * @return the latest 10 infolinks, if not enough,return the most can satisfy
 	 */
-	public static ArrayList<Long> getLastInfoLinks(String webId)
-	{
+	public static ArrayList<Long> getLastInfoLinks(String webId) {
 		Connection conn = null;
 		PreparedStatement st = null;
 		ResultSet rs = null;
@@ -849,7 +838,7 @@ public class DBUtil
 	/*
 	 * get total number of a kind of links in current round(not use)
 	 */
-	public static int getLinksNum(String webId, int type){
+	public static int getLinksNum(String webId, int type) {
 		//type:
 		//1 sinfo successful info links in total
 		//2 finfo failed info links in total
@@ -916,8 +905,7 @@ public class DBUtil
 	/*
 	 * not useS
 	 */
-	public static int getTotalSinfoLinks(String webId)
-	{
+	public static int getTotalSinfoLinks(String webId) {
 		int sum = 0;
 		Connection conn = null;
 		PreparedStatement st = null;
@@ -959,9 +947,25 @@ public class DBUtil
 		}
 		return sum;
 	}
+	public static int deleteTable(String table){
+		Connection conn = null;
+		PreparedStatement st = null;
+		int rs = 0;
+		String sql="drop table "+table;
+		try
+		{
+			conn=getConn();
+			st = (PreparedStatement) conn.prepareStatement(sql);
+			rs=st.executeUpdate();
+		}
+		catch (SQLException e) {
 
-	public static int delete(String table,String[] pn,String[] pv)
-	{
+		} finally {
+			release(conn, st, null);
+		}
+		return rs;
+	}
+	public static int delete(String table,String[] pn,String[] pv) {
 		Connection conn = null;
 		PreparedStatement st = null;
 		int rs = 0;
@@ -984,8 +988,7 @@ public class DBUtil
 			rs=st.executeUpdate();
 		}
 		catch (SQLException e) {
-			// TODO: handle exception
-			e.printStackTrace();
+
 		} finally {
 			release(conn, st, null);
 		}
