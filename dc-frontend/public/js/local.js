@@ -1768,11 +1768,16 @@ $(function() {
             var content = data['data'];
             var html = tmpl.render(content);
             $("#task-control-list-content").html(html);
-            $(".crawler-control-btn").off('click');
-            $(".crawler-control-btn").on('click', function() {
+            $(".crawler-control-btn").off('change');
+            $(".crawler-control-btn").on('change', function(e) {
               var $tr = $(this).parents("tr");
               var taskID = $tr.find("th.task-id").text().trim();
-              var action = $(this).attr("name");
+              var action = ''
+              var value = e.target.value
+              if (value === '停止') action = 'stop'
+              else if (value === '启动') action = 'start'
+              else if (value === '删除') action = 'delete'
+              console.log(action);
               if (action === 'delete') {
                 $.LoadingOverlay("show");
                 $.ajax({
@@ -1787,7 +1792,7 @@ $(function() {
                   .fail(function() {
                     $.LoadingOverlay("hide", true);
                   });
-              } else {
+              } else if(action){
                 $.LoadingOverlay("show");
                 $.ajax({
                   url: baseURL + '/api/datacrawling/task/monitor?action=option&option=' + action + '&taskID=' + taskID,
@@ -1806,8 +1811,6 @@ $(function() {
                     console.log("complete");
                   });
               }
-
-
             });
           }
         })
