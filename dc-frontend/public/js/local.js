@@ -2204,6 +2204,6 @@ $(function() {
     });
     $dbConfigBtn.click();
   });
-  $requestBtn.click();
+  $crawlingBtn.click();
 
 });
