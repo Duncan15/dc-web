@@ -1773,23 +1773,40 @@ $(function() {
               var $tr = $(this).parents("tr");
               var taskID = $tr.find("th.task-id").text().trim();
               var action = $(this).attr("name");
-              $.LoadingOverlay("show");
-              $.ajax({
-                url: baseURL + '/api/datacrawling/task/monitor?action=option&option=' + action + '&taskID=' + taskID,
-                type: 'GET',
-                dataType: 'json'
-              })
-                .done(function(data) {
-                  console.log("success");
-                  $.LoadingOverlay("hide", true);
-                  alert(data['data']['msg']);
+              if (action === 'delete') {
+                $.LoadingOverlay("show");
+                $.ajax({
+                  url: baseURL + '/api/datacrawling/task/' + taskID,
+                  type: 'DELETE',
+                  dataType: 'json'
                 })
-                .fail(function() {
-                  console.log("error");
+                  .done(function(data) {
+                    $.LoadingOverlay("hide", true);
+                    alert(data['data']);
+                  })
+                  .fail(function() {
+                    $.LoadingOverlay("hide", true);
+                  });
+              } else {
+                $.LoadingOverlay("show");
+                $.ajax({
+                  url: baseURL + '/api/datacrawling/task/monitor?action=option&option=' + action + '&taskID=' + taskID,
+                  type: 'GET',
+                  dataType: 'json'
                 })
-                .always(function() {
-                  console.log("complete");
-                });
+                  .done(function(data) {
+                    console.log("success");
+                    $.LoadingOverlay("hide", true);
+                    alert(data['data']['msg']);
+                  })
+                  .fail(function() {
+                    console.log("error");
+                  })
+                  .always(function() {
+                    console.log("complete");
+                  });
+              }
+
 
             });
           }
@@ -2187,5 +2204,3 @@ $(function() {
   $requestBtn.click();
 
 });
-
-
