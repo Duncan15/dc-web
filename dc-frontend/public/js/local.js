@@ -1815,6 +1815,21 @@ $(function() {
                   .done(function(data) {
                     $.LoadingOverlay("hide", true);
                     alert(data['data']);
+                    $.ajax({
+                      url: baseURL + '/api/datacrawling/task/all',
+                      type: 'GET',
+                      dataType: 'json'
+                    })
+                      .done(function(data) {
+                        console.log("success");
+                        if (data['errno'] != 0) {
+                          alert("服务器错误");
+                        } else {
+                          var content = data['data'];
+                          var html = tmpl.render(content);
+                          $("#task-control-list-content").html(html);
+                        }
+                      });
                   })
                   .fail(function() {
                     $.LoadingOverlay("hide", true);
