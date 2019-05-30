@@ -36,20 +36,8 @@ public class EstiMoniServlet extends HttpServlet {
         String mysqlUserName = properties.getProperty("mysqlUserName");
         String mysqlPassword = properties.getProperty("mysqlPassword");
 
-        String jarPath = new File(getServletContext().getRealPath("/"), "WEB-INF/lib/Controller_estimate_b.jar").getAbsolutePath();
-        builder = new ProcessBuilder("java", "-Xmx1024m", "-Xms256m", "-jar", jarPath, mysqlURL, mysqlUserName, mysqlPassword, estiId);
-
-        File logFile = Paths.get("logFile+"+estiId+".txt").toFile();
-        File logErr =  Paths.get("logErr+"+estiId+".txt").toFile();
-        if (logFile.exists()) {
-            logFile.delete();
-        }
-        if (logErr.exists()) {
-            logErr.delete();
-        }
-
-        builder.redirectOutput(logFile);
-        builder.redirectError(logErr);
+        String jarPath = new File(getServletContext().getRealPath("/"), "WEB-INF/lib/import_tool-jar-with-dependencies.jar").getAbsolutePath();
+        builder = new ProcessBuilder("java", "-jar", jarPath,estiId,mysqlURL, mysqlUserName, mysqlPassword);
 
         Process p = builder.start();
         try {

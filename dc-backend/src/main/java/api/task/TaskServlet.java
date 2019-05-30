@@ -623,7 +623,11 @@ public class TaskServlet extends HttpServlet {
                 FileOp.delete(Paths.get(workFile, webID + "").toFile());
             }
         }.start();
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json");
         response.getWriter().println(RespWrapper.build("删除成功"));
     }
+
+
 
 }

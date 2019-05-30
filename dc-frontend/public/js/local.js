@@ -896,6 +896,20 @@ $(function() {
             var content = data['data'];
             var html = tmpl.render(content);
             $("#rule-list-content").html(html);
+            $(".delete-rule").off('click');
+            $(".delete-rule").on('click', function(event) {
+                  var $tr = $(this).parents("tr");
+                  var taskID = $tr.find("th.rule-id").text();
+                  $.ajax({
+                      url: baseURL + '/api/datacrawling/task/' + taskID,
+                      type: 'DELETE',
+                      dataType: 'json'
+                  }).done(function(data){
+                      console.log(data);
+                      alert(data);
+                      $paserRuleBtn.click();
+                  })
+              });
             $(".change-rule").off('click');
             $(".change-rule").on('click', function(event) {
               var $tr = $(this).parents("tr");
@@ -1536,6 +1550,22 @@ $(function() {
               var content = data['data'];
               var html = tmpl.render(content);
               $("#template-list-content").html(html);
+              $(".delete-template").off('click');
+              $(".delete-template").on('click', function(event){
+                    event.preventDefault();
+                    var $tr = $(this).parents("tr");
+                    var templateID = $tr.find("th[name='template-id']").text().trim();
+                    var taskID = $tr.find("th[name='rule-id']").text().trim();
+                    $.ajax({
+                        url: baseURL + '/api/datacrawling/task/template?ruleId=' + taskID + '&templateId=' + templateID,
+                        type: 'DELETE',
+                        dataType: 'json'
+                    }).done(function(data){
+                        console.log(data);
+                        alert(data);
+                        $templateListBtn.click();
+                    })
+                });
               $(".change-template").off('click');
               $(".change-template").on('click', function(event) {
                 $("#edit-template .return-btn").off();

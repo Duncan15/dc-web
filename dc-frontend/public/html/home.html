@@ -240,9 +240,9 @@
 							<div class="form-group" id="driver-select-group">
 								<label class="col-xs-2 control-label">采集模式</label>
 								<div class="col-xs-6">
-									<label class="radio-inline">
+									<!-- <label class="radio-inline">
 										<input type="radio" name="driver-select" value="have">基于浏览器驱动</input>
-									</label>
+									</label> -->
 									<label class="radio-inline">
 										<input type="radio" name="driver-select" value="none">基于链接</input>
 									</label>
@@ -260,9 +260,9 @@
 									<!-- <label for="" class="radio-inline">
 										<input type="radio" name="base-select" value="apiBased">基于接口刷新</input>
 									</label> -->
-									<label for="" class="radio-inline">
+									<!-- <label for="" class="radio-inline">
 										<input type="radio" name="base-select" value="jsonBased">基于json刷新</input>
-									</label>
+									</label> -->
 								</div>
 							</div>
 							<div class="form-group">
@@ -354,6 +354,7 @@
 											{{/if}}
 										</th>
 										<th><a class="change-rule" href="#edit-rule" data-toggle="pill">修改</a></th>
+										<th><a class="delete-rule" href="#delete-rule">删除</a></th>
 									</tr>
 								{{/for}}
 							</script>
@@ -886,6 +887,7 @@
 											<th name="template-id">{{:templateID}}</th>
 											<th>{{:templateName}}</th>
 											<th><a class="change-template" href="#edit-template" data-toggle="pill">修改</a></th>
+											<th><a class="delete-template" href="#delete-template">删除</a></th>
 										</tr>
 										{{/for}}
 									</script>
@@ -1279,7 +1281,7 @@
 				<div class="col-xs-3 text-center">
 					<ul class="nav nav-pills nav-stacked">
 						<li>
-							<a id="url-sensing-btn" href="#url-sensing" data-toggle="pill">侦测接口</a>
+							<a id="url-sensing-btn" href="#url-sensing" data-toggle="pill">侦测form形式的搜索接口</a>
 						</li>
 						<li>
 							<a id="result-sensing-btn" href="#result-sensing" data-toggle="pill">侦测结果</a>

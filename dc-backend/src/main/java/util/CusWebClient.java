@@ -80,7 +80,7 @@ public class CusWebClient {
 //					System.out.println("***********************");
 
 					//int positiveNum=0;
-					if(formContext.indexOf("search")>0||formContext.indexOf("搜索")>0||formContext.indexOf("关键字")>0){
+					if(formContext.indexOf("search")>0||formContext.indexOf("keyword")>0||formContext.indexOf("Search")>0||formContext.indexOf("查询")>0||formContext.indexOf("搜索")>0||formContext.indexOf("关键字")>0){
 
 						if(judgeFrom(formMd5)){return false;}
 						String [] p1={"formMd5"};
@@ -111,7 +111,7 @@ public class CusWebClient {
 //						System.out.println(formContext);
 //						System.out.println("***********************");
 						//int positiveNum=0;
-						if(formContext.indexOf("search")>0||formContext.indexOf("搜索")>0||formContext.indexOf("关键字")>0){
+						if(formContext.indexOf("search")>0||formContext.indexOf("keyword")>0||formContext.indexOf("Search")>0||formContext.indexOf("查询")>0||formContext.indexOf("搜索")>0||formContext.indexOf("关键字")>0){
 							if(judgeFrom(formMd5)){return false;}
 							String [] p1={"formMd5"};
 							String [] p2={formMd5};
