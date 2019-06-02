@@ -1795,8 +1795,9 @@ $(function() {
             var content = data['data'];
             var html = tmpl.render(content);
             $("#task-control-list-content").html(html);
-            $(".crawler-control-btn").off('change');
+            // $(".crawler-control-btn").off('change');
             $(".crawler-control-btn").on('change', function(e) {
+              console.log('change');
               var $tr = $(this).parents("tr");
               var taskID = $tr.find("th.task-id").text().trim();
               var action = ''
@@ -1815,21 +1816,7 @@ $(function() {
                   .done(function(data) {
                     $.LoadingOverlay("hide", true);
                     alert(data['data']);
-                    $.ajax({
-                      url: baseURL + '/api/datacrawling/task/all',
-                      type: 'GET',
-                      dataType: 'json'
-                    })
-                      .done(function(data) {
-                        console.log("success");
-                        if (data['errno'] != 0) {
-                          alert("服务器错误");
-                        } else {
-                          var content = data['data'];
-                          var html = tmpl.render(content);
-                          $("#task-control-list-content").html(html);
-                        }
-                      });
+                    $taskMonitorBtn.click()
                   })
                   .fail(function() {
                     $.LoadingOverlay("hide", true);
