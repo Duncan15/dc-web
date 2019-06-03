@@ -906,7 +906,7 @@ $(function() {
                       dataType: 'json'
                   }).done(function(data){
                       console.log(data);
-                      alert(data);
+                      alert(data['data']);
                       $paserRuleBtn.click();
                   })
               });

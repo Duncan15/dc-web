@@ -14,12 +14,13 @@ import java.util.regex.Pattern;
 
 public class WebCrawlerDemo {
     private String baseLink1="";
+    private int webId=0;
     private int numOfLink=1;
     private boolean stopFlag = true;
     public void setBaseLink1(String url){
         baseLink1=url;
     }
-
+    public void setWebId(int id){webId = id;}
     public void crawlerStop(){
         stopFlag = false;
 
@@ -27,8 +28,10 @@ public class WebCrawlerDemo {
  
     public void myPrint(String baseUrl) {
 
-        if(CusWebClient.judgeurl(baseUrl)){
-            String webId2 = DBUtil.select("website", new String[]{"webId"}, new String[]{"indexUrl"}, new String[]{baseLink1})[0][0];
+        if(CusWebClient.judgeurl(webId,baseUrl)){
+            //String webId2 = DBUtil.select("website", new String[]{"webId"}, new String[]{"indexUrl"}, new String[]{baseLink1})[0][0];
+            String webId2 = webId+"";
+            System.out.println("webid2 = ==="+webId2);
             int num2 = Integer.valueOf(DBUtil.select("sensestate", new String[]{"allLinks"}, new String[]{"id"}, new String[]{webId2})[0][0]);
             String numAdd = String.valueOf(num2 + 1);
             System.out.println("numAdd:"+numAdd);
@@ -38,13 +41,14 @@ public class WebCrawlerDemo {
             System.out.println("发现正确url"+baseUrl);
             System.out.println("+++++++++++");
 
-            String webId1 = DBUtil.select("website",new String[]{"webId"},new String[]{"indexUrl"},new String[]{baseLink1})[0][0];
+            //String webId1 = DBUtil.select("website",new String[]{"webId"},new String[]{"indexUrl"},new String[]{baseLink1})[0][0];
+            String webId1 = webId+"";
             int num=Integer.valueOf(DBUtil.select("sensestate",new String[]{"trueLinks"},new String[]{"id"},new String[]{webId1})[0][0]);
             String numAdd4=String.valueOf(num+1);
             DBUtil.update("sensestate",new String[]{"trueLinks"},new String[]{numAdd4},new String[]{"id"},new String[]{webId1});
             try{
-                String [] p1={"homeUrl","targetUrl"};
-                String [] p2={baseUrl,baseUrl};
+                String [] p1={"webId","homeUrl","targetUrl"};
+                String [] p2={webId+"",baseUrl,baseUrl};
                 DBUtil.insert("sense",p1,p2);}
             catch (Exception e){
 
@@ -55,7 +59,8 @@ public class WebCrawlerDemo {
                 System.out.println("[[[[[[[[[[[[[[[[[[[");
             }
         }else {
-            String webId2 = DBUtil.select("website", new String[]{"webId"}, new String[]{"indexUrl"}, new String[]{baseLink1})[0][0];
+            //String webId2 = DBUtil.select("website", new String[]{"webId"}, new String[]{"indexUrl"}, new String[]{baseLink1})[0][0];
+            String webId2 = webId+"";
             int num2 = Integer.valueOf(DBUtil.select("sensestate", new String[]{"allLinks"}, new String[]{"id"}, new String[]{webId2})[0][0]);
             String numAdd = String.valueOf(num2 + 1);
             DBUtil.update("sensestate", new String[]{"allLinks"}, new String[]{numAdd}, new String[]{"id"}, new String[]{webId2});
@@ -149,7 +154,8 @@ public class WebCrawlerDemo {
                                     System.out.println("新的" + newLink);
                                     if (stopFlag) {
                                         numOfLink += 1;
-                                        String webId2 = DBUtil.select("website", new String[]{"webId"}, new String[]{"indexUrl"}, new String[]{baseLink1})[0][0];
+                                        //String webId2 = DBUtil.select("website", new String[]{"webId"}, new String[]{"indexUrl"}, new String[]{baseLink1})[0][0];
+                                        String webId2 = webId+"";
                                         int num2 = Integer.valueOf(DBUtil.select("sensestate", new String[]{"allLinks"}, new String[]{"id"}, new String[]{webId2})[0][0]);
                                         String numAdd = String.valueOf(num2 + 1);
                                         System.out.println("laaal"+numAdd);
@@ -160,21 +166,22 @@ public class WebCrawlerDemo {
                                     }
 
 
-                                    if (CusWebClient.judgeurl(newLink)) {
+                                    if (CusWebClient.judgeurl(webId,newLink)) {
                                         //	CusWebClient.method1("C:\\Users\\27148\\Desktop\\pp8.txt",newLink);
                                         System.out.println("+++++++++++");
                                         System.out.println("发现正确url" + newLink);
                                         System.out.println("+++++++++++");
 
                                         if (stopFlag) {
-                                            String webId1 = DBUtil.select("website", new String[]{"webId"}, new String[]{"indexUrl"}, new String[]{baseLink1})[0][0];
+                                            //String webId1 = DBUtil.select("website", new String[]{"webId"}, new String[]{"indexUrl"}, new String[]{baseLink1})[0][0];
+                                            String webId1 = webId+"";
                                             int num = Integer.valueOf(DBUtil.select("sensestate", new String[]{"trueLinks"}, new String[]{"id"}, new String[]{webId1})[0][0]);
                                             String numAdd = String.valueOf(num + 1);
                                             DBUtil.update("sensestate", new String[]{"trueLinks"}, new String[]{numAdd}, new String[]{"id"}, new String[]{webId1});
                                         }
                                         try {
-                                            String[] p1 = {"homeUrl", "targetUrl"};
-                                            String[] p2 = {baseLink1, newLink};
+                                            String[] p1 = {"webId","homeUrl", "targetUrl"};
+                                            String[] p2 = {webId+"",baseLink1, newLink};
                                             DBUtil.insert("sense", p1, p2);
                                         } catch (Exception e) {
 

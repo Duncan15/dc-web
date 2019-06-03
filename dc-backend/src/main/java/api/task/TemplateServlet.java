@@ -223,6 +223,7 @@ public class TemplateServlet extends HttpServlet {
 			else {
 				DBUtil.delete("pattern_structed", new String[]{"id"}, new String[]{templateID + ""});
 			}
+
 			response.getWriter().println(RespWrapper.build("删除成功"));
 		}catch (Exception e){
 			response.getWriter().println(RespWrapper.build("删除异常"));

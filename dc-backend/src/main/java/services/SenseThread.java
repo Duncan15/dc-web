@@ -31,6 +31,7 @@ public class SenseThread extends Thread{
             String link = url[0][0];
 
             webCrawlerDemo.setBaseLink1(link);
+            webCrawlerDemo.setWebId(Integer.valueOf(getName()));
             webCrawlerDemo.myPrint(link);
             this.setStatus("stop");
         }catch (Exception e){
