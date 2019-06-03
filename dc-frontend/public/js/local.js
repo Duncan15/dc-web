@@ -1686,6 +1686,7 @@ $(function() {
                     newContent.push(content[item]);
                   }
                 }
+                console.log(newContent)
                 var html = tmpl.render(newContent);
                 $("#task-id-list-content").html(html);
               }
@@ -1697,9 +1698,9 @@ $(function() {
               console.log("complete");
             });
 
-          form.find("input[name='pattern-type']").hide();
-          form.find("input[name='pattern-formula']").hide();
-          form.find("input[name='pattern-header-xpath']").hide();
+          form.find("input[name='pattern-type']").attr("disabled",true);
+          form.find("input[name='pattern-formula']").attr("disabled",true);
+          form.find("input[name='pattern-header-xpath']").attr("disabled",true);
         });
         $("input[name='pattern-mode'][value='structed']").off();
         $("input[name='pattern-mode'][value='structed']").on('click', function() {
@@ -1721,7 +1722,7 @@ $(function() {
                     newContent.push(content[item]);
                   }
                 }
-
+                console.log(newContent)
                 var html = tmpl.render(newContent);
                 $("#task-id-list-content").html(html);
               }
@@ -1734,9 +1735,9 @@ $(function() {
             });
 
 
-          form.find("input[name='pattern-type']").show();
-          form.find("input[name='pattern-formula']").show();
-          form.find("input[name='pattern-header-xpath']").show();
+            form.find("input[name='pattern-type']").attr("disabled",false);
+            form.find("input[name='pattern-formula']").attr("disabled",false);
+            form.find("input[name='pattern-header-xpath']").attr("disabled",false);
         });
         $("input[name='pattern-mode'][value='unstructed']").click();
         var form = $("#new-template-form");
