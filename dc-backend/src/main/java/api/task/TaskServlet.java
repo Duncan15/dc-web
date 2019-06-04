@@ -578,11 +578,21 @@ public class TaskServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
 	    String[] args = RequestParser.parsePath(request.getRequestURI(), 1);
 	    int webID = Integer.parseInt(args[0]);
+	    String[][] runtimeInfos = DBUtil.select("current", new String[]{"run"}, webID);
+	    if (runtimeInfos.length == 0) {
+            response.getWriter().println(RespWrapper.build("目标爬虫信息不存在，无法删除"));
+            return;
+        }
+	    if (Integer.parseInt(runtimeInfos[0][0]) != 0) {
+            response.getWriter().println(RespWrapper.build("爬虫正在运行中，无法删除"));
+            return;
+        }
         String[][] webInfos = DBUtil.select("website", new String[]{"workFile", "runningMode", "driver", "base","webName"}, webID);
         String workFile = webInfos[0][0];
         RunningMode runningMode = RunningMode.ValueOf(webInfos[0][1]);
         Driver driver = Driver.valueOf(Integer.parseInt(webInfos[0][2]));
         Base base = Base.valueOf(Integer.parseInt(webInfos[0][3]));
+
 
         //在if判断中删除数据库内数据
         if (runningMode == RunningMode.unstructed) {
@@ -595,7 +605,9 @@ public class TaskServlet extends HttpServlet {
             DBUtil.delete("current", new String[]{"webId"}, new String[]{webID + ""});
             DBUtil.delete("status", new String[]{"webId"}, new String[]{webID + ""});
             DBUtil.delete("pattern", new String[]{"webId"}, new String[]{webID + ""});
+            DBUtil.delete("sensestate", new String[]{"id"}, new String[]{webID + ""});
             DBUtil.delete("website", new String[]{"webId"}, new String[]{webID + ""});
+
         } else if (runningMode == RunningMode.structed) {
             if (Driver.have ==driver) {
                 DBUtil.delete("structedParam", new String[]{"webId"}, new String[]{webID + ""});
@@ -612,6 +624,7 @@ public class TaskServlet extends HttpServlet {
             DBUtil.delete("current", new String[]{"webId"}, new String[]{webID + ""});
             DBUtil.delete("status", new String[]{"webId"}, new String[]{webID + ""});
             DBUtil.delete("pattern_structed", new String[]{"webId"}, new String[]{webID + ""});
+            DBUtil.delete("sensestate", new String[]{"id"}, new String[]{webID + ""});
             DBUtil.delete("website", new String[]{"webId"}, new String[]{webID + ""});
         }
 
@@ -625,5 +638,7 @@ public class TaskServlet extends HttpServlet {
         }.start();
         response.getWriter().println(RespWrapper.build("删除成功"));
     }
+
+
 
 }

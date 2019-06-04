@@ -601,6 +601,7 @@ public class DBUtil
 				rs = st.executeQuery();
 			} catch (SQLException e)
 			{
+				System.err.println(sql);
 				e.printStackTrace();
 			}
 			ResultSetMetaData mm = null;
