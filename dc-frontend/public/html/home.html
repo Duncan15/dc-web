@@ -1278,17 +1278,17 @@
 	<div id="sensing" class="tab-pane" >
 		<div class="container-fluid">
 			<div class="row">
-				<div class="col-xs-3 text-center">
+				<div class="col-xs-0 text-center" style="display:none">
 					<ul class="nav nav-pills nav-stacked">
 						<li>
-							<a id="url-sensing-btn" href="#url-sensing" data-toggle="pill">侦测接口</a>
+							<a id="url-sensing-btn" href="#url-sensing" data-toggle="pill" display="none">侦测接口</a>
 						</li>
 						<li>
-							<a id="result-sensing-btn" href="#result-sensing" data-toggle="pill">侦测结果</a>
+							<a id="result-sensing-btn" href="#result-sensing" data-toggle="pill" display="none">侦测结果</a>
 						</li>
 					</ul>
 				</div>
-				<div class="col-xs-9 tab-content">
+				<div class="col-xs-12 tab-content">
 					<div id="url-sensing" class="tab-pane">
 						<!--<form class="form-horizontal" id="url-sensing-form">-->
 						<!--<div class="form-group">-->
@@ -1346,7 +1346,7 @@
 					<div id="result-sensing" class="tab-pane">
 
 						<table class="table table-striped table-hover">
-							<caption>侦测结果列表</caption>
+							<caption>侦测结果列表<span style="cursor:pointer;float:right;padding:10px" onClick="$('#sensing-btn').click()"> X </span></caption>
 							<thead>
 							<tr>
 								<th>首页URL</th>
