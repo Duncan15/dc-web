@@ -438,6 +438,102 @@ $(function() {
         .always(function() {
           console.log("complete");
         });
+
+
+      var handle = setInterval(function () {
+          var tmpl = $.templates("#sensingAll-list");
+          $.ajax({
+              url: baseURL + '/api/datacrawling/sense/all',
+              type: 'POST',
+              dataType: 'json',
+
+          })
+              .done(function(data) {
+                  if (data['errno'] != 0) {
+                      alert("服务器错误");
+                  } else {
+                      var html = tmpl.render(data['data']);
+                      $("#url-sensingAll-list-content").html(html);
+
+                      $(".sense-control-btn").off('click');
+                      $(".sense-control-btn").on('click', function() {
+                          var $tr = $(this).parents("tr");
+                          var senseId = $tr.find("th.sense-id").text().trim();
+                          var action = $(this).attr("name");
+                          // $.LoadingOverlay("show");
+                          $.ajax({
+                              url: baseURL + '/api/datacrawling/sensemoni/option',
+                              type: 'POST',
+                              dataType: 'json',
+                              data: {
+                                  action: action,
+                                  senseId: senseId,
+                              }
+                          })
+                              .done(function(data) {
+                                  // console.log(data['data']);
+                                  $.LoadingOverlay("hide", true);
+                                  alert(data['data']['msg']);
+                              })
+                              .fail(function() {
+                                  console.log("error");
+                              })
+                              .always(function() {
+                                  console.log("complete");
+                              });
+                      });
+
+                      $(".show-sense").off('click');
+                      $(".show-sense").on('click', function() {
+                          var $tr = $(this).parents("tr");
+                          var senseId = $tr.find("th.sense-id").text().trim();
+                          var tmpl = $.templates("#sensing-list");
+                          $.ajax({
+                              url: baseURL + '/api/datacrawling/sense/show',
+                              type: 'POST',
+                              dataType: 'json',
+                              data: {
+                                  getId: senseId,
+                              }
+                          })
+                              .done(function(data) {
+                                  console.log("success");
+                                  if (data['errno'] != 0) {
+                                      alert("服务器错误");
+                                  } else {
+                                      var html = tmpl.render(data['data']);
+                                      $("#url-sensing-list-content").html(html);
+                                      // $.LoadingOverlay("show");
+                                      $resultsensingBtn.click();
+                                  }
+
+                              })
+                              .fail(function() {
+                                  console.log("error");
+                              })
+                              .always(function() {
+                                  console.log("complete");
+                              });
+
+
+                      })
+                  }
+
+              })
+              .fail(function() {
+                  console.log("error");
+              })
+              .always(function() {
+                  console.log("complete");
+              });
+          if (handle == undefined) {
+              console.log("undefined");
+          } else {
+              if (!$("#sensing").hasClass('active')) {
+                  clearInterval(handle);
+              }
+          }
+      },3000)
     });
     $urlsensingBtn.click();
   })
@@ -1374,7 +1470,7 @@ $(function() {
                         dataType: 'json'
                     }).done(function(data){
                         console.log(data);
-                        alert(data);
+                        alert(data['data']);
                         $templateListBtn.click();
                     })
                 });

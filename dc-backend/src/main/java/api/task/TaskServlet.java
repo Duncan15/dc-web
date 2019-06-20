@@ -579,11 +579,8 @@ public class TaskServlet extends HttpServlet {
 	    String[] args = RequestParser.parsePath(request.getRequestURI(), 1);
 	    int webID = Integer.parseInt(args[0]);
 	    String[][] runtimeInfos = DBUtil.select("current", new String[]{"run"}, webID);
-	    if (runtimeInfos.length == 0) {
-            response.getWriter().println(RespWrapper.build("目标爬虫信息不存在，无法删除"));
-            return;
-        }
-	    if (Integer.parseInt(runtimeInfos[0][0]) != 0) {
+
+	    if (runtimeInfos.length != 0 && Integer.parseInt(runtimeInfos[0][0]) != 0) {
             response.getWriter().println(RespWrapper.build("爬虫正在运行中，无法删除"));
             return;
         }

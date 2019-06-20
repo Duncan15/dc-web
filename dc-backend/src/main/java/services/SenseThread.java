@@ -19,7 +19,9 @@ public class SenseThread extends Thread{
             webCrawlerDemo.crawlerStop();
         }
         this.status = status;
+
         DBUtil.update("sensestate",new String[]{"status"},new String[]{status},new String[]{"id"},new String[]{getName()});
+
 
     }
 

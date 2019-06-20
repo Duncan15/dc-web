@@ -4,6 +4,8 @@ import enums.*;
 import format.RespWrapper;
 import services.ConfigService;
 import util.DBUtil;
+import util.FileZip;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -155,6 +158,7 @@ public class MonitorServlet extends HttpServlet {
             }
 
             String[][] current = DBUtil.select("current",new String[]{"webId","round","M1status","M2status","M3status","M4status","SampleData_sum", "run"});
+
             for(int i = 0; i < current.length; i++){
                 Map<String,String> unit = new HashMap<>();
                 unit.put("taskID", current[i][0]);
@@ -170,12 +174,15 @@ public class MonitorServlet extends HttpServlet {
                     float dbNum = sizeMap.get(current[i][0]);
                     unit.put("crawlRatio", sampleNum / dbNum * 100 + "%");
                 }
+                Properties properties = ConfigService.getBackMap();
+                String[] websiteRow = website[idNameMap.get(current[i][0])];
+                RunningMode runningMode = RunningMode.ValueOf(websiteRow[2]);
+                if (runningMode == RunningMode.structed)
+                    unit.put("round",(Integer.parseInt(current[i][1])+1)+"" );
                 if ("0".equals(current[i][7])) {
-                    unit.put("status", "未启动");
+                    unit.put("status", "已停止");
                 } else {
-                    Properties properties = ConfigService.getBackMap();
-                    String[] websiteRow = website[idNameMap.get(current[i][0])];
-                    RunningMode runningMode = RunningMode.ValueOf(websiteRow[2]);
+
                     Driver driver = Driver.valueOf(Integer.parseInt(websiteRow[3]));
                     Base base = Base.valueOf(Integer.parseInt(websiteRow[4]));
                     String status = "已启动";
@@ -189,6 +196,7 @@ public class MonitorServlet extends HttpServlet {
                         }
 
                     } else if (runningMode == RunningMode.structed) {
+
                         for (int j = 2; j < 6; j++) {
                             if(current[i][j].equals("active")) {
                                 status = properties.getProperty(runningMode.name() + "." +driver.name() + "." +"status" + (j - 1));
@@ -208,7 +216,7 @@ public class MonitorServlet extends HttpServlet {
             String taskIDStr = request.getParameter("taskID");
             String option = request.getParameter("option");
 
-            int webID = 0;
+            Integer webID = 0;
             MonitorOption monitorOption = null;
             try {
                 webID = Integer.parseInt(taskIDStr);
@@ -218,7 +226,7 @@ public class MonitorServlet extends HttpServlet {
                 response.getWriter().println(RespWrapper.build(data));
                 return;
             }
-            String param1[] = {"runningMode", "driver", "base"};
+            String param1[] = {"runningMode", "driver", "base", "workFile"};
             String[][] ans =DBUtil.select("website",param1 , webID);
             if(ans.length == 0) {
                 data.put("msg", "webID所对应的网站不存在");
@@ -235,6 +243,24 @@ public class MonitorServlet extends HttpServlet {
             } else if (monitorOption == MonitorOption.stop) {
                 String msg = stop(webID);
                 data.put("msg", msg);
+                //对非结构型，在停止指令执行之后立即进行打包
+                if (runningMode == RunningMode.unstructed) {
+                    Path parAddr = Paths.get(ans[0][3], webID + "", "index");
+                    Path sourceAddr = parAddr.resolve("fulltext");
+                    Path zipAddr = parAddr.resolve(webID + ".zip");
+                    if (sourceAddr.toFile().isDirectory()) {
+                        zipAddr.toFile().delete();
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                System.out.println("开始压缩");
+                                FileZip.fileZip(sourceAddr.toString(), zipAddr.toString(), "lucene",true);
+                                System.out.println("压缩完成");
+                            }
+                        }.start();
+                    }
+
+                }
             } else {
                 data.put("msg", "该操作未定义，无法执行");
             }
