@@ -1,6 +1,6 @@
-//var baseURL="http://localhost:8082"
+var baseURL="http://localhost:8082"
 //var baseURL="http://10.24.11.220:8082"
-var baseURL = "http://10.13.56.36:8082"
+//var baseURL = "http://10.13.56.36:8082"
 $(function() {
   var $requestBtn = $("#request-btn");
   var $crawlingBtn = $("#crawling-btn");
