@@ -55,7 +55,7 @@ public class CusWebClient {
 		return false;
 	}
 
-	public static boolean humanTest(String url) {
+	public static boolean humanTest(int webId,String url) {
 
 			WebClient webclient = new WebClient(BrowserVersion.CHROME);
 
@@ -74,13 +74,13 @@ public class CusWebClient {
 				else if(listForm.size()==1){
 
 					String formContext=listForm.get(0).asXml();
-					String formMd5=encode(formContext);
+					String formMd5=webId+encode(formContext);
 //					System.out.println("***********************");
 //					System.out.println(formContext);
 //					System.out.println("***********************");
 
 					//int positiveNum=0;
-					if(formContext.indexOf("search")>0||formContext.indexOf("搜索")>0||formContext.indexOf("关键字")>0){
+					if(formContext.indexOf("search")>0||formContext.indexOf("keyword")>0||formContext.indexOf("Search")>0||formContext.indexOf("查询")>0||formContext.indexOf("搜索")>0||formContext.indexOf("关键字")>0){
 
 						if(judgeFrom(formMd5)){return false;}
 						String [] p1={"formMd5"};
@@ -106,12 +106,12 @@ public class CusWebClient {
 					for(int j=0;j<listForm.size();j++) {
 
 						String formContext=listForm.get(j).asXml();
-						String formMd5=encode(formContext);
+						String formMd5=webId+encode(formContext);
 //						System.out.println("***********************");
 //						System.out.println(formContext);
 //						System.out.println("***********************");
 						//int positiveNum=0;
-						if(formContext.indexOf("search")>0||formContext.indexOf("搜索")>0||formContext.indexOf("关键字")>0){
+						if(formContext.indexOf("search")>0||formContext.indexOf("keyword")>0||formContext.indexOf("Search")>0||formContext.indexOf("查询")>0||formContext.indexOf("搜索")>0||formContext.indexOf("关键字")>0){
 							if(judgeFrom(formMd5)){return false;}
 							String [] p1={"formMd5"};
 							String [] p2={formMd5};
@@ -427,7 +427,7 @@ public class CusWebClient {
 		}
 		}
 
-	public static boolean judgeurl(String url){
+	public static boolean judgeurl(int webId,String url){
 		//生成form
 		WebClient webclient = new WebClient(BrowserVersion.CHROME);
 		ArrayList<String> FormMd5s=new ArrayList<>();
@@ -443,7 +443,7 @@ public class CusWebClient {
 			int length=listForm.size();
 			for(int i=0;i<length;i++){
 				String formContext=listForm.get(i).asXml();
-				String formMd5=encode(formContext);
+				String formMd5=webId+encode(formContext);
 				FormMd5s.add(formMd5);
 
 			}
@@ -547,8 +547,9 @@ public class CusWebClient {
 		   	System.out.println("即将进行人工检测");
 
 			   //
-			   if(humanTest(url)){
+			   if(humanTest(webId,url)){
 				   flag=true;
+				   System.out.println("人工检测 yes");
 
 			   }
 			   else {

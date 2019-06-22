@@ -92,8 +92,8 @@ public class SenseServlet extends HttpServlet {
             String getUrl = DBUtil.select("website",new String[]{"indexUrl"},new String[]{"webId"},new String[]{getId})[0][0];
             try {
                 String[] p1 = {"homeUrl", "targetUrl"};
-                String[] cond_params={"homeUrl"};
-                String[] cond_par_val={getUrl};
+                String[] cond_params={"webId","homeUrl"};
+                String[] cond_par_val={getId,getUrl};
                 String[][] ans = DBUtil.select("sense", p1,cond_params,cond_par_val);
                 if(getUrl.equals("all")){
                     ans = DBUtil.select("sense", p1);

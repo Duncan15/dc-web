@@ -6,22 +6,17 @@ import enums.RunningMode;
 import enums.Usable;
 import format.RespWrapper;
 import services.ConfigService;
-import util.Initializer;
-import util.DBUtil;
-import util.RequestParser;
-import util.Verifier;
+import util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * servlet focus on creating task
@@ -109,9 +104,10 @@ public class TaskServlet extends HttpServlet {
                         String pageParamValue = request.getParameter("pageParamValue");
                         String otherParamName = request.getParameter("otherParamName");
                         String otherParamValue = request.getParameter("otherParamValue");
+                        String infoLinkXpath = request.getParameter("infoLinkXpath");
 
-                        String[]  param = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList"};
-                        String[] paramValue = {searchURL,keywordName,pageParamName,pageParamValue,otherParamName,otherParamValue};
+                        String[]  param = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList", "infoLinkXpath"};
+                        String[] paramValue = {searchURL,keywordName,pageParamName,pageParamValue,otherParamName,otherParamValue, infoLinkXpath};
 
                         //check whether urlBaseConf exists or not
                         if (!Verifier.verifyExist(webId, "urlBaseConf")) {
@@ -126,6 +122,7 @@ public class TaskServlet extends HttpServlet {
                             data.put("otherParamName",otherParamName);
                             data.put("pageParamValue",pageParamValue);
                             data.put("otherParamValue",otherParamValue);
+                            data.put("infoLinkXpath", infoLinkXpath);
                             response.getWriter().println(RespWrapper.build(data));
                         } else {
                             data.put("msg","url参数修改失败");
@@ -394,7 +391,7 @@ public class TaskServlet extends HttpServlet {
     for api: /api/datacrawling/task/:id
     for api: /api/datacrawling/task/all
      */
-	 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
          String[] pathParam=RequestParser.parsePath(request.getRequestURI(),2);
          Map<String,Object> data=new HashMap<>();
          if("task".equals(pathParam[0]) && "all".equals(pathParam[1])){//for task/all
@@ -462,8 +459,8 @@ public class TaskServlet extends HttpServlet {
 
              if (RunningMode.unstructed == r) {
                  if (Base.urlBased == b) {
-                     String[] params = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList"};
-                     String[] ansKeys = {"searchURL", "keywordName", "pageParamName", "pageParamValue", "otherParamName", "otherParamValue"};
+                     String[] params = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList", "infoLinkXpath"};
+                     String[] ansKeys = {"searchURL", "keywordName", "pageParamName", "pageParamValue", "otherParamName", "otherParamValue", "infoLinkXpath"};
                      if (Verifier.verifyExist(webId, "urlBaseConf")) {
                          String[] urlBasedData = DBUtil.select("urlBaseConf", params, webId)[0];
                          for (int i = 0; i < params.length; i++) {
@@ -572,4 +569,73 @@ public class TaskServlet extends HttpServlet {
              }
          }
     }
+
+    /**
+     * for invoking api: /api/datacrawling/task/:id by http method DELETE
+     * @param request
+     * @param response
+     */
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	    String[] args = RequestParser.parsePath(request.getRequestURI(), 1);
+	    int webID = Integer.parseInt(args[0]);
+	    String[][] runtimeInfos = DBUtil.select("current", new String[]{"run"}, webID);
+
+	    if (runtimeInfos.length != 0 && Integer.parseInt(runtimeInfos[0][0]) != 0) {
+            response.getWriter().println(RespWrapper.build("爬虫正在运行中，无法删除"));
+            return;
+        }
+        String[][] webInfos = DBUtil.select("website", new String[]{"workFile", "runningMode", "driver", "base","webName"}, webID);
+        String workFile = webInfos[0][0];
+        RunningMode runningMode = RunningMode.ValueOf(webInfos[0][1]);
+        Driver driver = Driver.valueOf(Integer.parseInt(webInfos[0][2]));
+        Base base = Base.valueOf(Integer.parseInt(webInfos[0][3]));
+
+
+        //在if判断中删除数据库内数据
+        if (runningMode == RunningMode.unstructed) {
+            if (base == Base.jsonBased) {
+                DBUtil.delete("jsonBaseConf", new String[]{"webId"}, new String[]{webID + ""});
+            } else if (base == Base.urlBased) {
+                DBUtil.delete("urlBaseConf", new String[]{"webId"}, new String[]{webID + ""});
+            }
+            DBUtil.delete("extraConf", new String[]{"webId"}, new String[]{webID + ""});
+            DBUtil.delete("current", new String[]{"webId"}, new String[]{webID + ""});
+            DBUtil.delete("status", new String[]{"webId"}, new String[]{webID + ""});
+            DBUtil.delete("pattern", new String[]{"webId"}, new String[]{webID + ""});
+            DBUtil.delete("sensestate", new String[]{"id"}, new String[]{webID + ""});
+            DBUtil.delete("website", new String[]{"webId"}, new String[]{webID + ""});
+
+        } else if (runningMode == RunningMode.structed) {
+            if (Driver.have ==driver) {
+                DBUtil.delete("structedParam", new String[]{"webId"}, new String[]{webID + ""});
+            }else if (Driver.json==driver){
+
+                DBUtil.delete("queryParam", new String[]{"webId"}, new String[]{webID + ""});
+                DBUtil.delete("jsonBase", new String[]{"webId"}, new String[]{webID + ""});
+            }else if (Driver.none==driver){
+                DBUtil.delete("queryParam", new String[]{"webId"}, new String[]{webID + ""});
+                DBUtil.delete("urlBaseConf", new String[]{"webId"}, new String[]{webID + ""});
+            }
+            DBUtil.deleteTable(webInfos[0][4]);
+            DBUtil.delete("extraConf", new String[]{"webId"}, new String[]{webID + ""});
+            DBUtil.delete("current", new String[]{"webId"}, new String[]{webID + ""});
+            DBUtil.delete("status", new String[]{"webId"}, new String[]{webID + ""});
+            DBUtil.delete("pattern_structed", new String[]{"webId"}, new String[]{webID + ""});
+            DBUtil.delete("sensestate", new String[]{"id"}, new String[]{webID + ""});
+            DBUtil.delete("website", new String[]{"webId"}, new String[]{webID + ""});
+        }
+
+        //删除文件夹内容时间较长，异步完成
+        new Thread() {
+            @Override
+            public void run() {
+                //只删除webID对应的文件夹内容
+                FileOp.delete(Paths.get(workFile, webID + "").toFile());
+            }
+        }.start();
+        response.getWriter().println(RespWrapper.build("删除成功"));
+    }
+
+
+
 }
