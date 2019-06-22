@@ -18,6 +18,11 @@ import java.util.Properties;
 @WebServlet(name = "EstiMoniServlet", urlPatterns = {"/api/datacrawling/estimoni"})
 public class EstiMoniServlet extends HttpServlet {
 
+    private static boolean setStatus(String status,String estiId){
+        boolean flag=DBUtil.update("estimate", new String[]{"status"}, new String[]{status}, new String[]{"estiId"}, new String[]{estiId});
+        return flag;
+    }
+
 
     private String start(String estiId) throws IOException {
         ProcessBuilder builder = null;
@@ -31,14 +36,9 @@ public class EstiMoniServlet extends HttpServlet {
         String mysqlUserName = properties.getProperty("mysqlUserName");
         String mysqlPassword = properties.getProperty("mysqlPassword");
 
-
-        DBUtil.update("estimate", new String[]{"status"}, new String[]{"start"}, new String[]{"estiId"}, new String[]{estiId});
-
-        //此处为爬取的jar包path
         String jarPath = new File(getServletContext().getRealPath("/"), "WEB-INF/lib/Controller_estimate.jar").getAbsolutePath();
         builder = new ProcessBuilder("java", "-Xmx1024m", "-Xms256m", "-jar", jarPath, mysqlURL, mysqlUserName, mysqlPassword, estiId);
-//
-//
+
         File logFile = Paths.get("logFile+"+estiId+".txt").toFile();
         File logErr =  Paths.get("logErr+"+estiId+".txt").toFile();
         if (logFile.exists()) {
@@ -58,8 +58,11 @@ public class EstiMoniServlet extends HttpServlet {
             //ignored
         }
         if (p.isAlive()) {
+            setStatus("start",estiId);
             return "估测任务成功启动";
+
         } else {
+            setStatus("stop",estiId);
             return "估测任务启动失败，请重新检查参数配置是正确，或查看输出日志进行问题定位";
         }
 
@@ -86,25 +89,20 @@ public class EstiMoniServlet extends HttpServlet {
         if (System.getProperty("os.name").toLowerCase().indexOf("windows") > -1) {
             try {
                 rt.exec("taskkill /pid " + pid+" -f");
+                setStatus("stop",estiId);
             } catch (IOException ex) {
-
-                //ignored
             }
         } else {
-            //在linux系统下的执行。
             try {
                 rt.exec("kill " + pid);
+                setStatus("stop",estiId);
             } catch (IOException ex) {
-                //ignored
             }
         }
         try {
             Thread.sleep(2000l);
         } catch (InterruptedException ex) {
-            //ignored
         }
-
-        DBUtil.update("estimate", new String[]{"status"}, new String[]{"stop"}, new String[]{"estiId"}, new String[]{estiId});
 
         ans = DBUtil.select("estimate", new String[]{"status"},new String[]{"estiId"}, new String[]{estiId} );
         if (ans[0][0].equals("stop")) {
@@ -114,9 +112,6 @@ public class EstiMoniServlet extends HttpServlet {
         }
     }
 
-
-
-
     /*
     for api: /api/datacrawling/estimoni?action=status
     for api: /api/datacrawling/estimoni?action=option&option=start or stop&estiId=1
@@ -124,7 +119,6 @@ public class EstiMoniServlet extends HttpServlet {
 
     /*To store the threads that already start
      * in order to remove them when stop */
-
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
@@ -132,8 +126,6 @@ public class EstiMoniServlet extends HttpServlet {
         String action = request.getParameter("action");
         Map<String, Object> data = new HashMap<>();
         if (action.equals("status")) {
-
-
 
         } else if (action.equals("option")) {
             String estiIdStr = request.getParameter("estiId");
@@ -155,6 +147,5 @@ public class EstiMoniServlet extends HttpServlet {
             response.getWriter().println(RespWrapper.build(data));
         }
     }
-
 
 }

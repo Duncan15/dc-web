@@ -218,11 +218,11 @@ public class TaskServlet extends HttpServlet {
                         String[] paramsValue = {webId+"",iframeNav,navValue,iframeCon,searchButton,resultRow,
                                 nextPageXPath,pageNumXPath,iframeSubParam,arrow,paramList,paramValueList};
 
-                        if (!Verifier.verifyExist(webId, "structedparam")) {
-                            DBUtil.insert("structedparam", new String[]{"webId"}, new String[]{"" + webId});
+                        if (!Verifier.verifyExist(webId, "structedParam")) {
+                            DBUtil.insert("structedParam", new String[]{"webId"}, new String[]{"" + webId});
                         }
 
-                        if(DBUtil.update("website", param, paramValue, webId) && DBUtil.update("structedparam", params, paramsValue,webId)){
+                        if(DBUtil.update("website", param, paramValue, webId) && DBUtil.update("structedParam", params, paramsValue,webId)){
                             data.put("iframeNav",iframeNav);
                             data.put("navValue",navValue);
                             data.put("iframeCon",iframeCon);
@@ -254,14 +254,14 @@ public class TaskServlet extends HttpServlet {
                         String[] paramsValue = {paramQueryValueList};
 
                         //check whether urlBaseConf exists or not
-                        if (!Verifier.verifyExist(webId, "urlbaseconf")) {
-                            DBUtil.insert("urlbaseconf", new String[]{"webId"}, new String[]{"" + webId});
+                        if (!Verifier.verifyExist(webId, "urlBaseConf")) {
+                            DBUtil.insert("urlBaseConf", new String[]{"webId"}, new String[]{"" + webId});
                         }
-                        if (!Verifier.verifyExist(webId, "queryparam")) {
-                            DBUtil.insert("queryparam", new String[]{"webId"}, new String[]{"" + webId});
+                        if (!Verifier.verifyExist(webId, "queryParam")) {
+                            DBUtil.insert("queryParam", new String[]{"webId"}, new String[]{"" + webId});
                         }
 
-                        if(DBUtil.update("urlbaseconf", param, paramValue, webId)&&DBUtil.update("queryparam", params, paramsValue, webId)) {
+                        if(DBUtil.update("urlBaseConf", param, paramValue, webId)&&DBUtil.update("queryParam", params, paramsValue, webId)) {
                             DBUtil.update("website", new String[]{"usable"}, new String[]{"" + usable.getValue()}, webId);
                             data.put("searchURL",searchURL);
                             data.put("keywordName",keywordName);
@@ -294,18 +294,18 @@ public class TaskServlet extends HttpServlet {
                         String[] paramsValue = {pageSize,totalAddress,contentAddress};
                         String paramQueryValueList = request.getParameter("paramQueryValueList");
 
-                        if (!Verifier.verifyExist(webId, "queryparam")) {
-                            DBUtil.insert("queryparam", new String[]{"webId"}, new String[]{"" + webId});
+                        if (!Verifier.verifyExist(webId, "queryParam")) {
+                            DBUtil.insert("queryParam", new String[]{"webId"}, new String[]{"" + webId});
                         }
                         //check whether urlBaseConf exists or not
                         if (!Verifier.verifyExist(webId, "urlBaseConf")) {
                             DBUtil.insert("urlBaseConf", new String[]{"webId"}, new String[]{"" + webId});
                         }
-                        if (!Verifier.verifyExist(webId, "jsonbase")) {
-                            DBUtil.insert("jsonbase", new String[]{"webId"}, new String[]{"" + webId});
+                        if (!Verifier.verifyExist(webId, "jsonBase")) {
+                            DBUtil.insert("jsonBase", new String[]{"webId"}, new String[]{"" + webId});
                         }
 
-                        if(DBUtil.update("urlBaseConf", param, paramValue, webId)&&DBUtil.update("jsonbase", params, paramsValue, webId)&&DBUtil.update("queryparam",new String[] {"dataParamList"} ,new String[] {paramQueryValueList}, webId)) {
+                        if(DBUtil.update("urlBaseConf", param, paramValue, webId)&&DBUtil.update("jsonBase", params, paramsValue, webId)&&DBUtil.update("queryParam",new String[] {"dataParamList"} ,new String[] {paramQueryValueList}, webId)) {
                             DBUtil.update("website", new String[]{"usable"}, new String[]{"" + usable.getValue()}, webId);
                             data.put("searchURL",searchURL);
                             data.put("keywordName",keywordName);
@@ -516,8 +516,8 @@ public class TaskServlet extends HttpServlet {
                      String[] structedDataparams = {"iframeNav", "navValue", "iframeCon", "searchButton", "resultRow", "nextPageXPath"
                              , "pageNumXPath", "iframeSubParam", "arrow", "paramList", "paramValueList"};
 
-                     if (Verifier.verifyExist(webId, "structedparam")) {
-                         String[] structedData = DBUtil.select("structedparam", structedDataparams, webId)[0];
+                     if (Verifier.verifyExist(webId, "structedParam")) {
+                         String[] structedData = DBUtil.select("structedParam", structedDataparams, webId)[0];
                          for (int i = 0; i < structedDataparams.length; i++)
                              data.put(structedDataparams[i], structedData[i]);
                          data.put("otherParamName", structedData[9]);
@@ -531,13 +531,13 @@ public class TaskServlet extends HttpServlet {
                  } else if (Driver.none == v) {
                      String[] params = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList"};
                      String[] ansKeys = {"searchURL", "keywordName", "pageParamName", "pageParamValue", "otherParamName", "otherParamValue"};
-                     if (Verifier.verifyExist(webId, "queryparam") && Verifier.verifyExist(webId, "urlBaseConf")) {
+                     if (Verifier.verifyExist(webId, "queryParam") && Verifier.verifyExist(webId, "urlBaseConf")) {
                          String[] urlBasedData = DBUtil.select("urlBaseConf", params, webId)[0];
                          for (int i = 0; i < params.length; i++) {
                              data.put(ansKeys[i], urlBasedData[i]);
                          }
 
-                         data.put("paramQueryValueList", DBUtil.select("queryparam", new String[] {"dataParamList"}, webId)[0][0]);
+                         data.put("paramQueryValueList", DBUtil.select("queryParam", new String[] {"dataParamList"}, webId)[0][0]);
                      } else {
                          for (int i = 0; i < params.length; i++)
                              data.put(ansKeys[i], "");
@@ -547,16 +547,16 @@ public class TaskServlet extends HttpServlet {
                      String[] params = {"prefix", "paramQuery", "paramPage", "startPageNum", "paramList", "paramValueList"};
                      String[] ansKeys = {"searchURL", "keywordName", "pageParamName", "pageParamValue", "otherParamName", "otherParamValue"};
                      String[] param = {"pageSize","totalAddress","contentAddress"};
-                     if (Verifier.verifyExist(webId, "jsonbase") && Verifier.verifyExist(webId, "urlBaseConf")) {
+                     if (Verifier.verifyExist(webId, "jsonBase") && Verifier.verifyExist(webId, "urlBaseConf")) {
                          String[] urlBasedData = DBUtil.select("urlBaseConf", params, webId)[0];
                          for (int i = 0; i < params.length; i++) {
                              data.put(ansKeys[i], urlBasedData[i]);
                          }
-                         data.put("paramQueryValueList", DBUtil.select("queryparam", new String[] {"dataParamList"}, webId)[0][0]);
+                         data.put("paramQueryValueList", DBUtil.select("queryParam", new String[] {"dataParamList"}, webId)[0][0]);
 
-                         String[] jsonbase=DBUtil.select("jsonbase", param, webId)[0];
+                         String[] jsonBase=DBUtil.select("jsonBase", param, webId)[0];
                           for (int i = 0; i < param.length; i++) {
-                             data.put(param[i], jsonbase[i]);
+                             data.put(param[i], jsonBase[i]);
                          }
                      } else {
                          for (int i = 0; i < params.length; i++)
