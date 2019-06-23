@@ -16,12 +16,11 @@
 	<script src="js/local.js"></script>
 </head>
 <body>
-<nav class="navbar navbar-fixed-top" role="navigation">
+<nav class="navbar navbar-fixed-top" role="navigation" style="display: none">
       <div class="container">
-        <a class="navbar-brand tag-btn" data-toggle="collapse" href="#menu-bar">数据采集</a>
         <ul class="nav navbar-nav navbar-right">
             <li><a target="_blank" href="softwareManuals.pdf" >帮助</a></li>
-			<li><a target="_blank" id="showTime" >点击记录时间</a></li>
+						<li><a target="_blank" id="showTime" >点击记录时间</a></li>
         </ul>
       </div>
 </nav>
@@ -652,13 +651,19 @@
 										</div>
 									</div>
 									<div class="form-group">
+										<label for="attr-value" class="control-label col-xs-2">属性值</label>
+										<div class="col-xs-6 has-valid">
+											<input type="text" name="attr-value" placeholder="查询的属性值" class="form-control">
+										</div>
+									</div>
+									<div class="form-group">
 										<label for="page-name" class="control-label col-xs-2">分页参数名称</label>
 										<div class="col-xs-6 has-valid">
 											<input required type="text" name="page-name" class="form-control">
 										</div>
 									</div>
 									<div class="form-group">
-										<label for="page-value" class="control-label col-xs-2">开始页面号</label>
+										<label for="page-value" class="control-label col-xs-2">开始页面号和步长</label>
 										<div class="col-xs-6 has-valid">
 											<input required type="text" name="page-value" placeholder="开始查询页面的页号" class="form-control">
 										</div>
@@ -673,12 +678,6 @@
 										<label for="other-param-value" class="control-label col-xs-2">其他参数值列表</label>
 										<div class="col-xs-6 has-valid">
 											<input type="text" name="other-param-value" placeholder="其他参数的值, 用','分开" class="form-control">
-										</div>
-									</div>
-									<div class="form-group">
-										<label for="attr-value" class="control-label col-xs-2">属性值</label>
-										<div class="col-xs-6 has-valid">
-											<input type="text" name="attr-value" placeholder="查询的属性值" class="form-control">
 										</div>
 									</div>
 									<div class="form-group">
@@ -975,23 +974,27 @@
 								<div class="form-group">
 										<label class="col-sm-2 control-label">模板类型</label>
 										<div class="col-sm-6 has-valid">
-											  <input required type="text" class="form-control" name="pattern-type" placeholder="模板的类型">
+												<select name="pattern-type" id="" class="form-control" required>
+													<option value="formula">formula</option>
+													<option value="userDefined">userDefined</option>
+													<option value="null" disabled selected>请选择</option>
+												</select>
 										</div>
 								</div>
 								<div class="form-group">
-					    			<label class="col-sm-2 control-label">模板Xpath</label>
+					    			<label class="col-sm-2 control-label">模板数据位置</label>
 					    			<div class="col-sm-6 has-valid">
 					      				<input required type="text" class="form-control" name="pattern-xpath" placeholder="模板的xpath, 如果超过一个xpath，用'#'分开">
 					    			</div>
 								</div>
 								<div class="form-group">
-										<label class="col-sm-2 control-label">模板formula</label>
+										<label class="col-sm-2 control-label">模板组合公式</label>
 										<div class="col-sm-6 has-valid">
 											  <input required type="text" class="form-control" name="pattern-formula" placeholder="模板的formula">
 										</div>
 								</div>
 								<div class="form-group">
-										<label class="col-sm-2 control-label">模板headerXpath</label>
+										<label class="col-sm-2 control-label">模板表头位置</label>
 										<div class="col-sm-6 has-valid">
 											  <input required type="text" class="form-control" name="pattern-header-xpath" placeholder="模板的headerXpath">
 										</div>
