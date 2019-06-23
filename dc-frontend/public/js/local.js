@@ -1,6 +1,6 @@
-var baseURL="http://localhost:8082"
+// var baseURL="http://localhost:8082"
 //var baseURL="http://10.24.11.220:8082"
-// var baseURL = "http://10.13.56.36:8082"
+var baseURL = "http://10.13.56.36:8082"
 $(function() {
   var $requestBtn = $("#request-btn");
   var $crawlingBtn = $("#crawling-btn");
@@ -2028,6 +2028,16 @@ $(function() {
 
       }
     })
+  })
+  $("select[name='pattern-type']").on('change', function (event) {
+    var { value } = event.target
+    if(value ==='formula') {
+      $("input[name='pattern-header-xpath']").attr("disabled", "disabled")
+      $("input[name='pattern-formula']").removeAttr("disabled")
+    } else if(value ==='userDefined') {
+      $("input[name='pattern-formula']").attr("disabled", "disabled")
+      $("input[name='pattern-header-xpath']").removeAttr("disabled")
+    }
   })
   $configBtn.on('click', function(event) {
     event.preventDefault();
