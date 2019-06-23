@@ -10,7 +10,6 @@ $(function() {
   var $sensingBtn = $("#sensing-btn");
   var $estimateBtn = $("#estimate-btn");
   var $showTime = $("#showTime");
-  //Bellow is code for estimate.
   $showTime.on('click',function (event) {
 
       $.ajax({
@@ -344,8 +343,6 @@ $(function() {
 
     $estiOperateBtn.click();
   })
-
-
 
   $sensingBtn.on('click', function(event) {
 
@@ -2158,6 +2155,6 @@ $(function() {
     });
     $dbConfigBtn.click();
   });
-  $crawlingBtn.click();
+  $requestBtn.click();
 
 });
