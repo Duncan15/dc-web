@@ -110,11 +110,9 @@ public class FileZip
             ZipOutputStream zos = new ZipOutputStream(opt);
             compress(sourceFile,zos,name,KeepDirStructure);
             zos.close();
-            System.out.println("压缩完成");
             return true;
 
         }catch (Exception e) {
-            System.out.println("压缩失败");
             return false;
 
         }

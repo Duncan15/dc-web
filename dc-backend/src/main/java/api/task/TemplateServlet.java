@@ -117,6 +117,8 @@ public class TemplateServlet extends HttpServlet {
     for api: /api/datacrawling/task/template/:id
 	for api: /api/datacrawling/task/template/new
      */
+
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		String[] pathParam=RequestParser.parsePath(request.getRequestURI(),2);
@@ -193,6 +195,38 @@ public class TemplateServlet extends HttpServlet {
 			}
 		}else {
 			response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR, data));
+		}
+
+	}
+
+
+	/**
+	 * for invoking api: /api/datacrawling/task/template?ruleId=&templateId= by http method DELETE
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void doDelete(HttpServletRequest request,HttpServletResponse response) throws ServletException,IOException{
+		request.setCharacterEncoding("UTF-8");
+
+		int webId = Integer.parseInt(request.getParameter("ruleId"));
+		String[][] webInfos = DBUtil.select("website", new String[]{"runningMode"}, webId);
+		RunningMode runningMode = RunningMode.ValueOf(webInfos[0][0]);
+		int templateID = Integer.parseInt(request.getParameter("templateId"));
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("application/json");
+		try{
+			if (runningMode == RunningMode.unstructed){
+				DBUtil.delete("pattern",new String[]{"id"}, new String[]{templateID + ""});
+			}
+			else {
+				DBUtil.delete("pattern_structed", new String[]{"id"}, new String[]{templateID + ""});
+			}
+
+			response.getWriter().println(RespWrapper.build("删除成功"));
+		}catch (Exception e){
+			response.getWriter().println(RespWrapper.build("删除异常"));
 		}
 
 	}

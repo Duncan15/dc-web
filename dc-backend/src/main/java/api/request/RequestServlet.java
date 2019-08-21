@@ -52,7 +52,7 @@ public class RequestServlet extends HttpServlet {
             String[] params = {"requestID", "requestName", "requestDesc"};
             String[] conParams={"requestID"};
             String[] conPalues={String.valueOf(requestID)};
-            String[][] requestData = DBUtil.select("requestTable", params, conParams, conPalues);
+            String[][] requestData = DBUtil.select("requesttable", params, conParams, conPalues);
             Map<String, Object> data = new HashMap<>();
             data.put("requestID",Integer.parseInt(requestData[0][0]));
             data.put("requestName",requestData[0][1]);

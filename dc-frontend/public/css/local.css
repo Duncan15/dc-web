@@ -1,11 +1,22 @@
 body {
-	font-family: "Helvetica Neue", Helvetica,"幼圆";
+	font-family: "Microsoft YaHei";
+	font-size: 12px;
+	font-weight: normal;
+	letter-spacing: .8px;
+}
+a:hover {
+	cursor: pointer!important;
 }
 .navbar-fixed-top {
-	background-color: #1b365f;
+	/* background-color: #1b365f; */
+	font-family: "Microsoft YaHei";
+	font-size: 12px;
+	font-weight: normal;
+	letter-spacing: .8px;
+	color: black;
 }
 .navbar-fixed-top a {
-	color:#f8f3f3!important;
+	/* color:#f8f3f3!important; */
 }
 .empty-to-fixed,
 .main-content,
@@ -34,4 +45,7 @@ body {
 }
 .modal-line {
 	margin: 20px 0;
+}
+.see-delivery-task-btn:hover {
+	cursor: pointer;
 }

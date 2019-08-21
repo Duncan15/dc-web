@@ -1,4 +1,4 @@
-//var baseURL="http://localhost:8082"
+// var baseURL="http://localhost:8082"
 //var baseURL="http://10.24.11.220:8082"
 var baseURL = "http://10.13.56.36:8082"
 $(function() {
@@ -9,9 +9,20 @@ $(function() {
   var $configBtn = $("#config-btn");
   var $sensingBtn = $("#sensing-btn");
   var $estimateBtn = $("#estimate-btn");
+  var $showTime = $("#showTime");
+  $showTime.on('click',function (event) {
 
-  //Bellow is code for estimate.
+      $.ajax({
+          url:baseURL+"/api/ClickBtn",
+          data:{},
+          type:"get",
+          dataType:"text"
 
+      }).done(function (data) {
+          alert(data)
+      })
+
+  })
   $estimateBtn.on('click', function(event) {
 
     var $estiOperateBtn = $("#esti-operate-btn");
@@ -333,8 +344,6 @@ $(function() {
     $estiOperateBtn.click();
   })
 
-
-
   $sensingBtn.on('click', function(event) {
 
     var $urlsensingBtn = $("#url-sensing-btn");
@@ -428,204 +437,101 @@ $(function() {
         });
 
 
-      // setInterval每隔一定时间就调用一次函数。3000毫秒=3秒。
-      var handle = setInterval(function() {
-        var tmpl = $.templates("#sensingAll-list");
-        $.ajax({
-          url: baseURL + '/api/datacrawling/sense/all',
-          type: 'POST',
-          dataType: 'json',
+      var handle = setInterval(function () {
+          var tmpl = $.templates("#sensingAll-list");
+          $.ajax({
+              url: baseURL + '/api/datacrawling/sense/all',
+              type: 'POST',
+              dataType: 'json',
 
-        })
-          .done(function(data) {
-            if (data['errno'] != 0) {
-              alert("服务器错误");
-            } else {
-              var html = tmpl.render(data['data']);
-              $("#url-sensingAll-list-content").html(html);
-
-              $(".sense-control-btn").off('click');
-              $(".sense-control-btn").on('click', function() {
-                var $tr = $(this).parents("tr");
-                var senseId = $tr.find("th.sense-id").text().trim();
-                var action = $(this).attr("name");
-                // $.LoadingOverlay("show");
-                $.ajax({
-                  url: baseURL + '/api/datacrawling/sensemoni/option',
-                  type: 'POST',
-                  dataType: 'json',
-                  data: {
-                    action: action,
-                    senseId: senseId,
-                  }
-                })
-                  .done(function(data) {
-                    // console.log(data['data']);
-                    $.LoadingOverlay("hide", true);
-                    alert(data['data']['msg']);
-                  })
-                  .fail(function() {
-                    console.log("error");
-                  })
-                  .always(function() {
-                    console.log("complete");
-                  });
-              });
-
-              $(".show-sense").off('click');
-              $(".show-sense").on('click', function() {
-                var $tr = $(this).parents("tr");
-                var senseId = $tr.find("th.sense-id").text().trim();
-                var tmpl = $.templates("#sensing-list");
-                $.ajax({
-                  url: baseURL + '/api/datacrawling/sense/show',
-                  type: 'POST',
-                  dataType: 'json',
-                  data: {
-                    getId: senseId,
-                  }
-                })
-                  .done(function(data) {
-                    console.log("success");
-                    if (data['errno'] != 0) {
+          })
+              .done(function(data) {
+                  if (data['errno'] != 0) {
                       alert("服务器错误");
-                    } else {
+                  } else {
                       var html = tmpl.render(data['data']);
-                      $("#url-sensing-list-content").html(html);
-                      // $.LoadingOverlay("show");
-                      $resultsensingBtn.click();
-                    }
+                      $("#url-sensingAll-list-content").html(html);
 
-                  })
-                  .fail(function() {
-                    console.log("error");
-                  })
-                  .always(function() {
-                    console.log("complete");
-                  });
+                      $(".sense-control-btn").off('click');
+                      $(".sense-control-btn").on('click', function() {
+                          var $tr = $(this).parents("tr");
+                          var senseId = $tr.find("th.sense-id").text().trim();
+                          var action = $(this).attr("name");
+                          // $.LoadingOverlay("show");
+                          $.ajax({
+                              url: baseURL + '/api/datacrawling/sensemoni/option',
+                              type: 'POST',
+                              dataType: 'json',
+                              data: {
+                                  action: action,
+                                  senseId: senseId,
+                              }
+                          })
+                              .done(function(data) {
+                                  // console.log(data['data']);
+                                  $.LoadingOverlay("hide", true);
+                                  alert(data['data']['msg']);
+                              })
+                              .fail(function() {
+                                  console.log("error");
+                              })
+                              .always(function() {
+                                  console.log("complete");
+                              });
+                      });
 
+                      $(".show-sense").off('click');
+                      $(".show-sense").on('click', function() {
+                          var $tr = $(this).parents("tr");
+                          var senseId = $tr.find("th.sense-id").text().trim();
+                          var tmpl = $.templates("#sensing-list");
+                          $.ajax({
+                              url: baseURL + '/api/datacrawling/sense/show',
+                              type: 'POST',
+                              dataType: 'json',
+                              data: {
+                                  getId: senseId,
+                              }
+                          })
+                              .done(function(data) {
+                                  console.log("success");
+                                  if (data['errno'] != 0) {
+                                      alert("服务器错误");
+                                  } else {
+                                      var html = tmpl.render(data['data']);
+                                      $("#url-sensing-list-content").html(html);
+                                      // $.LoadingOverlay("show");
+                                      $resultsensingBtn.click();
+                                  }
+
+                              })
+                              .fail(function() {
+                                  console.log("error");
+                              })
+                              .always(function() {
+                                  console.log("complete");
+                              });
+
+
+                      })
+                  }
 
               })
-
-            }
-
-          })
-          .fail(function() {
-            console.log("error");
-          })
-          .always(function() {
-            console.log("complete");
-          });
-      }, 3000);
-
-
+              .fail(function() {
+                  console.log("error");
+              })
+              .always(function() {
+                  console.log("complete");
+              });
+          if (handle == undefined) {
+              console.log("undefined");
+          } else {
+              if (!$("#sensing").hasClass('active')) {
+                  clearInterval(handle);
+              }
+          }
+      },3000)
     });
-
-
-    // $("#page-url").val("");
-    // var validator=$("#url-sensing-form").validate({
-    //     submitHandler:function () {
-    //       var  pageUrl=$("#page-url").val.trim();
-    //       if(pageUrl==""){
-    //         alert("输入不能为空");
-    //       }
-    //       sessionStorage.setItem("senseUrl",pageUrl)
-    //       $.ajax({
-    //           url:baseURL+'/api/datacrawling/sense/new',
-    //           type:'POST',
-    //           dataType: 'json',
-    //           data: {
-    //               pageUrl: pageUrl,
-    //           }
-    //       })
-    //           .done(function(data) {
-    //               console.log("success");
-    //               if(data['errno']!=0){
-    //                   alert("服务器错误");
-    //               }else{
-    //                   alert("新建成功");
-    //                   $resultsensingBtn.click();
-    //               }
-    //           })
-    //           .fail(function() {
-    //               console.log("error");
-    //           })
-    //           .always(function() {
-    //               console.log("complete");
-    //           });
-    //     }
-    // })
-    //   validator.resetForm();
-    //
-
-
-    // $resultsensingBtn.off('click');
-    // $resultsensingBtn.on('click',function () {
-    //     var tmpl=$.templates("#sensing-list");
-    //     var getUrl="all";
-    //     var senenUrl=sessionStorage.getItem("senseUrl");
-    //     if(senenUrl!=null){
-    //         getUrl=senenUrl;
-    //     }
-    //     $.ajax({
-    //         url: baseURL+'/api/datacrawling/sense/show',
-    //         type: 'POST',
-    //         dataType: 'json',
-    //         data: {
-    //             getUrl: getUrl,
-    //         }
-    //     })
-    //     .done(function(data) {
-    //         console.log("success");
-    //         if(data['errno']!=0){
-    //             alert("服务器错误");
-    //         }else{
-    //             var html=tmpl.render(data['data']);
-    //             $("#url-sensing-list-content").html(html);
-    //         }
-    //     })
-    //     .fail(function() {
-    //         console.log("error");
-    //     })
-    //     .always(function() {
-    //         console.log("complete");
-    //     });
-    //
-    //     var handle=setInterval(function(){
-    //         var getUrl="all";
-    //         var senenUrl=sessionStorage.getItem("senseUrl");
-    //         if(senenUrl!=null){
-    //             getUrl=senenUrl;
-    //         }
-    //         $.ajax({
-    //             url: baseURL+'/api/datacrawling/sense/show',
-    //             type: 'POST',
-    //             dataType: 'json',
-    //             data: {
-    //                 getUrl: getUrl,
-    //             }
-    //         })
-    //             .done(function(data) {
-    //                 console.log("success");
-    //                 if(data['errno']!=0){
-    //                     alert("服务器错误");
-    //                 }else{
-    //                     var html=tmpl.render(data['data']);
-    //                     $("#url-sensing-list-content").html(html);
-    //                 }
-    //             })
-    //             .fail(function() {
-    //                 console.log("error");
-    //             })
-    //             .always(function() {
-    //                 console.log("complete");
-    //             });
-    //     },3000);
-    //
-    //
-    // })
-
-
     $urlsensingBtn.click();
   })
   $requestBtn.on('click', function(event) {
@@ -884,6 +790,31 @@ $(function() {
             var content = data['data'];
             var html = tmpl.render(content);
             $("#rule-list-content").html(html);
+            $(".delete-rule").off('click');
+            $(".delete-rule").on('click', function(event) {
+                  var $tr = $(this).parents("tr");
+                  var taskID = $tr.find("th.rule-id").text();
+                  $.ajax({
+                      url: baseURL + '/api/datacrawling/task/' + taskID,
+                      type: 'DELETE',
+                      dataType: 'json'
+                  }).done(function(data){
+                      console.log(data);
+                      alert(data['data']);
+                      $paserRuleBtn.click();
+                  })
+              });
+
+            //   var $tr = $(this).parents("tr");
+            //   var taskID = $tr.find("th.rule-id").text();
+            //   $.ajax({
+            //     url: baseURL + '/api/datacrawling/task/' + taskID,
+            //     type: 'DELETE',
+            //     dataType: 'json'
+            //   }).done(function(data){
+            //     console.log(data);
+            //   })
+            // });
             $(".change-rule").off('click');
             $(".change-rule").on('click', function(event) {
               var $tr = $(this).parents("tr");
@@ -1524,6 +1455,35 @@ $(function() {
               var content = data['data'];
               var html = tmpl.render(content);
               $("#template-list-content").html(html);
+              $(".delete-template").off('click');
+              $(".delete-template").on('click', function(event){
+                    event.preventDefault();
+                    var $tr = $(this).parents("tr");
+                    var templateID = $tr.find("th[name='template-id']").text().trim();
+                    var taskID = $tr.find("th[name='rule-id']").text().trim();
+                    $.ajax({
+                        url: baseURL + '/api/datacrawling/task/template?ruleId=' + taskID + '&templateId=' + templateID,
+                        type: 'DELETE',
+                        dataType: 'json'
+                    }).done(function(data){
+                        console.log(data);
+                        alert(data['data']);
+                        $templateListBtn.click();
+                    })
+                });
+              //   event.preventDefault();
+              //   var $tr = $(this).parents("tr");
+              //   var templateID = $tr.find("th[name='template-id']").text().trim();
+              //   var taskID = $tr.find("th[name='rule-id']").text().trim();
+              //   $.ajax({
+              //     url: baseURL + '/api/datacrawling/task/template?ruleId=' + taskID + '&templateId=' + templateID,
+              //     type: 'DELETE',
+              //     dataType: 'json'
+              //   }).done(function(data){
+              //     console.log(data);
+              //   })
+              // });
+
               $(".change-template").off('click');
               $(".change-template").on('click', function(event) {
                 $("#edit-template .return-btn").off();
@@ -1647,6 +1607,7 @@ $(function() {
                     newContent.push(content[item]);
                   }
                 }
+                console.log(newContent)
                 var html = tmpl.render(newContent);
                 $("#task-id-list-content").html(html);
               }
@@ -1658,9 +1619,9 @@ $(function() {
               console.log("complete");
             });
 
-          form.find("input[name='pattern-type']").hide();
-          form.find("input[name='pattern-formula']").hide();
-          form.find("input[name='pattern-header-xpath']").hide();
+          form.find("input[name='pattern-type']").attr("disabled",true);
+          form.find("input[name='pattern-formula']").attr("disabled",true);
+          form.find("input[name='pattern-header-xpath']").attr("disabled",true);
         });
         $("input[name='pattern-mode'][value='structed']").off();
         $("input[name='pattern-mode'][value='structed']").on('click', function() {
@@ -1682,7 +1643,7 @@ $(function() {
                     newContent.push(content[item]);
                   }
                 }
-
+                console.log(newContent)
                 var html = tmpl.render(newContent);
                 $("#task-id-list-content").html(html);
               }
@@ -1695,9 +1656,9 @@ $(function() {
             });
 
 
-          form.find("input[name='pattern-type']").show();
-          form.find("input[name='pattern-formula']").show();
-          form.find("input[name='pattern-header-xpath']").show();
+            form.find("input[name='pattern-type']").attr("disabled",false);
+            form.find("input[name='pattern-formula']").attr("disabled",false);
+            form.find("input[name='pattern-header-xpath']").attr("disabled",false);
         });
         $("input[name='pattern-mode'][value='unstructed']").click();
         var form = $("#new-template-form");
@@ -1756,29 +1717,51 @@ $(function() {
             var content = data['data'];
             var html = tmpl.render(content);
             $("#task-control-list-content").html(html);
-            $(".crawler-control-btn").off('click');
-            $(".crawler-control-btn").on('click', function() {
+            // $(".crawler-control-btn").off('change');
+            $(".crawler-control-btn").on('change', function(e) {
+              console.log('change');
               var $tr = $(this).parents("tr");
               var taskID = $tr.find("th.task-id").text().trim();
-              var action = $(this).attr("name");
-              $.LoadingOverlay("show");
-              $.ajax({
-                url: baseURL + '/api/datacrawling/task/monitor?action=option&option=' + action + '&taskID=' + taskID,
-                type: 'GET',
-                dataType: 'json'
-              })
-                .done(function(data) {
-                  console.log("success");
-                  $.LoadingOverlay("hide", true);
-                  alert(data['data']['msg']);
+              var action = ''
+              var value = e.target.value
+              if (value === '停止') action = 'stop'
+              else if (value === '启动') action = 'start'
+              else if (value === '删除') action = 'delete'
+              console.log(action);
+              if (action === 'delete') {
+                $.LoadingOverlay("show");
+                $.ajax({
+                  url: baseURL + '/api/datacrawling/task/' + taskID,
+                  type: 'DELETE',
+                  dataType: 'json'
                 })
-                .fail(function() {
-                  console.log("error");
+                  .done(function(data) {
+                    $.LoadingOverlay("hide", true);
+                    alert(data['data']);
+                    $taskMonitorBtn.click()
+                  })
+                  .fail(function() {
+                    $.LoadingOverlay("hide", true);
+                  });
+              } else if(action){
+                $.LoadingOverlay("show");
+                $.ajax({
+                  url: baseURL + '/api/datacrawling/task/monitor?action=option&option=' + action + '&taskID=' + taskID,
+                  type: 'GET',
+                  dataType: 'json'
                 })
-                .always(function() {
-                  console.log("complete");
-                });
-
+                  .done(function(data) {
+                    console.log("success");
+                    $.LoadingOverlay("hide", true);
+                    alert(data['data']['msg']);
+                  })
+                  .fail(function() {
+                    console.log("error");
+                  })
+                  .always(function() {
+                    console.log("complete");
+                  });
+              }
             });
           }
         })
@@ -2045,6 +2028,16 @@ $(function() {
 
       }
     })
+  })
+  $("select[name='pattern-type']").on('change', function (event) {
+    var { value } = event.target
+    if(value ==='formula') {
+      $("input[name='pattern-header-xpath']").attr("disabled", "disabled")
+      $("input[name='pattern-formula']").removeAttr("disabled")
+    } else if(value ==='userDefined') {
+      $("input[name='pattern-formula']").attr("disabled", "disabled")
+      $("input[name='pattern-header-xpath']").removeAttr("disabled")
+    }
   })
   $configBtn.on('click', function(event) {
     event.preventDefault();

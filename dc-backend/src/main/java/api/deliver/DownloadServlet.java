@@ -8,10 +8,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 @WebServlet(name = "DownloadServlet",urlPatterns = {"/api/datacrawling/download"})
@@ -24,68 +23,45 @@ public class DownloadServlet extends HttpServlet {
 // TODO Auto-generated method stub
 
         String webId = request.getParameter("id");
-        String partFile = request.getParameter("partFile");
-        if(partFile == null){
-            partFile = "fulltext";
-        }
         int id = Integer.valueOf(webId);
         String []params = {"workFile"};
-        String workFile = DBUtil.select("website", params,id)[0][0]+"/"+webId+"/index/"+partFile;
-        System.out.println("workfile是:   "+workFile);
-        String afterZipPath = DBUtil.select("website", params,id)[0][0]+"/"+webId+"/index/"+webId+".zip";
-        System.out.println("afterZipPath为：  "+afterZipPath);
-        boolean ifZip =  FileZip.fileZip(workFile,afterZipPath,webId,true);
-        if(ifZip) {
-            System.out.println("压缩成功");
-            String filename = webId + ".zip";
+        String workDir = DBUtil.select("website", params,id)[0][0];
+        Path parDir = Paths.get(workDir, webId + "", "index");
+        Path zipPath = parDir.resolve(webId + ".zip");
+        Path sourcePath = parDir.resolve("fulltext");
+        String filename = webId + ".zip";
+
+        File f = zipPath.toFile();
+        if (!f.exists()) {
+            System.out.println("开始压缩");
+            FileZip.fileZip(sourcePath.toString(), zipPath.toString(), "lucene",true);
+            System.out.println("压缩完成");
+        }
+
+        //设置文件MIME类型
+        response.setContentType(getServletContext().getMimeType(filename));
+        //设置Content-Disposition
+        response.setHeader("Content-Disposition", "attachment;filename=" + filename);
+        //读取目标文件，通过response将目标文件写到客户端
 
 
-            //设置文件MIME类型
-            response.setContentType(getServletContext().getMimeType(filename));
-            //设置Content-Disposition
-            response.setHeader("Content-Disposition", "attachment;filename=" + filename);
-            //读取目标文件，通过response将目标文件写到客户端
+        //读取文件
+        InputStream in = new FileInputStream(zipPath.toString());
+        OutputStream out = response.getOutputStream();
 
-
-            //读取文件
-            InputStream in = new FileInputStream(afterZipPath);
-            OutputStream out = response.getOutputStream();
-
-            //写文件
-            int b;
+        //写文件
+        int b;
+        try {
             while ((b = in.read()) != -1) {
                 out.write(b);
             }
 
             in.close();
             out.close();
-
-            try{
-                if(FileZip.deleteFile(afterZipPath)){
-
-//                    FileZip.deleteFile(afterZipPath);
-
-                    System.out.println("删除成功");
-
-                }else {
-                    System.out.println("删除失败");
-                };
-
-            }catch (Exception e){
-                System.out.println("删除程序错误");
-            }
-
+        } catch (IOException ex) {
+            //
         }
-        else {
-            System.out.println("压缩失败 ");
-            response.getWriter().println(RespWrapper.build(RespWrapper.AnsMode.SYSERROR,"文件夹压缩失败"));
-        }
-
-
 
     }
-
-
-
 
 }

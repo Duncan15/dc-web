@@ -19,7 +19,9 @@ public class SenseThread extends Thread{
             webCrawlerDemo.crawlerStop();
         }
         this.status = status;
+
         DBUtil.update("sensestate",new String[]{"status"},new String[]{status},new String[]{"id"},new String[]{getName()});
+
 
     }
 
@@ -31,6 +33,7 @@ public class SenseThread extends Thread{
             String link = url[0][0];
 
             webCrawlerDemo.setBaseLink1(link);
+            webCrawlerDemo.setWebId(Integer.valueOf(getName()));
             webCrawlerDemo.myPrint(link);
             this.setStatus("stop");
         }catch (Exception e){

@@ -1,25 +1,11 @@
-/*
-Navicat MySQL Data Transfer
-
-Source Server         : data
-Source Server Version : 80015
-Source Host           : localhost:3306
-Source Database       : webcrawler2
-
-Target Server Type    : MYSQL
-Target Server Version : 80015
-File Encoding         : 65001
-
-Date: 2019-04-08 13:14:16
-*/
 
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for apibaseconf
+-- Table structure for apiBaseConf
 -- ----------------------------
-DROP TABLE IF EXISTS `apibaseconf`;
-CREATE TABLE `apibaseconf` (
+DROP TABLE IF EXISTS `apiBaseConf`;
+CREATE TABLE `apiBaseConf` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `webId` bigint(20) NOT NULL DEFAULT '0',
   `prefix` varchar(1024) NOT NULL DEFAULT '',
@@ -29,11 +15,6 @@ CREATE TABLE `apibaseconf` (
   `payloadXpath` varchar(256) NOT NULL DEFAULT '' COMMENT 'format:\nxpath,name',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
-
--- ----------------------------
--- Records of apibaseconf
--- ----------------------------
-INSERT INTO `apibaseconf` VALUES ('2', '124', 'http://10.24.13.223:8080/hbky/privateFileManager/grwpgl', '//*[@id=\"searchtext\"]', '//div[@class=\"searchIcon\"]', '//div[@id=\"allwenjian\"]//a[@href]', '//div[@id=\"allwenjian\"]//div[@class=\"filename\"],title');
 
 -- ----------------------------
 -- Table structure for current
@@ -50,11 +31,6 @@ CREATE TABLE `current` (
   `run` bigint(20) NOT NULL DEFAULT '0',
   KEY `round` (`round`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of current
--- ----------------------------
-INSERT INTO `current` VALUES ('126', '1', 'stop', 'done', 'done', 'done', '245945', '0');
 
 -- ----------------------------
 -- Table structure for estimate
@@ -77,14 +53,10 @@ CREATE TABLE `estimate` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
 
 -- ----------------------------
--- Records of estimate
+-- Table structure for extraConf
 -- ----------------------------
-
--- ----------------------------
--- Table structure for extraconf
--- ----------------------------
-DROP TABLE IF EXISTS `extraconf`;
-CREATE TABLE `extraconf` (
+DROP TABLE IF EXISTS `extraConf`;
+CREATE TABLE `extraConf` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `webId` bigint(20) NOT NULL DEFAULT '0',
   `userNameXpath` varchar(1024) NOT NULL DEFAULT '',
@@ -99,15 +71,6 @@ CREATE TABLE `extraconf` (
   `databaseSize` bigint(20) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
-
--- ----------------------------
--- Records of extraconf
--- ----------------------------
-INSERT INTO `extraconf` VALUES ('8', '122', '', '', '', '', '', '', '5', '3000', 'UTF-8', '0');
-INSERT INTO `extraconf` VALUES ('9', '123', 'txtUserName', 'txtPassword', '431200000000', 'aaaaaa', 'http://ai.inspur.com/login', 'btnLogin', '5', '3000', 'UTF-8', '13');
-INSERT INTO `extraconf` VALUES ('10', '124', '//*[@id=\"j_username\"]', '//*[@id=\"j_password\"]', 'zongyb', 'abing201!2', 'http://10.24.13.223:8080/hbky/index.jsp#', '//*[@id=\"submit_btn\"]', '5', '3000', 'UTF-8', '0');
-INSERT INTO `extraconf` VALUES ('11', '125', '//*[@id=\"j_username\"]', '//*[@id=\"j_password\"]', 'zongyb', 'abing201!2', 'http://10.24.13.223:8080/hbky/index.jsp#', '//*[@id=\"submit_btn\"]', '20', '30000', 'UTF-8', '0');
-INSERT INTO `extraconf` VALUES ('12', '126', 'txtUserName', 'txtPassword', '431200000000', 'aaaaaa', 'http://ai.inspur.com/login', 'btnLogin', '20', '8000', 'UTF-8', '249951');
 
 -- ----------------------------
 -- Table structure for formsbymd5
@@ -135,17 +98,11 @@ CREATE TABLE `jsonbase` (
   `contentAddress` varchar(256) NOT NULL DEFAULT '' COMMENT 'if value is an empty string, the root is cotent address',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
-
 -- ----------------------------
--- Records of jsonbase
+-- Table structure for jsonBaseConf
 -- ----------------------------
-INSERT INTO `jsonbase` VALUES ('2', '126', '1000', '/d/total', '/d/rows');
-
--- ----------------------------
--- Table structure for jsonbaseconf
--- ----------------------------
-DROP TABLE IF EXISTS `jsonbaseconf`;
-CREATE TABLE `jsonbaseconf` (
+DROP TABLE IF EXISTS `jsonBaseConf`;
+CREATE TABLE `jsonBaseConf` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `webId` bigint(20) NOT NULL DEFAULT '0',
   `prefix` varchar(1024) NOT NULL DEFAULT '',
@@ -161,11 +118,6 @@ CREATE TABLE `jsonbaseconf` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
 
 -- ----------------------------
--- Records of jsonbaseconf
--- ----------------------------
-INSERT INTO `jsonbaseconf` VALUES ('1', '125', 'http://10.24.13.223:8080/hbky/search/getResult?', 'keyword', 'pageIndex', '1,1', 'type=0&searchtime=0', '/0/sum', '', '[http://10.24.13.223:8080/hbky/lucene/wjdownload?path=]+/path+[&filename=]+/filename+[&fileid=]+/fileid+[&category=]+/category', '/content');
-
--- ----------------------------
 -- Table structure for pattern
 -- ----------------------------
 DROP TABLE IF EXISTS `pattern`;
@@ -176,10 +128,6 @@ CREATE TABLE `pattern` (
   `id` int(20) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of pattern
--- ----------------------------
 
 -- ----------------------------
 -- Table structure for pattern_structed
@@ -198,15 +146,6 @@ CREATE TABLE `pattern_structed` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
 
 -- ----------------------------
--- Records of pattern_structed
--- ----------------------------
-INSERT INTO `pattern_structed` VALUES ('123', 'a', '/html/body/div[3]/div/div[1]/div[1]/div[1]/div/table', '(a+b)*(c+d)', 'formula', '/', '2');
-INSERT INTO `pattern_structed` VALUES ('123', 'b', '/html/body/div[3]/div/div[1]/div[2]/div[1]/div/table', '(a+b)*(c+d)', 'formula', '/', '3');
-INSERT INTO `pattern_structed` VALUES ('123', 'c', '/html/body/div[3]/div/div[1]/div[1]/div[2]/div/table', '(a+b)*(c+d)', 'formula', '/', '4');
-INSERT INTO `pattern_structed` VALUES ('123', 'd', '/html/body/div[3]/div/div[1]/div[2]/div[2]/table', '(a+b)*(c+d)', 'formula', '/', '5');
-INSERT INTO `pattern_structed` VALUES ('123', 'subpage_data', 'pcObj', 'pcObj', 'json', '/subpage', '6');
-
--- ----------------------------
 -- Table structure for queryparam
 -- ----------------------------
 DROP TABLE IF EXISTS `queryparam`;
@@ -221,11 +160,6 @@ CREATE TABLE `queryparam` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
 
 -- ----------------------------
--- Records of queryparam
--- ----------------------------
-INSERT INTO `queryparam` VALUES ('1', '126', '一般贫困户,低保户,五保户,低保贫困户;因病,因残,因学,因灾,缺土地,缺水', '24', '6');
-
--- ----------------------------
 -- Table structure for requesttable
 -- ----------------------------
 DROP TABLE IF EXISTS `requesttable`;
@@ -236,10 +170,6 @@ CREATE TABLE `requesttable` (
   `createdTime` varchar(256) NOT NULL DEFAULT '',
   PRIMARY KEY (`requestID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
-
--- ----------------------------
--- Records of requesttable
--- ----------------------------
 
 -- ----------------------------
 -- Table structure for sense
@@ -253,10 +183,6 @@ CREATE TABLE `sense` (
 ) ENGINE=InnoDB AUTO_INCREMENT=158 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
--- Records of sense
--- ----------------------------
-
--- ----------------------------
 -- Table structure for sensestate
 -- ----------------------------
 DROP TABLE IF EXISTS `sensestate`;
@@ -268,9 +194,6 @@ CREATE TABLE `sensestate` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
--- ----------------------------
--- Records of sensestate
--- ----------------------------
 
 -- ----------------------------
 -- Table structure for status
@@ -287,13 +210,6 @@ CREATE TABLE `status` (
   KEY `statusId` (`statusId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7134 DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Records of status
--- ----------------------------
-INSERT INTO `status` VALUES ('126', '7130', '0', 'info', '0', '245945');
-INSERT INTO `status` VALUES ('126', '7131', '0', 'query', '0', '250');
-INSERT INTO `status` VALUES ('126', '7132', '1', 'info', '0', '0');
-INSERT INTO `status` VALUES ('126', '7133', '1', 'query', '0', '0');
 
 -- ----------------------------
 -- Table structure for structedparam
@@ -317,15 +233,10 @@ CREATE TABLE `structedparam` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
 
 -- ----------------------------
--- Records of structedparam
+-- Table structure for urlBaseConf
 -- ----------------------------
-INSERT INTO `structedparam` VALUES ('2', '123', 'ifmNav', '贫困县', 'ifmCon', 'btnSearch', 'Aaa003', '/html/body/div[3]/div/div[2]/table/tbody/tr/td[8]/a', '/html/body/div[3]/div/div[2]/table/tbody/tr/td[5]/input', 'Aaa003', 'combo-arrow', '/', '_easyui_combobox_i8_0,_easyui_combobox_i8_1,_easyui_combobox_i8_2,_easyui_combobox_i8_3,_easyui_combobox_i8_4,_easyui_combobox_i8_5');
-
--- ----------------------------
--- Table structure for urlbaseconf
--- ----------------------------
-DROP TABLE IF EXISTS `urlbaseconf`;
-CREATE TABLE `urlbaseconf` (
+DROP TABLE IF EXISTS `urlBaseConf`;
+CREATE TABLE `urlBaseConf` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `webId` bigint(20) NOT NULL DEFAULT '0',
   `prefix` varchar(1024) NOT NULL DEFAULT '',
@@ -336,12 +247,6 @@ CREATE TABLE `urlbaseconf` (
   `paramValueList` varchar(256) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
-
--- ----------------------------
--- Records of urlbaseconf
--- ----------------------------
-INSERT INTO `urlbaseconf` VALUES ('4', '122', 'http://www.zhaoan.gov.cn/cms/siteresource/search.shtml?', 'key', 'page', '1,1', 'searchSiteId,siteId,pageName', '60427348114130001,60427348114130001,quickSiteSearch');
-INSERT INTO `urlbaseconf` VALUES ('5', '126', 'http://ai.inspur.com/Archive/PoorFamilyList-GetPoorFamilyData', 'poorproperty,poorcause,planOutPoor,realname,name6,basicArea,txtYear,Aad105,isHelp,isHelpPeople,isImmigrant,isPlan,AreaType,Aah006,Aad003,condition,membercondition,orders,sorts,poorFamilyType', 'pagenumber', '1,1', 'isNull,pagesize', '0,1000');
 
 -- ----------------------------
 -- Table structure for website
@@ -360,12 +265,3 @@ CREATE TABLE `website` (
   `base` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0:url based\n1:api based',
   PRIMARY KEY (`webId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of website
--- ----------------------------
-INSERT INTO `website` VALUES ('122', '诏安县政府官网', 'http://www.zhaoan.gov.cn/cms/html/zaxrmzf/index.html', '/Users/cwc/Desktop/tencent/data-crawling/zhaoan', 'unstructed', '0', '1', '2019-03-16 19:25:56', '', '0');
-INSERT INTO `website` VALUES ('123', '扶贫', 'http://ai.inspur.com/Main/Archive', '/Users/cwc/Desktop/tencent/data-crawling/provty', 'structed', '1', '1', '2019-03-19 14:15:51', '', '1');
-INSERT INTO `website` VALUES ('124', '网盘爬取', 'http://10.24.13.223:8080/hbky/index.jsp#', '/Users/cwc/Desktop/tencent/data-crawling/pan', 'unstructed', '0', '1', '2019-03-24 14:48:30', '', '1');
-INSERT INTO `website` VALUES ('125', '网盘全文检索', 'http://10.24.13.223:8080/hbky/index.jsp#', '/Users/cwc/Desktop/tencent/data-crawling/pan', 'unstructed', '0', '1', '', '', '2');
-INSERT INTO `website` VALUES ('126', '扶贫测试', 'http://ai.inspur.com/Main/Archive', 'D:/table/provty', 'structed', '2', '1', '2019-03-19 14:15:51', '', '1');

@@ -4,6 +4,8 @@ import enums.*;
 import format.RespWrapper;
 import services.ConfigService;
 import util.DBUtil;
+import util.FileZip;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -37,9 +40,6 @@ public class MonitorServlet extends HttpServlet {
         String mysqlUserName = properties.getProperty("mysqlUserName");
         String msyqlPassword = properties.getProperty("mysqlPassword");
 
-         //此处为爬取的jar包path
-//        String jarPath=new File(getServletContext().getRealPath("/"),"WEB-INF/lib/lp2.jar").getAbsolutePath();
-//        builder=new ProcessBuilder("java","-jar",jarPath,webid);
         if(runningMode == RunningMode.unstructed && (base == Base.urlBased || base == Base.apiBased || base == Base.jsonBased)){
 //            --web-id=116
 //            --jdbc-url=jdbc:mysql://localhost:3306/webcrawler?characterEncoding=UTF-8&useSSL=false&useAffectedRows=true&allowPublicKeyRetrieval=true
@@ -50,12 +50,8 @@ public class MonitorServlet extends HttpServlet {
 
             //设置工作目录，主要作用是支持ansj的配置载入
             builder.directory(new File(getServletContext().getRealPath("/"), "WEB-INF"));
-        } else if(runningMode == RunningMode.structed && (driver == Driver.json||driver == Driver.have)){//以下启动模式根据自定义进行修改
+        } else if(runningMode == RunningMode.structed && (driver == Driver.json||driver == Driver.have||driver == Driver.none)){//以下启动模式根据自定义进行修改
             String jarPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/Controller_structed.jar").getAbsolutePath();
-//            String shPath = new File(getServletContext().getRealPath("/"),"WEB-INF/lib/start.sh").getAbsolutePath();
-//
-//            builder = new ProcessBuilder("sh",shPath,jarPath, webID+"",  mysqlURL,  mysqlUserName, msyqlPassword);
-            //builder = new ProcessBuilder( "xvfb-run", "-a", "--server-args=\"-screen 0 1024x768x24\"" ,"java","-jar",jarPath, webID+"",  mysqlURL,  mysqlUserName, msyqlPassword);
             builder = new ProcessBuilder("java","-jar",jarPath, webID+"",  mysqlURL,  mysqlUserName, msyqlPassword);
         }
         if (builder == null) {
@@ -83,10 +79,11 @@ public class MonitorServlet extends HttpServlet {
         }catch (InterruptedException e){
             //ignored
         }
-        if(p.isAlive()) {
+        if (p.isAlive()) {
             return "爬虫成功启动";
-        }else {
-
+        } else if (p.exitValue() == 0) {
+            return "爬虫启动，检测到目标网站数据无更新，爬虫退出";
+        } else {
             return "爬虫启动失败,程序退出码为" + p.exitValue() + "，请重新检查参数配置是否正确，或查看输出日志进行问题定位";
         }
 
@@ -155,6 +152,7 @@ public class MonitorServlet extends HttpServlet {
             }
 
             String[][] current = DBUtil.select("current",new String[]{"webId","round","M1status","M2status","M3status","M4status","SampleData_sum", "run"});
+
             for(int i = 0; i < current.length; i++){
                 Map<String,String> unit = new HashMap<>();
                 unit.put("taskID", current[i][0]);
@@ -170,12 +168,15 @@ public class MonitorServlet extends HttpServlet {
                     float dbNum = sizeMap.get(current[i][0]);
                     unit.put("crawlRatio", sampleNum / dbNum * 100 + "%");
                 }
+                Properties properties = ConfigService.getBackMap();
+                String[] websiteRow = website[idNameMap.get(current[i][0])];
+                RunningMode runningMode = RunningMode.ValueOf(websiteRow[2]);
+                if (runningMode == RunningMode.structed)
+                    unit.put("round",(Integer.parseInt(current[i][1])+1)+"" );
                 if ("0".equals(current[i][7])) {
-                    unit.put("status", "未启动");
+                    unit.put("status", "已停止");
                 } else {
-                    Properties properties = ConfigService.getBackMap();
-                    String[] websiteRow = website[idNameMap.get(current[i][0])];
-                    RunningMode runningMode = RunningMode.ValueOf(websiteRow[2]);
+
                     Driver driver = Driver.valueOf(Integer.parseInt(websiteRow[3]));
                     Base base = Base.valueOf(Integer.parseInt(websiteRow[4]));
                     String status = "已启动";
@@ -189,6 +190,7 @@ public class MonitorServlet extends HttpServlet {
                         }
 
                     } else if (runningMode == RunningMode.structed) {
+
                         for (int j = 2; j < 6; j++) {
                             if(current[i][j].equals("active")) {
                                 status = properties.getProperty(runningMode.name() + "." +driver.name() + "." +"status" + (j - 1));
@@ -208,7 +210,7 @@ public class MonitorServlet extends HttpServlet {
             String taskIDStr = request.getParameter("taskID");
             String option = request.getParameter("option");
 
-            int webID = 0;
+            Integer webID = 0;
             MonitorOption monitorOption = null;
             try {
                 webID = Integer.parseInt(taskIDStr);
@@ -218,7 +220,7 @@ public class MonitorServlet extends HttpServlet {
                 response.getWriter().println(RespWrapper.build(data));
                 return;
             }
-            String param1[] = {"runningMode", "driver", "base"};
+            String param1[] = {"runningMode", "driver", "base", "workFile"};
             String[][] ans =DBUtil.select("website",param1 , webID);
             if(ans.length == 0) {
                 data.put("msg", "webID所对应的网站不存在");
@@ -235,6 +237,24 @@ public class MonitorServlet extends HttpServlet {
             } else if (monitorOption == MonitorOption.stop) {
                 String msg = stop(webID);
                 data.put("msg", msg);
+                //对非结构型，在停止指令执行之后立即进行打包
+                if (runningMode == RunningMode.unstructed) {
+                    Path parAddr = Paths.get(ans[0][3], webID + "", "index");
+                    Path sourceAddr = parAddr.resolve("fulltext");
+                    Path zipAddr = parAddr.resolve(webID + ".zip");
+                    if (sourceAddr.toFile().isDirectory()) {
+                        zipAddr.toFile().delete();
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                System.out.println("开始压缩");
+                                FileZip.fileZip(sourceAddr.toString(), zipAddr.toString(), "lucene",true);
+                                System.out.println("压缩完成");
+                            }
+                        }.start();
+                    }
+
+                }
             } else {
                 data.put("msg", "该操作未定义，无法执行");
             }
