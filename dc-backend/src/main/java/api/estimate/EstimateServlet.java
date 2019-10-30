@@ -98,6 +98,7 @@ public class EstimateServlet extends HttpServlet {
             /*
              * check whether ID is in the estimate table;
              * if not,we create one.Then update.
+
              * if in,we directly get.
              * */
             String[][] IDArray = DBUtil.select("estimate", new String[]{"estiId"});
@@ -109,6 +110,7 @@ public class EstimateServlet extends HttpServlet {
             if (!IDset.contains(estiId)) {
                 DBUtil.insert("estimate", new String[]{"estiId"}, new String[]{estiId});
             }
+
 
             Map<String, Object> data = new HashMap<>();
             String[] params = new String[]{
