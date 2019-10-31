@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Logger;
 
 
 @WebServlet(name = "EstimateServlet", urlPatterns = {"/api/datacrawling/estimate/*"})
@@ -94,10 +95,18 @@ public class EstimateServlet extends HttpServlet {
 
             /*In use when click change button.
              * */
-            String estiId = pathParam[2];
+            String estiId="";
+            try {
+                estiId = pathParam[2];
+                System.out.println("estiId is "+estiId);
+                Logger.getLogger("estiId ",estiId);
+            }catch (NullPointerException nu){
+                nu.printStackTrace();
+            }
             /*
              * check whether ID is in the estimate table;
              * if not,we create one.Then update.
+
              * if in,we directly get.
              * */
             String[][] IDArray = DBUtil.select("estimate", new String[]{"estiId"});
@@ -109,6 +118,7 @@ public class EstimateServlet extends HttpServlet {
             if (!IDset.contains(estiId)) {
                 DBUtil.insert("estimate", new String[]{"estiId"}, new String[]{estiId});
             }
+
 
             Map<String, Object> data = new HashMap<>();
             String[] params = new String[]{
