@@ -98,6 +98,7 @@ public class EstimateServlet extends HttpServlet {
             String estiId="";
             try {
                 estiId = pathParam[2];
+
                 System.out.println("estiId is "+estiId);
 //                Logger.getLogger("estiId ",estiId);
             }catch (NullPointerException nu){
