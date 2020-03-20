@@ -95,21 +95,10 @@ public class EstimateServlet extends HttpServlet {
 
             /*In use when click change button.
              * */
-            String estiId="";
-            try {
-                estiId = pathParam[2];
-                System.out.println("estiId is "+estiId);
-                Logger.getLogger("estiId ",estiId);
-            }catch (NullPointerException nu){
-                nu.printStackTrace();
-            }
-            /*
-             * check whether ID is in the estimate table;
-             * if not,we create one.Then update.
-
-             * if in,we directly get.
-             * */
-            String[][] IDArray = DBUtil.select("estimate", new String[]{"estiId"});
+            String estiId = "";
+            estiId = pathParam[2];
+            String[]params_estiId={"estiId"};
+            String[][] IDArray = DBUtil.select("estimate", params_estiId);
             HashSet<String> IDset = new HashSet<>();
             for (String[] aID : IDArray) {
                 IDset.add(aID[0]);
@@ -124,9 +113,9 @@ public class EstimateServlet extends HttpServlet {
             String[] params = new String[]{
                     "linksXpath", "contentXpath", "startWord", "walkTimes", "contentLocation", "querySend"
             };
-            String[] conParams = {"estiId"};
+
             String[] conPalues = {estiId};
-            String[][] estiData = DBUtil.select("estimate", params, conParams, conPalues);
+            String[][] estiData = DBUtil.select("estimate", params, params_estiId, conPalues);
 
             for (int i = 0; i < params.length; i++) {
                 if (estiData[0][i] != null) {
@@ -136,7 +125,8 @@ public class EstimateServlet extends HttpServlet {
                 }
             }
 
-            String[][] IDArray1 = DBUtil.select("urlbaseconf", new String[]{"webId"});
+            String []params_webId={"webId"};
+            String[][] IDArray1 = DBUtil.select("urlBaseConf", params_webId);
             HashSet<String> IDset1 = new HashSet<>();
             for (String[] aID : IDArray1) {
                 IDset1.add(aID[0]);
@@ -149,7 +139,7 @@ public class EstimateServlet extends HttpServlet {
 
             String[][] urlBaseConfData;
             if (IDset1.contains(estiId)) {
-                urlBaseConfData = DBUtil.select("urlbaseconf", params1, conParams1, conPalues1);
+                urlBaseConfData = DBUtil.select("urlBaseConf", params1, conParams1, conPalues1);
             } else {
                 urlBaseConfData = new String[1][params1.length];
                 for (int i = 0; i < params1.length; i++) {
