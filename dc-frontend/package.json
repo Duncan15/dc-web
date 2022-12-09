@@ -15,7 +15,7 @@
   "author": "cwc",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "http-errors": "^1.7.2",
     "morgan": "^1.9.1",
     "rotating-file-stream": "^1.4.0"
