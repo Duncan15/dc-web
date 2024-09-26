@@ -119,8 +119,8 @@ public class WebCrawlerDemo {
                     HttpURLConnection connection = (HttpURLConnection) url
                             .openConnection();
                     connection.setRequestMethod("GET");
-                    connection.setConnectTimeout(2000);
-                    connection.setReadTimeout(2000);
+                    connection.setConnectTimeout(200000);
+                    connection.setReadTimeout(200000);
 
                     if (connection.getResponseCode() == 200) {
                         InputStream inputStream = connection.getInputStream();
@@ -128,7 +128,7 @@ public class WebCrawlerDemo {
                                 new InputStreamReader(inputStream, "UTF-8"));
                         String line = "";
                         Pattern pattern = Pattern
-                                .compile("<a.*?href=[\"']?((https?://)?/?[^\"']+)[\"']?.*?>(.+)</a>");
+                                .compile("<[aA]{1}.*?href=[\"']?((https?://)?/?[^\"']+)[\"']?.*?>(.+)</[aA]{1}>");
                         Matcher matcher = null;
                         while (((line = reader.readLine()) != null)&&stopFlag) {
                             matcher = pattern.matcher(line);

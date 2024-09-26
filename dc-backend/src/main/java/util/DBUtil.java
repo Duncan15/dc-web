@@ -1085,11 +1085,22 @@ public class DBUtil
     }
 
 	public static void main(String[] args){
-		String[] params_value = {"aaaa","prefix"};
-		String[] params= {"requestName","requestDesc"};
-		boolean flag = DBUtil.insert("requesttable", params, params_value);
-		System.out.println("insert or not ?"+flag);
-
+//		String[] params_value = {"aaaa","prefix"};
+//		String[] params= {"requestName","requestDesc"};
+//		boolean flag = DBUtil.insert("requesttable", params, params_value);
+//		System.out.println("insert or not ?"+flag);
+//		String[][] IDArray1 = DBUtil.select("urlBaseconf", new String[]{""});
+		String[][] IDArray = new String[0][];
+		try {
+			IDArray = DBUtil.select("estimate",new String[]{"estiId"});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		for(int i=0;i<IDArray.length;i++){
+			for (int j=0;j<IDArray[0].length;j++)
+			System.out.print(IDArray[i][j]+" ");
+			System.out.println();
+		}
 	}
 
 }
